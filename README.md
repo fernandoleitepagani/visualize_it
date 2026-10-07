@@ -1,37 +1,21 @@
-# Algoritmos — visualizações passo a passo
+# Visualize It
 
-Site estático que mostra algoritmos clássicos em execução: barras animadas,
-código em Java e C, e análise assintótica lado a lado.
+Visualizador interativo de algoritmos, estruturas de dados e análise de complexidade.
+Cada página mostra o passo a passo de um algoritmo com animação, código em
+Java ou C, e uma tabela de complexidade assintótica.
 
-## Estrutura
+## Conteúdo
 
-```
-index.html              → menu
-pages/                  → uma página por algoritmo
-assets/css/style.css    → tema único (preto + âmbar)
-assets/js/page.js       → bootstrap de cada página
-assets/js/registry.js   → catálogo de algoritmos
-assets/js/algorithms/   → um módulo por algoritmo
-```
+**Ordenação** — Selection Sort, Insertion Sort, Bubble Sort, Shellsort,
+Quicksort, Mergesort, Heapsort, Counting Sort, Radix Sort.
 
+**Busca** — Busca Sequencial, Busca Binária.
 
-## Adicionar um algoritmo novo
+**Estruturas lineares** — Lista sequencial, lista encadeada, lista dupla,
+pilha sequencial, pilha encadeada, fila circular, fila encadeada.
 
-1. Crie `assets/js/algorithms/meu_algo.js` exportando um objeto com o
-   formato do `ALGORITHMS` (id, title, complexity, code, steps).
-2. Importe-o em `assets/js/registry.js` e registre no mapa.
-3. Crie `pages/meu_algo.html` (copie qualquer página existente e mude
-   `data-algo` e `<title>`).
-4. Adicione um card no `index.html`.
+**Análise** — Complexidade (Θ / O / Ω) e provas por indução.
 
-O motor (Player, renderBars, renderCode) já cuida do resto.
+São 21 páginas no total, todas servidas como HTML estático.
 
-## Deploy no GitHub Pages
-
-1. Push para um repositório público.
-2. Settings → Pages → Deploy from branch → `main` / root.
-3. O `.nojekyll` já está lá para o Pages não mexer nos arquivos.
-
-## Licença
-
-Uso educacional.
+## Estrutura do projeto
