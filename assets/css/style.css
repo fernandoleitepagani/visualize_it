@@ -103,7 +103,7 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
 /* ---------- Visualization (shared container) ---------- */
 .viz { padding: 22px 18px 18px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
 
-/* ---------- Bars view (sorting) ---------- */
+/* ---------- Bars view (sorting + search) ---------- */
 .bars { display: flex; align-items: flex-end; gap: 6px; height: 240px; }
 
 .bar-wrap {
@@ -317,3 +317,64 @@ input[type=range] { accent-color: var(--accent); width: 100px; }
 /* ---------- Algorithm page header ---------- */
 #algo-title { margin-top: 6px; }
 .subtitle   { color: var(--text-muted); font-size: 13.5px; }
+
+/* ---------- Article pages (complexity, induction) ---------- */
+.article { padding: 4px 0 40px; }
+.article h2 {
+  font-size: 18px; font-weight: 600;
+  margin: 36px 0 12px; letter-spacing: -.005em;
+}
+.article h2:first-child { margin-top: 0; }
+.article h3 {
+  font-size: 15px; font-weight: 600;
+  margin: 22px 0 8px;
+}
+.article p { color: var(--text); margin: 0 0 12px; max-width: 76ch; }
+.article p.muted { color: var(--text-muted); }
+.article ul, .article ol { padding-left: 22px; color: var(--text); margin: 0 0 14px; max-width: 76ch; }
+.article li { margin-bottom: 6px; }
+.article pre {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  overflow-x: auto;
+  color: var(--text);
+  margin: 0 0 16px;
+}
+.article code {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--accent);
+  font-size: 12.5px;
+}
+.article pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+.article .kbd {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--accent-glow);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  margin-right: 6px;
+}
+.article blockquote {
+  border-left: 2px solid var(--accent-dim);
+  padding: 4px 0 4px 16px;
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 76ch;
+}
