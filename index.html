@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algoritmos — visualizações passo a passo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1>Algoritmos<span class="accent">.</span></h1>
+  </header>
+
+  <section class="hero">
+    <h1>Veja os algoritmos <span class="accent">funcionando</span>.</h1>
+    <p>Percorra cada algoritmo linha por linha, com o vetor animado, código em Java ou C e a análise assintótica lado a lado.</p>
+  </section>
+
+  <h2 class="section-title">Ordenação</h2>
+  <div class="grid">
+    <a class="card" href="pages/selecao.html">
+      <h3>Selection Sort</h3>
+      <p>Encontra o menor a cada rodada e o move para o início.</p>
+      <span class="tag">Θ(n²)</span>
+    </a>
+    <a class="card" href="pages/insercao.html">
+      <h3>Insertion Sort</h3>
+      <p>Empurra cada elemento até a posição correta na parte já ordenada.</p>
+      <span class="tag">Θ(n) – Θ(n²)</span>
+    </a>
+    <a class="card" href="pages/bolha.html">
+      <h3>Bubble Sort</h3>
+      <p>Compara vizinhos; o maior borbulha até o fim.</p>
+      <span class="tag">Θ(n) – Θ(n²)</span>
+    </a>
+    <a class="card" href="pages/shellsort.html">
+      <h3>Shellsort</h3>
+      <p>Inserção com gaps decrescentes.</p>
+      <span class="tag">≈ Θ(n^1.25)</span>
+    </a>
+    <a class="card" href="pages/quicksort.html">
+      <h3>Quicksort</h3>
+      <p>Particiona em torno de um pivô e repete recursivamente.</p>
+      <span class="tag">Θ(n·log n) médio</span>
+    </a>
+    <a class="card" href="pages/mergesort.html">
+      <h3>Mergesort</h3>
+      <p>Divide ao meio e intercala as metades ordenadas.</p>
+      <span class="tag">Θ(n·log n)</span>
+    </a>
+    <a class="card" href="pages/heapsort.html">
+      <h3>Heapsort</h3>
+      <p>Constrói um heap de máximo e extrai repetidamente.</p>
+      <span class="tag">Θ(n·log n)</span>
+    </a>
+    <a class="card" href="pages/counting.html">
+      <h3>Counting Sort</h3>
+      <p>Conta ocorrências e distribui direto na posição final.</p>
+      <span class="tag">Θ(n + k)</span>
+    </a>
+    <a class="card" href="pages/radix.html">
+      <h3>Radix Sort</h3>
+      <p>Ordena dígito por dígito, do menos ao mais significativo.</p>
+      <span class="tag">Θ(d·(n + b))</span>
+    </a>
+  </div>
+
+  <h2 class="section-title">Estruturas Lineares</h2>
+  <div class="grid">
+    <a class="card disabled" href="#">
+      <h3>Lista encadeada</h3>
+      <p>Simples, dupla e circular.</p>
+      <span class="tag">fase 3</span>
+    </a>
+    <a class="card disabled" href="#">
+      <h3>Pilha (LIFO)</h3>
+      <p>Push e pop no topo em O(1).</p>
+      <span class="tag">fase 3</span>
+    </a>
+    <a class="card disabled" href="#">
+      <h3>Fila (FIFO)</h3>
+      <p>Enfileirar e desenfileirar nas pontas.</p>
+      <span class="tag">fase 3</span>
+    </a>
+  </div>
+
+  <h2 class="section-title">Análise</h2>
+  <div class="grid">
+    <a class="card disabled" href="#">
+      <h3>Complexidade</h3>
+      <p>Notações Θ, O e Ω e contagem de operações.</p>
+      <span class="tag">fase 4</span>
+    </a>
+    <a class="card disabled" href="#">
+      <h3>Provas por Indução</h3>
+      <p>Indução simples, forte e estrutural.</p>
+      <span class="tag">fase 4</span>
+    </a>
+  </div>
+
+  <footer class="foot">
+    Fase 2 — todas as ordenações clássicas em um só lugar.
+  </footer>
+</div>
+</body>
+</html>

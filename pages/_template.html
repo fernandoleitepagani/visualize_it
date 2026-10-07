@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algoritmo — visualização</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body data-algo="SUBSTITUIR">
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <a class="back" href="../index.html">← todos os algoritmos</a>
+      <h1 id="algo-title">…</h1>
+      <div class="subtitle" id="algo-subtitle"></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="panel-header"><span>vetor</span><span id="counter" class="counter">1 / 1</span></div>
+      <div class="viz">
+        <div class="bars" id="bars"></div>
+        <div class="viz-desc">
+          <div class="label">passo atual</div>
+          <div class="text" id="desc"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>código</span>
+        <div class="code-tabs">
+          <button data-lang="java" class="active">Java</button>
+          <button data-lang="c">C</button>
+        </div>
+      </div>
+      <div class="code" id="code"></div>
+    </section>
+  </div>
+
+  <div class="controls">
+    <button class="btn" id="btn-reset">Recomeçar</button>
+    <button class="btn" id="btn-prev">Anterior</button>
+    <button class="btn primary" id="btn-play">Executar</button>
+    <button class="btn" id="btn-next">Próximo</button>
+    <span class="speed">
+      <label for="speed">velocidade</label>
+      <input type="range" id="speed" min="1" max="10" value="5">
+    </span>
+  </div>
+
+  <div class="input-row">
+    <label>valores<input type="text" id="values-input"></label>
+    <button class="btn" id="btn-apply">Aplicar</button>
+    <button class="btn" id="btn-random">Sortear</button>
+  </div>
+  <p class="err" id="values-error"></p>
+
+  <section class="info">
+    <h2>Sobre</h2>
+    <p id="algo-desc"></p>
+
+    <h2>Complexidade</h2>
+    <table class="complexity">
+      <thead><tr><th></th><th>melhor</th><th>médio</th><th>pior</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Tempo</td>
+          <td class="mono" id="tbl-best">—</td>
+          <td class="mono" id="tbl-avg">—</td>
+          <td class="mono" id="tbl-worst">—</td>
+        </tr>
+        <tr><td>Espaço</td><td colspan="3" class="mono" id="tbl-space">—</td></tr>
+        <tr><td>Estável</td><td colspan="3" id="tbl-stable">—</td></tr>
+      </tbody>
+    </table>
+    <p id="complexity-note"></p>
+  </section>
+
+  <footer class="foot">Use ← e → para avançar, espaço para executar.</footer>
+</div>
+
+<script src="../assets/js/viz.js"></script>
+<script src="../assets/js/algorithms/ALGO.js"></script>
+</body>
+</html>

@@ -9,23 +9,11 @@ código em Java e C, e análise assintótica lado a lado.
 index.html              → menu
 pages/                  → uma página por algoritmo
 assets/css/style.css    → tema único (preto + âmbar)
-assets/js/engine.js     → motor compartilhado (Player + render)
 assets/js/page.js       → bootstrap de cada página
 assets/js/registry.js   → catálogo de algoritmos
 assets/js/algorithms/   → um módulo por algoritmo
 ```
 
-## Rodar localmente
-
-ES modules exigem um servidor HTTP. Use:
-
-```bash
-python -m http.server 8000
-# ou
-npx serve .
-```
-
-Depois abra `http://localhost:8000`.
 
 ## Adicionar um algoritmo novo
 
