@@ -100,8 +100,10 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
   color: var(--text-dim); font-weight: 600;
 }
 
-/* ---------- Bar visualization ---------- */
-.viz { padding: 22px 18px 18px; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-end; }
+/* ---------- Visualization (shared container) ---------- */
+.viz { padding: 22px 18px 18px; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
+
+/* ---------- Bars view (sorting) ---------- */
 .bars { display: flex; align-items: flex-end; gap: 6px; height: 240px; }
 
 .bar-wrap {
@@ -129,6 +131,84 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
 .bar-wrap.swap  .bar-val { color: var(--green); }
 .bar-wrap.pivot .bar-val { color: var(--purple); }
 
+/* ---------- Cells view (array-based linear structures) ---------- */
+.cells {
+  display: flex; align-items: flex-end; gap: 4px;
+  justify-content: center;
+  padding: 30px 0 10px;
+  min-height: 240px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.cell-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  min-width: 52px;
+}
+.cell-labels {
+  font-family: var(--mono); font-size: 10px; color: var(--accent);
+  height: 14px; display: flex; gap: 4px; white-space: nowrap;
+}
+.cell-labels i { font-style: normal; }
+.cell {
+  width: 48px; height: 44px;
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 600; font-size: 14px;
+  transition: border-color .15s, background .15s;
+}
+.cell.empty   { border-style: dashed; background: transparent; color: var(--text-dim); }
+.cell.active  { border-color: var(--accent); background: var(--accent-glow); }
+.cell.compare { border-color: var(--green); background: rgba(74,222,128,.12); }
+.cell.write   { border-color: var(--accent); background: var(--accent-glow); }
+.cell-idx { font-family: var(--mono); font-size: 10px; color: var(--text-dim); }
+
+/* ---------- Nodes view (linked linear structures) ---------- */
+.nodes {
+  display: flex; align-items: center; gap: 10px;
+  justify-content: center;
+  padding: 30px 0 10px;
+  min-height: 240px;
+  flex-wrap: wrap;
+}
+.node-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.node-labels {
+  font-family: var(--mono); font-size: 10px; color: var(--accent);
+  height: 14px; display: flex; gap: 4px; white-space: nowrap;
+}
+.node-labels i { font-style: normal; }
+.node {
+  display: flex; align-items: stretch;
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.node.active  { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.node.compare { border-color: var(--green); }
+.node.write   { border-color: var(--accent); }
+.node > * { border-right: 1px solid var(--border-2); }
+.node > *:last-child { border-right: none; }
+.node-val {
+  padding: 8px 12px;
+  font-family: var(--mono); font-weight: 600; font-size: 14px;
+  display: flex; align-items: center;
+}
+.node-ptr {
+  padding: 8px 10px;
+  font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+  background: var(--surface-3);
+  display: flex; align-items: center;
+}
+.arrow {
+  font-family: var(--mono); color: var(--text-dim); font-size: 14px;
+}
+
+/* ---------- Step description ---------- */
 .viz-desc {
   margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border);
   min-height: 52px;

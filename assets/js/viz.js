@@ -1,11 +1,17 @@
 /* viz.js — registry + player. Pages call viz.register(id, cfg) and set
-   data-algo on <body>; boot happens automatically. */
+   data-algo on <body>; boot happens automatically.
+
+   Views:
+     - default (bars)  : sorting; steps return { arr, cmp, swap, pivot, sorted, dim }
+     - 'cells'         : array-based structures; steps return { cells: [{val,labels,state}] }
+     - 'nodes'         : linked structures; steps return { nodes: [{id,val,prev,next,labels,state}] }
+*/
 window.viz = (function () {
   const registry = {};
   const $  = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
   const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const KW = /\b(void|int|for|if|else|while|return|new|boolean|true|false|null|length|break|continue)\b/g;
+  const KW = /\b(void|int|char|for|if|else|while|return|new|boolean|true|false|null|length|break|continue|struct|typedef|malloc|free)\b/g;
 
   const hl = (s) => esc(s)
     .replace(/(\/\/.*)$/, '<i class="c">$1</i>')
@@ -14,24 +20,67 @@ window.viz = (function () {
 
   let cfg, steps, idx = 0, timer = null, lang = 'java';
 
+  /* ---------- Renderers ---------- */
+
   function paintBars(st) {
-    const max = Math.max(...st.arr, 1);
-    const S = (xs = []) => new Set(xs);
-    const cmp = S(st.cmp), swap = S(st.swap), piv = S(st.pivot),
-          sorted = S(st.sorted), dim = S(st.dim);
-    $('#bars').innerHTML = st.arr.map((v, i) => {
+    const el = $('#bars'); el.className = 'bars';
+    const { arr, cmp = [], swap = [], pivot = [], sorted = [], dim = [] } = st;
+    const max = Math.max(...arr, 1);
+    const S = (xs) => new Set(xs);
+    const cmpS = S(cmp), swpS = S(swap), pvS = S(pivot), soS = S(sorted), dmS = S(dim);
+    el.innerHTML = arr.map((v, i) => {
       const h = Math.max(8, Math.round(v / max * 220));
-      let c = 'bar';
-      if (swap.has(i))        c += ' swap';
-      else if (piv.has(i))    c += ' pivot';
-      else if (cmp.has(i))    c += ' cmp';
-      else if (sorted.has(i)) c += ' sorted';
-      const w = 'bar-wrap' + (dim.has(i) ? ' dim' : '');
+      let c = 'bar', extra = '';
+      if (swpS.has(i))      { c += ' swap';  extra = ' swap'; }
+      else if (pvS.has(i))  { c += ' pivot'; extra = ' pivot'; }
+      else if (cmpS.has(i)) { c += ' cmp';   extra = ' cmp'; }
+      else if (soS.has(i))  { c += ' sorted'; }
+      const w = 'bar-wrap' + extra + (dmS.has(i) ? ' dim' : '');
       return `<div class="${w}">
         <span class="bar-val">${v}</span>
         <div class="${c}" style="height:${h}px"></div>
       </div>`;
     }).join('');
+  }
+
+  function paintCells(st) {
+    const el = $('#bars'); el.className = 'cells';
+    el.innerHTML = (st.cells || []).map((c, i) => {
+      const st2 = c.state || (c.val === null ? 'empty' : '');
+      const labels = (c.labels || []).map(l => `<i>${esc(l)}</i>`).join('');
+      const val = (c.val === null || c.val === undefined) ? '' : c.val;
+      return `<div class="cell-wrap">
+        <div class="cell-labels">${labels}</div>
+        <div class="cell ${st2}">${val}</div>
+        <div class="cell-idx">${i}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function paintNodes(st) {
+    const el = $('#bars'); el.className = 'nodes';
+    const mode = cfg.linked || 'singly';
+    const nodes = st.nodes || [];
+    const parts = [];
+    nodes.forEach((nd, i) => {
+      const s = nd.state || '';
+      const labels = (nd.labels || []).map(l => `<i>${esc(l)}</i>`).join('');
+      const prevCmp = (mode === 'doubly')
+        ? `<span class="node-ptr">${nd.prev ? '←' + nd.prev : '∅'}</span>` : '';
+      const nextCmp = `<span class="node-ptr">${nd.next ? '→' + nd.next : '∅'}</span>`;
+      parts.push(`<div class="node-wrap">
+        <div class="node-labels">${labels}</div>
+        <div class="node ${s}">${prevCmp}<span class="node-val">${nd.val}</span>${nextCmp}</div>
+      </div>`);
+      if (i < nodes.length - 1) parts.push('<span class="arrow">→</span>');
+    });
+    el.innerHTML = parts.join('');
+  }
+
+  function paintStep(st) {
+    if (cfg.view === 'cells') paintCells(st);
+    else if (cfg.view === 'nodes') paintNodes(st);
+    else paintBars(st);
   }
 
   function paintCode(activeLine) {
@@ -45,8 +94,8 @@ window.viz = (function () {
 
   function render() {
     const st = steps[idx];
-    paintBars(st);
-    paintCode(st.line);
+    paintStep(st);
+    paintCode(st.line !== undefined ? st.line : 0);
     $('#desc').textContent = st.desc;
     $('#counter').textContent = `${idx + 1} / ${steps.length}`;
     $('#btn-prev').disabled = idx === 0;
@@ -81,6 +130,9 @@ window.viz = (function () {
     $('#algo-subtitle').textContent = cfg.subtitle || '';
     $('#algo-desc').textContent     = cfg.description || '';
 
+    const lbl = $('#panel-label');
+    if (lbl) lbl.textContent = cfg.panelLabel || 'vetor';
+
     const cx = cfg.complexity || {}, t = cx.time || {};
     $('#tbl-best').textContent   = t.best  || '—';
     $('#tbl-avg').textContent    = t.avg   || '—';
@@ -101,8 +153,8 @@ window.viz = (function () {
     $('#btn-apply').onclick = () => {
       const parts = $('#values-input').value.trim()
         .split(/[,\s]+/).filter(Boolean).map(Number);
-      if (parts.length < 2 || parts.length > 12 || parts.some(n => !isFinite(n))) {
-        $('#values-error').textContent = 'Use entre 2 e 12 números separados por vírgula.';
+      if (parts.length < 1 || parts.length > 12 || parts.some(n => !isFinite(n))) {
+        $('#values-error').textContent = 'Use entre 1 e 12 números separados por vírgula.';
         return;
       }
       $('#values-error').textContent = '';
@@ -110,7 +162,7 @@ window.viz = (function () {
     };
 
     $('#btn-random').onclick = () => {
-      const n = 5 + Math.floor(Math.random() * 4);
+      const n = 4 + Math.floor(Math.random() * 4);
       const vals = Array.from({ length: n }, () => 1 + Math.floor(Math.random() * 60));
       $('#values-input').value = vals.join(', ');
       $('#values-error').textContent = '';
@@ -131,12 +183,11 @@ window.viz = (function () {
   }
 
   function register(id, options) { registry[id] = options; }
-  function boot(id) { const o = registry[id]; if (o) init(o); }
 
   document.addEventListener('DOMContentLoaded', () => {
     const id = document.body.dataset.algo;
-    if (id) boot(id);
+    if (id && registry[id]) init(registry[id]);
   });
 
-  return { register, boot };
+  return { register };
 })();

@@ -18,7 +18,7 @@
 
   <section class="hero">
     <h1>Veja os algoritmos <span class="accent">funcionando</span>.</h1>
-    <p>Percorra cada algoritmo linha por linha, com o vetor animado, código em Java ou C e a análise assintótica lado a lado.</p>
+    <p>Percorra cada algoritmo linha por linha, com a estrutura animada, código em Java ou C e a análise assintótica lado a lado.</p>
   </section>
 
   <h2 class="section-title">Ordenação</h2>
@@ -72,20 +72,40 @@
 
   <h2 class="section-title">Estruturas Lineares</h2>
   <div class="grid">
-    <a class="card disabled" href="#">
-      <h3>Lista encadeada</h3>
-      <p>Simples, dupla e circular.</p>
-      <span class="tag">fase 3</span>
+    <a class="card" href="pages/lista-sequencial.html">
+      <h3>Lista Sequencial</h3>
+      <p>Lista em vetor. Inserir/remover no meio empurra elementos.</p>
+      <span class="tag">Θ(1) – Θ(n)</span>
     </a>
-    <a class="card disabled" href="#">
-      <h3>Pilha (LIFO)</h3>
-      <p>Push e pop no topo em O(1).</p>
-      <span class="tag">fase 3</span>
+    <a class="card" href="pages/lista-encadeada.html">
+      <h3>Lista Encadeada</h3>
+      <p>Nós com um ponteiro prox. Cresce sob demanda.</p>
+      <span class="tag">Θ(1) – Θ(n)</span>
     </a>
-    <a class="card disabled" href="#">
-      <h3>Fila (FIFO)</h3>
-      <p>Enfileirar e desenfileirar nas pontas.</p>
-      <span class="tag">fase 3</span>
+    <a class="card" href="pages/lista-dupla.html">
+      <h3>Lista Dupla</h3>
+      <p>Nós com ant e prox — percorre nos dois sentidos.</p>
+      <span class="tag">Θ(1) – Θ(n)</span>
+    </a>
+    <a class="card" href="pages/pilha-sequencial.html">
+      <h3>Pilha Sequencial</h3>
+      <p>LIFO em vetor com topo. Capacidade fixa.</p>
+      <span class="tag">Θ(1)</span>
+    </a>
+    <a class="card" href="pages/pilha-encadeada.html">
+      <h3>Pilha Encadeada</h3>
+      <p>LIFO com nós dinâmicos, sem limite fixo.</p>
+      <span class="tag">Θ(1)</span>
+    </a>
+    <a class="card" href="pages/fila-circular.html">
+      <h3>Fila Circular</h3>
+      <p>FIFO em vetor com índices que dão a volta.</p>
+      <span class="tag">Θ(1)</span>
+    </a>
+    <a class="card" href="pages/fila-encadeada.html">
+      <h3>Fila Encadeada</h3>
+      <p>FIFO com nós dinâmicos e ponteiros nas duas pontas.</p>
+      <span class="tag">Θ(1)</span>
     </a>
   </div>
 
@@ -104,7 +124,7 @@
   </div>
 
   <footer class="foot">
-    Fase 2 — todas as ordenações clássicas em um só lugar.
+    Fase 3 — estruturas lineares em ação.
   </footer>
 </div>
 </body>
