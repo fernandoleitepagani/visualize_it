@@ -345,6 +345,18 @@ input[type=range] { accent-color: var(--accent); width: 100px; }
   color: var(--text);
   margin: 0 0 16px;
 }
+.article pre .hl {
+  display: inline-block;
+  width: calc(100% + 32px);      /* 100% = content-box do <pre>; +32 = os dois paddings */
+  margin-left: -16px;            /* encosta na borda esquerda do <pre> */
+  padding-left: 14px;            /* alinha o "if" com o resto do código */
+  box-sizing: border-box;
+  background: var(--accent-glow);
+  border-left: 2px solid var(--accent);
+  color: var(--accent);
+  line-height: inherit;          /* garante a mesma altura das outras linhas */
+  vertical-align: top;
+}
 .article code {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -488,3 +500,24 @@ input[type=range] { accent-color: var(--accent); width: 100px; }
 }
 
 .somatorio p { color: var(--text-muted); max-width: 640px; margin: 0; font-size: 12.5px; }
+
+/* ---------- Variáveis do passo ---------- */
+.vars {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  padding: 12px 0 0;
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12.5px;
+}
+.vars:empty { display: none; }
+
+.vars .var {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.vars .var-name  { color: var(--text-dim); font-style: italic; }
+.vars .var-value { color: var(--accent); font-weight: 600; min-width: 14px; text-align: center; }
+.vars .var-value.empty { color: var(--text-dim); font-weight: 400; }

@@ -21,8 +21,6 @@ viz.register('for', {
 
     code: {
     java: `
-import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -44,10 +42,6 @@ public class Main {
 }`.trim().split('\n'),
 
     c: `
-#include <stdio.h>
-
-/* Somatório: S = Σ num/(3i−1)      */
-/* onde num = Σ i·p, p de i+1 até N */
 int main() {
     float S = 0, num;
     int N;
@@ -62,7 +56,7 @@ int main() {
         }
         S += num / (3 * i - 1);
     }
-    printf("resultado: %f\n", S);
+    printf("resultado: %f", S);
     return 0;
 }`.trim().split('\n')
     },

@@ -77,6 +77,20 @@ window.viz = (function () {
     el.innerHTML = parts.join('');
   }
 
+  function paintVars(st) {
+    const el = $('#vars');
+    if (!el) return;
+    const v = st.vars;
+    if (!v || typeof v !== 'object') { el.innerHTML = ''; return; }
+    const fmt = (x) =>
+      (x === null || x === undefined)
+        ? '<span class="var-value empty">—</span>'
+        : `<span class="var-value">${esc(String(x))}</span>`;
+    el.innerHTML = Object.entries(v).map(([k, val]) =>
+      `<span class="var"><span class="var-name">${esc(k)}</span>${fmt(val)}</span>`
+    ).join('');
+  }
+
   function paintStep(st) {
     if (cfg.view === 'cells') paintCells(st);
     else if (cfg.view === 'nodes') paintNodes(st);
@@ -109,6 +123,7 @@ window.viz = (function () {
   function render() {
     const st = steps[idx];
     paintStep(st);
+    paintVars(st);
     paintCode(st.line !== undefined ? st.line : 0);
     $('#desc').textContent = st.desc;
     renderSomatorio(st);
