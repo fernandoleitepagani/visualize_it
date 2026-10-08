@@ -92,11 +92,26 @@ window.viz = (function () {
     if (a) a.scrollIntoView({ block: 'nearest' });
   }
 
+  /* Atualiza o valor exibido no bloco do somatório, se existir na página. */
+  function renderSomatorio(st) {
+    const el = document.getElementById('s-value');
+    if (!el || !st || !st.cells) return;
+    const find = (label) => {
+      for (const c of st.cells) {
+        if ((c.labels || []).includes(label)) return c.val;
+      }
+      return undefined;
+    };
+    const S = find('S');
+    if (S !== undefined && S !== '—') el.textContent = S;
+  }
+
   function render() {
     const st = steps[idx];
     paintStep(st);
     paintCode(st.line !== undefined ? st.line : 0);
     $('#desc').textContent = st.desc;
+    renderSomatorio(st);
     $('#counter').textContent = `${idx + 1} / ${steps.length}`;
     $('#btn-prev').disabled = idx === 0;
     $('#btn-next').disabled = idx === steps.length - 1;
