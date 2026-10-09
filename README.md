@@ -1,21 +1,75 @@
-# Visualize It
+# React + TypeScript + Vite
 
-Visualizador interativo de algoritmos, estruturas de dados e análise de complexidade.
-Cada página mostra o passo a passo de um algoritmo com animação, código em
-Java ou C, e uma tabela de complexidade assintótica.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Conteúdo
+Currently, two official plugins are available:
 
-**Ordenação** — Selection Sort, Insertion Sort, Bubble Sort, Shellsort,
-Quicksort, Mergesort, Heapsort, Counting Sort, Radix Sort.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-**Busca** — Busca Sequencial, Busca Binária.
+## React Compiler
 
-**Estruturas lineares** — Lista sequencial, lista encadeada, lista dupla,
-pilha sequencial, pilha encadeada, fila circular, fila encadeada.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-**Análise** — Complexidade (Θ / O / Ω) e provas por indução.
+## Expanding the ESLint configuration
 
-São 21 páginas no total, todas servidas como HTML estático.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Estrutura do projeto
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
+```
+
+You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
+```

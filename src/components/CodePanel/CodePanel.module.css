@@ -1,0 +1,39 @@
+.panel {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.codeBlock {
+  margin: 0;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+}
+
+.line {
+  display: flex;
+  padding: 2px 16px;
+  color: var(--text-muted);
+  border-left: 4px solid transparent;
+}
+
+.line.active {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-left-color: var(--color-bar-min);
+  color: var(--text-primary);
+}
+
+.lineNumber {
+  width: 24px;
+  text-align: right;
+  margin-right: 16px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  user-select: none;
+}
+
+.lineContent {
+  white-space: pre;
+}
