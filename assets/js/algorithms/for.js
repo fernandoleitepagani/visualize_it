@@ -2,12 +2,12 @@ viz.register('for', {
     title: 'For',
     subtitle: 'Somatório com laço aninhado',
     description:
-        'Calcula S = Σ num / (3i − 1), onde num = Σ i · p para p de i + 1 até N. ' +
-        'Exemplo clássico de prova: dois laços aninhados, e o interno depende do externo. ' +
+        'Calcula o valor de S. ' +
+        'Exemplo real de codigo que já apareceu em prova: dois laços aninhados, e o interno depende do externo. ' +
         'O primeiro valor informado é usado como N (1 a 10).',
     view: 'cells',
     panelLabel: 'variáveis',
-    initial: [6],
+    initial: [3],
 
     complexity: {
         time: { best: 'Θ(N²)', avg: 'Θ(N²)', worst: 'Θ(N²)' },
