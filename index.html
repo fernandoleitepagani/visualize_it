@@ -21,109 +21,151 @@
     <p>Percorra cada algoritmo linha por linha, com a estrutura animada, código em Java ou C e a análise assintótica lado a lado.</p>
   </section>
 
-  <h2 class="section-title">Ordenação</h2>
-  <div class="grid">
-    <a class="card" href="pages/selecao.html">
-      <h3>Selection Sort</h3>
-      <p>Encontra o menor a cada rodada e o move para o início.</p>
-      <span class="tag">Θ(n²)</span>
-    </a>
-    <a class="card" href="pages/insercao.html">
-      <h3>Insertion Sort</h3>
-      <p>Empurra cada elemento até a posição correta na parte já ordenada.</p>
-      <span class="tag">Θ(n) – Θ(n²)</span>
-    </a>
-    <a class="card" href="pages/bolha.html">
-      <h3>Bubble Sort</h3>
-      <p>Compara vizinhos; o maior borbulha até o fim.</p>
-      <span class="tag">Θ(n) – Θ(n²)</span>
-    </a>
-    <a class="card" href="pages/shellsort.html">
-      <h3>Shellsort</h3>
-      <p>Inserção com gaps decrescentes.</p>
-      <span class="tag">≈ Θ(n^1.25)</span>
-    </a>
-    <a class="card" href="pages/quicksort.html">
-      <h3>Quicksort</h3>
-      <p>Particiona em torno de um pivô e repete recursivamente.</p>
-      <span class="tag">Θ(n·log n) médio</span>
-    </a>
-    <a class="card" href="pages/mergesort.html">
-      <h3>Mergesort</h3>
-      <p>Divide ao meio e intercala as metades ordenadas.</p>
-      <span class="tag">Θ(n·log n)</span>
-    </a>
-    <a class="card" href="pages/heapsort.html">
-      <h3>Heapsort</h3>
-      <p>Constrói um heap de máximo e extrai repetidamente.</p>
-      <span class="tag">Θ(n·log n)</span>
-    </a>
-    <a class="card" href="pages/counting.html">
-      <h3>Counting Sort</h3>
-      <p>Conta ocorrências e distribui direto na posição final.</p>
-      <span class="tag">Θ(n + k)</span>
-    </a>
-    <a class="card" href="pages/radix.html">
-      <h3>Radix Sort</h3>
-      <p>Ordena dígito por dígito, do menos ao mais significativo.</p>
-      <span class="tag">Θ(d·(n + b))</span>
-    </a>
-  </div>
+  <section class="AEDS I">
+    <h1 class="section-title">AEDS I</h1>
 
-  <h2 class="section-title">Busca</h2>
-  <div class="grid">
-    <a class="card" href="pages/busca-sequencial.html">
-      <h3>Busca Sequencial</h3>
-      <p>Percorre o vetor do início ao fim comparando com o alvo.</p>
-      <span class="tag">Θ(n)</span>
-    </a>
-    <a class="card" href="pages/busca-binaria.html">
-      <h3>Busca Binária</h3>
-      <p>Descarta metade do vetor ordenado a cada comparação.</p>
-      <span class="tag">Θ(log n)</span>
-    </a>
-  </div>
+    <h2 class="div-title">Laços de repetição</h2>
+    <div class="grid">
+      <a class="card" href="pages/for.html">
+        <h3>For</h3>
+        <p>repetição com número de vezes controlado.</p>
+        <span class="tag">Θ(n)</span>
+      </a>
+      <a class="card" href="pages/while.html">
+        <h3>While</h3>
+        <p>repete enquanto a condição for verdadeira; testa antes.</p>
+        <span class="tag">Θ(n)</span>
+      </a>
+      <a class="card" href="pages/do-while.html">
+        <h3>Do While</h3>
+        <p>repete enquanto a condição for verdadeira; testa depois, então executa pelo menos uma vez.</p>
+        <span class="tag">Θ(n)</span>
+      </a>
+    </div>
 
-  <h2 class="section-title">Estruturas Lineares</h2>
-  <div class="grid">
-    <a class="card" href="pages/lista-sequencial.html">
-      <h3>Lista Sequencial</h3>
-      <p>Lista em vetor. Inserir/remover no meio empurra elementos.</p>
-      <span class="tag">Θ(1) – Θ(n)</span>
-    </a>
-    <a class="card" href="pages/lista-encadeada.html">
-      <h3>Lista Encadeada</h3>
-      <p>Nós com um ponteiro prox. Cresce sob demanda.</p>
-      <span class="tag">Θ(1) – Θ(n)</span>
-    </a>
-    <a class="card" href="pages/lista-dupla.html">
-      <h3>Lista Dupla</h3>
-      <p>Nós com ant e prox — percorre nos dois sentidos.</p>
-      <span class="tag">Θ(1) – Θ(n)</span>
-    </a>
-    <a class="card" href="pages/pilha-sequencial.html">
-      <h3>Pilha Sequencial</h3>
-      <p>LIFO em vetor com topo. Capacidade fixa.</p>
-      <span class="tag">Θ(1)</span>
-    </a>
-    <a class="card" href="pages/pilha-encadeada.html">
-      <h3>Pilha Encadeada</h3>
-      <p>LIFO com nós dinâmicos, sem limite fixo.</p>
-      <span class="tag">Θ(1)</span>
-    </a>
-    <a class="card" href="pages/fila-circular.html">
-      <h3>Fila Circular</h3>
-      <p>FIFO em vetor com índices que dão a volta.</p>
-      <span class="tag">Θ(1)</span>
-    </a>
-    <a class="card" href="pages/fila-encadeada.html">
-      <h3>Fila Encadeada</h3>
-      <p>FIFO com nós dinâmicos e ponteiros nas duas pontas.</p>
-      <span class="tag">Θ(1)</span>
-    </a>
-  </div>
+    <h2 class="div-title">Recursividade</h2>
+    <div class="grid">
 
-  <h2 class="section-title">Análise</h2>
+    </div>
+
+    <h2 class="div-title">Ponteiros</h2>
+    <div class="grid">
+      <a class="card" href="pages/aritmetica-ponteiro.html">
+        <h3>Aritmetica de ponteiros</h3>
+        <p>operações utilizando ponteiros.</p>
+        <span class="tag">Θ(n)</span>
+      </a>
+    </div>
+
+  </section>
+
+  <section class="AEDS II">
+    <h1 class="section-title">AEDS II</h1>
+
+    <h2 class="div-title">Ordenação</h2>
+    <div class="grid">
+      <a class="card" href="pages/selecao.html">
+        <h3>Selection Sort</h3>
+        <p>Encontra o menor a cada rodada e o move para o início.</p>
+        <span class="tag">Θ(n²)</span>
+      </a>
+      <a class="card" href="pages/insercao.html">
+        <h3>Insertion Sort</h3>
+        <p>Empurra cada elemento até a posição correta na parte já ordenada.</p>
+        <span class="tag">Θ(n) – Θ(n²)</span>
+      </a>
+      <a class="card" href="pages/bolha.html">
+        <h3>Bubble Sort</h3>
+        <p>Compara vizinhos; o maior borbulha até o fim.</p>
+        <span class="tag">Θ(n) – Θ(n²)</span>
+      </a>
+      <a class="card" href="pages/shellsort.html">
+        <h3>Shellsort</h3>
+        <p>Inserção com gaps decrescentes.</p>
+        <span class="tag">≈ Θ(n^1.25)</span>
+      </a>
+      <a class="card" href="pages/quicksort.html">
+        <h3>Quicksort</h3>
+        <p>Particiona em torno de um pivô e repete recursivamente.</p>
+        <span class="tag">Θ(n·log n) médio</span>
+      </a>
+      <a class="card" href="pages/mergesort.html">
+        <h3>Mergesort</h3>
+        <p>Divide ao meio e intercala as metades ordenadas.</p>
+        <span class="tag">Θ(n·log n)</span>
+      </a>
+      <a class="card" href="pages/heapsort.html">
+        <h3>Heapsort</h3>
+        <p>Constrói um heap de máximo e extrai repetidamente.</p>
+        <span class="tag">Θ(n·log n)</span>
+      </a>
+      <a class="card" href="pages/counting.html">
+        <h3>Counting Sort</h3>
+        <p>Conta ocorrências e distribui direto na posição final.</p>
+        <span class="tag">Θ(n + k)</span>
+      </a>
+      <a class="card" href="pages/radix.html">
+        <h3>Radix Sort</h3>
+        <p>Ordena dígito por dígito, do menos ao mais significativo.</p>
+        <span class="tag">Θ(d·(n + b))</span>
+      </a>
+    </div>
+
+    <h2 class="div-title">Busca</h2>
+    <div class="grid">
+      <a class="card" href="pages/busca-sequencial.html">
+        <h3>Busca Sequencial</h3>
+        <p>Percorre o vetor do início ao fim comparando com o alvo.</p>
+        <span class="tag">Θ(n)</span>
+      </a>
+      <a class="card" href="pages/busca-binaria.html">
+        <h3>Busca Binária</h3>
+        <p>Descarta metade do vetor ordenado a cada comparação.</p>
+        <span class="tag">Θ(log n)</span>
+      </a>
+    </div>
+
+    <h2 class="div-title">Estruturas Lineares</h2>
+    <div class="grid">
+      <a class="card" href="pages/lista-sequencial.html">
+        <h3>Lista Sequencial</h3>
+        <p>Lista em vetor. Inserir/remover no meio empurra elementos.</p>
+        <span class="tag">Θ(1) – Θ(n)</span>
+      </a>
+      <a class="card" href="pages/lista-encadeada.html">
+        <h3>Lista Encadeada</h3>
+        <p>Nós com um ponteiro prox. Cresce sob demanda.</p>
+        <span class="tag">Θ(1) – Θ(n)</span>
+      </a>
+      <a class="card" href="pages/lista-dupla.html">
+        <h3>Lista Dupla</h3>
+        <p>Nós com ant e prox — percorre nos dois sentidos.</p>
+        <span class="tag">Θ(1) – Θ(n)</span>
+      </a>
+      <a class="card" href="pages/pilha-sequencial.html">
+        <h3>Pilha Sequencial</h3>
+        <p>LIFO em vetor com topo. Capacidade fixa.</p>
+        <span class="tag">Θ(1)</span>
+      </a>
+      <a class="card" href="pages/pilha-encadeada.html">
+        <h3>Pilha Encadeada</h3>
+        <p>LIFO com nós dinâmicos, sem limite fixo.</p>
+        <span class="tag">Θ(1)</span>
+      </a>
+      <a class="card" href="pages/fila-circular.html">
+        <h3>Fila Circular</h3>
+        <p>FIFO em vetor com índices que dão a volta.</p>
+        <span class="tag">Θ(1)</span>
+      </a>
+      <a class="card" href="pages/fila-encadeada.html">
+        <h3>Fila Encadeada</h3>
+        <p>FIFO com nós dinâmicos e ponteiros nas duas pontas.</p>
+        <span class="tag">Θ(1)</span>
+      </a>
+    </div>
+  </section>
+
+  <h2 class="div-title">Análise</h2>
   <div class="grid">
     <a class="card" href="pages/complexidade.html">
       <h3>Complexidade</h3>

@@ -25,6 +25,7 @@
       <div class="panel-header"><span>vetor</span><span id="counter" class="counter">1 / 1</span></div>
       <div class="viz">
         <div class="bars" id="bars"></div>
+        <div class="vars" id="vars"></div>
         <div class="viz-desc">
           <div class="label">passo atual</div>
           <div class="text" id="desc"></div>
@@ -61,6 +62,122 @@
     <button class="btn" id="btn-random">Sortear</button>
   </div>
   <p class="err" id="values-error"></p>
+
+    <section class="info" id="analise-comparacoes">
+      <h2>Número de comparações entre registros</h2>
+      <p>
+        Para todos os casos — melhor, médio e pior — o Selection Sort executa
+        exatamente a mesma quantidade de comparações entre registros.
+      </p>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-header"><span>contagem</span></div>
+          <div class="article" style="padding:14px 16px 0">
+          <pre style="margin:0 0 14px"><code>      for (i = 0; i &lt; (n - 1); i++) {
+            menor = i;
+            for (j = (i + 1); j &lt; n; j++) {
+              <span class="hl">if (vetor[j] &lt; vetor[menor])</span>        
+              menor = j;
+            }
+            swap(menor, i);
+      }</code></pre>
+          </div>
+        </section>
+
+        <div class="somatorio">
+          <div class="div-title">resposta</div>
+          <div class="formula">
+            <span class="f-var">c(n)</span>
+            <span class="f-eq">=</span>
+            <span class="f-sum">
+              <span class="f-top">n−2</span>
+              <span class="f-sigma">Σ</span>
+              <span class="f-bot">i = 0</span>
+            </span>
+            <span class="f-paren">(n − i − 1)</span>
+          </div>
+        </div>
+      </div>
+
+      <table class="complexity" style="margin-top:20px">
+        <tbody>
+          <tr>
+            <td><i>i</i></td>
+            <td class="mono">0</td>
+            <td class="mono">1</td>
+            <td class="mono">2</td>
+            <td class="mono">…</td>
+            <td class="mono">n−2</td>
+          </tr>
+          <tr>
+            <td><i>c(i)</i> = (n − (i + 1))</td>
+            <td class="mono">n−1</td>
+            <td class="mono">n−2</td>
+            <td class="mono">n−3</td>
+            <td class="mono">…</td>
+            <td class="mono">1</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:20px">
+        O Algoritmo de Seleção realiza
+        <span class="mono">Σ<sub>0 ≤ i ≤ n−2</sub> (n − i − 1)</span>
+        comparações entre registros. Agora, mostraremos a fórmula fechada
+        para esse somatório.
+      </p>
+
+      <div class="somatorio"
+          style="min-height:auto; grid-template-areas:'title' 'formula'; grid-template-columns:1fr">
+        <div class="div-title">fórmula fechada</div>
+        <div class="formula"
+            style="display:flex; flex-direction:column; align-items:flex-start; gap:16px; font-size:15px;">
+
+          <div>
+            <span class="f-sum">
+              <span class="f-top">0 ≤ i ≤ n−2</span>
+              <span class="f-sigma f-sigma-sm">Σ</span>
+            </span>
+            <span class="f-paren">(n − i − 1)</span>
+            <span class="f-eq">=</span>
+            <span class="f-var">n</span>(n − 1) −
+            <span class="f-frac">
+              <span class="f-num">(n − 2)(n − 1)</span>
+              <span class="f-den">2</span>
+            </span>
+            − 1 · (n − 1)
+          </div>
+
+          <div>
+            <span class="f-eq">=</span>
+            <span class="f-frac">
+              <span class="f-num">2n(n − 1) − (n − 2)(n − 1) − 2(n − 1)</span>
+              <span class="f-den">2</span>
+            </span>
+          </div>
+
+          <div>
+            <span class="f-eq">=</span>
+            <span class="f-frac">
+              <span class="f-num">2n² − 2n − (n² − 3n + 2) − 2n + 2</span>
+              <span class="f-den">2</span>
+            </span>
+          </div>
+
+          <div>
+            <span class="f-eq">=</span>
+            <span class="f-frac">
+              <span class="f-num">n² − n</span>
+              <span class="f-den">2</span>
+            </span>
+            <span class="f-eq">=</span>
+            <span class="f-var">Θ(n²)</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
 
   <section class="info">
     <h2>Sobre</h2>

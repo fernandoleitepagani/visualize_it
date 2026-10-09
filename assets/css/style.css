@@ -65,7 +65,7 @@ code, .mono { font-family: var(--mono); font-size: .9em; }
 .hero h1 .accent { color: var(--accent); }
 .hero p { color: var(--text-muted); max-width: 640px; margin: 0; font-size: 15.5px; }
 
-.section-title {
+.div-title {
   font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--text-dim); margin: 32px 0 14px; font-weight: 600;
 }
@@ -345,6 +345,18 @@ input[type=range] { accent-color: var(--accent); width: 100px; }
   color: var(--text);
   margin: 0 0 16px;
 }
+.article pre .hl {
+  display: inline-block;
+  width: calc(100% + 32px);      /* 100% = content-box do <pre>; +32 = os dois paddings */
+  margin-left: -16px;            /* encosta na borda esquerda do <pre> */
+  padding-left: 14px;            /* alinha o "if" com o resto do código */
+  box-sizing: border-box;
+  background: var(--accent-glow);
+  border-left: 2px solid var(--accent);
+  color: var(--accent);
+  line-height: inherit;          /* garante a mesma altura das outras linhas */
+  vertical-align: top;
+}
 .article code {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -378,3 +390,134 @@ input[type=range] { accent-color: var(--accent); width: 100px; }
   font-style: italic;
   max-width: 76ch;
 }
+
+/* ---------- Somatório (fórmula matemática) ---------- */
+.somatorio {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title   title"
+    "formula result";
+  align-items: center;
+  gap: 16px 24px;
+  margin-top: 0;                 /* cola na caixa de cima */
+  padding: 18px 26px 26px;
+  min-height: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* título do somatório dentro da caixa */
+.somatorio .div-title {
+  grid-area: title;
+  margin: 0;                       /* zera o margin global */
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.formula {
+  grid-area: formula;
+  justify-self: center;            /* centraliza a fórmula */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 17px;
+  line-height: 1;
+  color: var(--text);
+}
+
+.resolved {
+  grid-area: result;
+  align-self: center;
+  justify-self: end;
+  text-align: right;
+  min-width: 130px;
+}
+
+.f-var { color: var(--accent); font-weight: 600; font-size: 1.2em; }
+.f-eq  { color: var(--text-muted); }
+
+.f-sum {
+  display: inline-flex; flex-direction: column;
+  align-items: center; gap: 2px;
+  line-height: 1;
+  position: relative;
+  top: -2px;
+}
+.f-top, .f-bot {
+  font-family: var(--mono);
+  font-size: .68em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.f-sigma {
+  font-size: 2.1em;
+  line-height: .8;
+  color: var(--accent);
+  font-family: 'Inter', 'Times New Roman', serif;
+  font-weight: 400;
+}
+.f-sigma-sm { font-size: 1.6em; }
+.f-sum-inner { top: -1px; }
+
+.f-frac {
+  display: inline-flex; flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+}
+.f-num {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 12px 5px;
+  border-bottom: 1.5px solid var(--text);
+}
+.f-den {
+  padding: 5px 12px 2px;
+  font-size: .98em;
+  white-space: nowrap;
+}
+.f-paren { padding-left: 4px; white-space: nowrap; }
+
+.resolved {
+  text-align: right;
+  min-width: 130px;
+}
+.resolved-label {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.resolved-value {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  transition: color .2s;
+}
+
+.somatorio p { color: var(--text-muted); max-width: 640px; margin: 0; font-size: 12.5px; }
+
+/* ---------- Variáveis do passo ---------- */
+.vars {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  padding: 12px 0 0;
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12.5px;
+}
+.vars:empty { display: none; }
+
+.vars .var {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.vars .var-name  { color: var(--text-dim); font-style: italic; }
+.vars .var-value { color: var(--accent); font-weight: 600; min-width: 14px; text-align: center; }
+.vars .var-value.empty { color: var(--text-dim); font-weight: 400; }
