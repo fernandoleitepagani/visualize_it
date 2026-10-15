@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'mergesort',
@@ -12,7 +13,7 @@ export const lesson: Lesson = {
     note: 'Garante Θ(n·log n) em qualquer entrada, mas precisa de um vetor auxiliar Θ(n).',
   },
   code: {
-    java: `
+    java: lines(`
 void mergeSort(int[] v, int lo, int hi) {
   if (lo < hi) {
     int mid = (lo + hi) / 2;
@@ -28,10 +29,8 @@ void merge(int[] v, int lo, int mid, int hi) {
     v[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
   while (i < L.length) v[k++] = L[i++];
   while (j < R.length) v[k++] = R[j++];
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void mergeSort(int v[], int lo, int hi) {
   if (lo < hi) {
     int mid = (lo + hi) / 2;
@@ -50,9 +49,7 @@ void merge(int v[], int lo, int mid, int hi) {
     v[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
   while (i < Ln) v[k++] = L[i++];
   while (j < Rn) v[k++] = R[j++];
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice(),

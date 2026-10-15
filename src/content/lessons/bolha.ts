@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'bolha',
@@ -12,7 +13,7 @@ export const lesson: Lesson = {
     note: 'Com a flag de "trocou", o melhor caso é Θ(n) — vetor já ordenado.',
   },
   code: {
-    java: `
+    java: lines(`
 void bubbleSort(int[] v) {
   for (int i = 0; i < v.length - 1; i++) {
     boolean swapped = false;
@@ -24,10 +25,8 @@ void bubbleSort(int[] v) {
     }
     if (!swapped) break;
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void bubbleSort(int v[], int n) {
   for (int i = 0; i < n - 1; i++) {
     int swapped = 0;
@@ -39,9 +38,7 @@ void bubbleSort(int v[], int n) {
     }
     if (!swapped) break;
   }
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice(),

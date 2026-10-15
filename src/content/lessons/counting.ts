@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'counting',
@@ -13,7 +14,7 @@ export const lesson: Lesson = {
   },
   initial: [4, 2, 2, 8, 3, 3, 1],
   code: {
-    java: `
+    java: lines(`
 void countingSort(int[] v) {
   int max = maxOf(v);
   int[] count = new int[max + 1];
@@ -25,10 +26,8 @@ void countingSort(int[] v) {
     count[v[i]]--;
   }
   System.arraycopy(out, 0, v, 0, v.length);
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void countingSort(int v[], int n) {
   int max = v[0];
   for (int i = 1; i < n; i++) if (v[i] > max) max = v[i];
@@ -42,9 +41,7 @@ void countingSort(int v[], int n) {
     count[v[i]]--;
   }
   for (int i = 0; i < n; i++) v[i] = out[i];
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const src = arr.map((x) => Math.max(0, Math.floor(x)));

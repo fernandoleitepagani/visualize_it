@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'radix',
@@ -13,7 +14,7 @@ export const lesson: Lesson = {
   },
   initial: [170, 45, 75, 90, 802, 24, 2, 66],
   code: {
-    java: `
+    java: lines(`
 void radixSort(int[] v) {
   int max = maxOf(v);
   for (int exp = 1; max / exp > 0; exp *= 10)
@@ -30,10 +31,8 @@ void countingByDigit(int[] v, int exp) {
     count[d]--;
   }
   System.arraycopy(out, 0, v, 0, v.length);
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void radixSort(int v[], int n) {
   int max = v[0];
   for (int i = 1; i < n; i++) if (v[i] > max) max = v[i];
@@ -51,9 +50,7 @@ void countingByDigit(int v[], int n, int exp) {
     count[d]--;
   }
   for (int i = 0; i < n; i++) v[i] = out[i];
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.map((x) => Math.max(0, Math.floor(x)));

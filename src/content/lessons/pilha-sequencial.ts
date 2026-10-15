@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'pilha-sequencial',
@@ -15,7 +16,7 @@ export const lesson: Lesson = {
     note: 'push e pop tocam apenas a posição topo — sempre Θ(1).',
   },
   code: {
-    java: `
+    java: lines(`
 class Pilha {
   int[] v = new int[8];
   int topo = -1;
@@ -27,10 +28,8 @@ class Pilha {
     if (topo == -1) throw new RuntimeException("vazia");
     return v[topo--];
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 #define MAX 8
 int v[MAX], topo = -1;
 void push(int x) {
@@ -40,9 +39,7 @@ void push(int x) {
 int pop() {
   if (topo == -1) return -1;
   return v[topo--];
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     const MAX = 8;

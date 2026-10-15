@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'lista-sequencial',
@@ -16,7 +17,7 @@ export const lesson: Lesson = {
     note: 'Inserir/remover no fim é Θ(1); no início ou no meio, Θ(n) por causa do deslocamento.',
   },
   code: {
-    java: `
+    java: lines(`
 class Lista {
   int[] v = new int[8];
   int n = 0;
@@ -30,10 +31,8 @@ class Lista {
     for (int i = pos; i < n - 1; i++) v[i] = v[i + 1];
     n--; return r;
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 #define MAX 8
 int v[MAX], n = 0;
 void inserir(int pos, int x) {
@@ -45,9 +44,7 @@ int remover(int pos) {
   int r = v[pos];
   for (int i = pos; i < n - 1; i++) v[i] = v[i + 1];
   n--; return r;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     const MAX = 8;

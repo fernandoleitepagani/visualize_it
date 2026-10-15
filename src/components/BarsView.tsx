@@ -1,15 +1,15 @@
 import type { Step } from '@/engine/types';
 import { cx } from '@/lib/cx';
 
+interface Props {
+  state: Step | undefined;
+  /** Stable element ids (see assignElementIds) so swaps can glide. */
+  ids?: string[];
+}
+
 /** Bars view — sorting and search over a numeric vector. */
-export function BarsView({ state }: { state: Step | undefined }) {
+export function BarsView({ state, ids = [] }: Props) {
   const arr = state?.arr ?? [];
-  const cmp = new Set(state?.cmp ?? []);
-  const swap = new Set(state?.swap ?? []);
-  const pivot = new Set(state?.pivot ?? []);
-  const sorted = new Set(state?.sorted ?? []);
-  const dim = new Set(state?.dim ?? []);
-  const max = Math.max(...arr, 1);
 
   if (arr.length === 0) {
     return (
@@ -17,22 +17,36 @@ export function BarsView({ state }: { state: Step | undefined }) {
     );
   }
 
+  const cmp = new Set(state?.cmp ?? []);
+  const swap = new Set(state?.swap ?? []);
+  const pivot = new Set(state?.pivot ?? []);
+  const sorted = new Set(state?.sorted ?? []);
+  const dim = new Set(state?.dim ?? []);
+  const max = Math.max(...arr, 1);
+  const slot = 100 / arr.length;
+
   return (
-    <div className="flex h-60 items-end gap-1.5">
+    <div className="relative h-60">
       {arr.map((value, i) => {
         const isSwap = swap.has(i);
         const isPivot = pivot.has(i);
         const isCmp = cmp.has(i);
         const isSorted = sorted.has(i);
-        const height = Math.max(8, Math.round((value / max) * 220));
+        const height = Math.max(8, Math.round((value / max) * 100));
 
         return (
           <div
-            key={i}
+            key={ids[i] ?? i}
             className={cx(
-              'flex min-w-0 flex-1 flex-col items-center justify-end gap-1.5 transition-opacity',
+              'absolute bottom-0 flex flex-col items-center rounded-t-md border-[1.5px] pt-1.5 transition-[left,height,background-color,border-color] duration-300 ease-out',
+              !isSwap && !isPivot && !isCmp && !isSorted && 'border-line-2 bg-surface-3',
+              isCmp && 'border-accent bg-accent/15',
+              isSwap && 'border-green bg-green/20',
+              isPivot && 'border-purple bg-purple/20',
+              isSorted && 'border-accent-dim bg-accent/5',
               dim.has(i) && 'opacity-30',
             )}
+            style={{ left: `${i * slot}%`, width: `calc(${slot}% - 6px)`, height: `${height}%` }}
           >
             <span
               className={cx(
@@ -44,17 +58,6 @@ export function BarsView({ state }: { state: Step | undefined }) {
             >
               {value}
             </span>
-            <div
-              className={cx(
-                'w-full rounded-t-md border-[1.5px] transition-all duration-200',
-                !isSwap && !isPivot && !isCmp && !isSorted && 'border-line-2 bg-surface-3',
-                isCmp && 'border-accent bg-accent/15',
-                isSwap && 'border-green bg-green/20',
-                isPivot && 'border-purple bg-purple/20',
-                isSorted && 'border-accent-dim bg-accent/5',
-              )}
-              style={{ height }}
-            />
           </div>
         );
       })}

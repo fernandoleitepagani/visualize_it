@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'for',
@@ -23,7 +24,7 @@ export const lesson: Lesson = {
   },
 
   code: {
-    java: `
+    java: lines(`
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -42,11 +43,9 @@ public class Main {
         }
         System.out.println("resultado: " + S);
     }
-}`
-      .trim()
-      .split('\n'),
+}`),
 
-    c: `
+    c: lines(`
 int main() {
     float S = 0, num;
     int N;
@@ -63,9 +62,7 @@ int main() {
     }
     printf("resultado: %f", S);
     return 0;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
 
   steps(initial) {

@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'busca-binaria',
@@ -14,7 +15,7 @@ export const lesson: Lesson = {
     note: 'Melhor caso: alvo no meio na primeira comparação. Pior caso: ⌊log₂ n⌋ + 1 comparações.',
   },
   code: {
-    java: `
+    java: lines(`
 int buscaBinaria(int[] v, int x) {
   int esq = 0, dir = v.length - 1;
   while (esq <= dir) {
@@ -24,10 +25,8 @@ int buscaBinaria(int[] v, int x) {
     else dir = meio - 1;
   }
   return -1;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 int buscaBinaria(int v[], int n, int x) {
   int esq = 0, dir = n - 1;
   while (esq <= dir) {
@@ -37,9 +36,7 @@ int buscaBinaria(int v[], int n, int x) {
     else dir = meio - 1;
   }
   return -1;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice().sort((a, b) => a - b);

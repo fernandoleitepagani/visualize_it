@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Lesson } from '@/engine/types';
+import type { Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
+import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
@@ -8,6 +9,7 @@ import { CodePanel } from './CodePanel';
 import type { CodeLang } from './CodePanel';
 import { ComplexityTable } from './ComplexityTable';
 import { NodesView } from './NodesView';
+import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { VarsPanel } from './VarsPanel';
 
@@ -24,6 +26,13 @@ function parseInput(raw: string): number[] | null {
   return parts;
 }
 
+/** Picks the renderer for the lesson's view. */
+function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
+  if (lesson.view === 'cells') return <CellsView cells={step?.cells} />;
+  if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
+  return <BarsView state={step} ids={ids} />;
+}
+
 export function LessonView({ lesson }: { lesson: Lesson }) {
   const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
   const [input, setInput] = useState<number[]>(initialInput);
@@ -34,6 +43,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const steps = useMemo(() => lesson.steps(input), [lesson, input]);
   const playback = usePlayback(steps);
   const step = playback.step ?? steps[0];
+
+  // Element identities let the bars view animate swaps (only the bars view uses them).
+  const ids = useMemo(
+    () => ((lesson.view ?? 'bars') === 'bars' ? assignElementIds(steps) : []),
+    [lesson.view, steps],
+  );
 
   const apply = useCallback(() => {
     const parsed = parseInput(inputValue);
@@ -78,27 +93,19 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     return () => document.removeEventListener('keydown', onKey);
   }, [playback]);
 
-  const view =
-    lesson.view === 'cells' ? (
-      <CellsView cells={step?.cells} />
-    ) : lesson.view === 'nodes' ? (
-      <NodesView nodes={step?.nodes} linked={lesson.linked} />
-    ) : (
-      <BarsView state={step} />
-    );
-
   return (
     <>
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className="overflow-hidden rounded-xl border border-line bg-surface">
-          <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3 text-xs font-semibold tracking-wider text-dim uppercase">
-            <span>{lesson.panelLabel ?? 'vetor'}</span>
+        <Panel
+          label={lesson.panelLabel ?? 'vetor'}
+          aside={
             <span className="font-mono text-[12.5px] text-muted normal-case">
               {playback.index + 1} / {playback.total}
             </span>
-          </div>
+          }
+        >
           <div className="flex flex-col justify-center px-4 pt-5 pb-4">
-            {view}
+            <Canvas lesson={lesson} step={step} ids={ids[playback.index] ?? []} />
             <div className="mt-4 min-h-[52px] border-t border-line pt-4">
               <div className="mb-1 text-[11px] font-semibold tracking-widest text-dim uppercase">
                 passo atual
@@ -107,7 +114,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             </div>
             <VarsPanel vars={step?.vars} />
           </div>
-        </section>
+        </Panel>
 
         <CodePanel
           code={lesson.code[lang]}

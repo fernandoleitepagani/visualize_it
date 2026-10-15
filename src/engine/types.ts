@@ -76,6 +76,3 @@ export interface Lesson {
 
 /** Input used when a lesson does not declare its own `initial`. */
 export const DEFAULT_INPUT = [7, 3, 9, 1, 5, 8, 2];
-
-/** The line index shown when a frame does not specify one. */
-export const DEFAULT_LINE = 0;

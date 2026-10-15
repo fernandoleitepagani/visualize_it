@@ -1,4 +1,5 @@
 import type { Lesson, Step, Node } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
   ant: string | null;
@@ -22,7 +23,7 @@ export const lesson: Lesson = {
     note: 'Vantagem sobre a lista simples: remover o último elemento é Θ(1), porque cada nó conhece o anterior.',
   },
   code: {
-    java: `
+    java: lines(`
 class No { int val; No ant, prox; No(int v){val=v;} }
 No head = null, tail = null;
 void inserirFim(int x) {
@@ -37,10 +38,8 @@ void removerFim() {
   tail = tail.ant;
   if (tail != null) tail.prox = null;
   else head = null;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 typedef struct No { int val; struct No *ant, *prox; } No;
 No *head = NULL, *tail = NULL;
 void inserirFim(int x) {
@@ -54,9 +53,7 @@ void removerFim() {
   tail = tail->ant;
   if (tail) tail->prox = NULL;
   else head = NULL;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     let idc = 0;

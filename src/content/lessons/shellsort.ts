@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'shellsort',
@@ -12,7 +13,7 @@ export const lesson: Lesson = {
     note: 'Depende da sequência de gaps. Com n/2, n/4, …, 1 fica perto de Θ(n^1.3) na prática.',
   },
   code: {
-    java: `
+    java: lines(`
 void shellSort(int[] v) {
   for (int gap = v.length / 2; gap > 0; gap /= 2) {
     for (int i = gap; i < v.length; i++) {
@@ -24,10 +25,8 @@ void shellSort(int[] v) {
       v[j] = key;
     }
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void shellSort(int v[], int n) {
   for (int gap = n / 2; gap > 0; gap /= 2) {
     for (int i = gap; i < n; i++) {
@@ -39,9 +38,7 @@ void shellSort(int v[], int n) {
       v[j] = key;
     }
   }
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice(),

@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'do-while',
@@ -13,26 +14,21 @@ export const lesson: Lesson = {
   complexity: {
     time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' },
     space: 'Θ(1)',
-    stable: undefined,
     note: 'Executa pelo menos uma vez; o teste acontece depois do corpo. Mesmo custo linear do while.',
   },
   code: {
-    java: `
+    java: lines(`
 int i = 1, S = 0;
 do {
   S += i;
   i++;
-} while (i <= n);`
-      .trim()
-      .split('\n'),
-    c: `
+} while (i <= n);`),
+    c: lines(`
 int i = 1, S = 0;
 do {
   S += i;
   i++;
-} while (i <= n);`
-      .trim()
-      .split('\n'),
+} while (i <= n);`),
   },
   steps(initial) {
     const raw = Number(initial[0]);

@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'aritmetica',
@@ -20,7 +21,7 @@ export const lesson: Lesson = {
   },
 
   code: {
-    java: `
+    java: lines(`
     void walk() {
         int[] v = {10, 20, 30, 40, 50};
         int p = 0;                  // p aponta v[0]
@@ -32,11 +33,9 @@ export const lesson: Lesson = {
         System.out.println(v[p]);   // 40
         p--;                        // p = 2
         System.out.println(v[p]);   // 30
-    }`
-      .trim()
-      .split('\n'),
+    }`),
 
-    c: `
+    c: lines(`
     void walk() {
         int v[] = {10, 20, 30, 40, 50};
         int *p = v;              /* p → v[0] */
@@ -48,9 +47,7 @@ export const lesson: Lesson = {
         printf("%d\\n", *p);      /* 40 */
         p--;                     /* p → v[2] */
         printf("%d\\n", *p);      /* 30 */
-    }`
-      .trim()
-      .split('\n'),
+    }`),
   },
 
   steps(initial) {

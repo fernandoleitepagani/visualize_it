@@ -1,4 +1,5 @@
 import type { Lesson, Step, Node } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
   prox: string | null;
@@ -21,7 +22,7 @@ export const lesson: Lesson = {
     note: 'Com dois ponteiros (primeiro e ultimo), as duas pontas custam Θ(1).',
   },
   code: {
-    java: `
+    java: lines(`
 class No { int val; No prox; No(int v){val=v;} }
 No primeiro = null, ultimo = null;
 void enqueue(int x) {
@@ -35,10 +36,8 @@ int dequeue() {
   primeiro = primeiro.prox;
   if (primeiro == null) ultimo = null;
   return r;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 typedef struct No { int val; struct No *prox; } No;
 No *pri = NULL, *ult = NULL;
 void enqueue(int x) {
@@ -53,9 +52,7 @@ int dequeue() {
   pri = pri->prox;
   if (!pri) ult = NULL;
   return r;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     let idc = 0;

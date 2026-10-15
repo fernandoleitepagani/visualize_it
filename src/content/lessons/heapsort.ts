@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'heapsort',
@@ -12,7 +13,7 @@ export const lesson: Lesson = {
     note: 'Garante Θ(n·log n) e não usa memória extra. Constrói o heap em Θ(n).',
   },
   code: {
-    java: `
+    java: lines(`
 void heapSort(int[] v) {
   int n = v.length;
   for (int i = n / 2 - 1; i >= 0; i--) heapify(v, n, i);
@@ -29,10 +30,8 @@ void heapify(int[] v, int n, int i) {
     int t = v[i]; v[i] = v[largest]; v[largest] = t;
     heapify(v, n, largest);
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void heapSort(int v[], int n) {
   for (int i = n / 2 - 1; i >= 0; i--) heapify(v, n, i);
   for (int i = n - 1; i > 0; i--) {
@@ -48,9 +47,7 @@ void heapify(int v[], int n, int i) {
     int t = v[i]; v[i] = v[largest]; v[largest] = t;
     heapify(v, n, largest);
   }
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice(),

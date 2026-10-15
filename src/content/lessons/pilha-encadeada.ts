@@ -1,4 +1,5 @@
 import type { Lesson, Step, Node } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
   prox: string | null;
@@ -21,7 +22,7 @@ export const lesson: Lesson = {
     note: 'Sempre Θ(1). Sem limite de capacidade, ao custo de um ponteiro por elemento.',
   },
   code: {
-    java: `
+    java: lines(`
 class No { int val; No prox; No(int v){val=v;} }
 No topo = null;
 void push(int x) {
@@ -34,10 +35,8 @@ int pop() {
   int r = topo.val;
   topo = topo.prox;
   return r;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 typedef struct No { int val; struct No *prox; } No;
 No *topo = NULL;
 void push(int x) {
@@ -51,9 +50,7 @@ int pop() {
   int r = topo->val;
   topo = topo->prox;
   return r;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     let idc = 0;

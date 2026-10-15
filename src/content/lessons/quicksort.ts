@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'quicksort',
@@ -12,7 +13,7 @@ export const lesson: Lesson = {
     note: 'Pior caso Θ(n²) quando o pivô é sempre o maior/menor — por exemplo, vetor ordenado com pivô no fim.',
   },
   code: {
-    java: `
+    java: lines(`
 void quickSort(int[] v, int lo, int hi) {
   if (lo < hi) {
     int p = partition(v, lo, hi);
@@ -30,10 +31,8 @@ int partition(int[] v, int lo, int hi) {
   }
   int t = v[i + 1]; v[i + 1] = v[hi]; v[hi] = t;
   return i + 1;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void quickSort(int v[], int lo, int hi) {
   if (lo < hi) {
     int p = partition(v, lo, hi);
@@ -51,9 +50,7 @@ int partition(int v[], int lo, int hi) {
   }
   int t = v[i + 1]; v[i + 1] = v[hi]; v[hi] = t;
   return i + 1;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice(),

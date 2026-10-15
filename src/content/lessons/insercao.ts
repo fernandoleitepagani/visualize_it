@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'insercao',
@@ -12,7 +13,7 @@ export const lesson: Lesson = {
     note: 'Melhor caso Θ(n) quando o vetor já está quase ordenado.',
   },
   code: {
-    java: `
+    java: lines(`
 void insertionSort(int[] v) {
   for (int i = 1; i < v.length; i++) {
     int key = v[i], j = i - 1;
@@ -22,10 +23,8 @@ void insertionSort(int[] v) {
     }
     v[j + 1] = key;
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void insertionSort(int v[], int n) {
   for (int i = 1; i < n; i++) {
     int key = v[i], j = i - 1;
@@ -35,9 +34,7 @@ void insertionSort(int v[], int n) {
     }
     v[j + 1] = key;
   }
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice(),

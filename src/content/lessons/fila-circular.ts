@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'fila-circular',
@@ -16,7 +17,7 @@ export const lesson: Lesson = {
     note: 'Enfileirar e desenfileirar mexem só em primeiro/ultimo, com módulo pelo tamanho. Θ(1) sempre.',
   },
   code: {
-    java: `
+    java: lines(`
 class Fila {
   int[] v = new int[7];   // 6 + 1 de folga
   int pri = 0, ult = 0;
@@ -31,10 +32,8 @@ class Fila {
     pri = (pri + 1) % v.length;
     return r;
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 #define MAX 7
 int v[MAX], pri = 0, ult = 0;
 void enqueue(int x) {
@@ -47,9 +46,7 @@ int dequeue() {
   int r = v[pri];
   pri = (pri + 1) % MAX;
   return r;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     const MAX = 7;

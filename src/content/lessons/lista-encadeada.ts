@@ -1,4 +1,5 @@
 import type { Lesson, Step, Node } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
   prox: string | null;
@@ -20,7 +21,7 @@ export const lesson: Lesson = {
     note: 'inserirInicio é Θ(1). Inserir/remover no fim ou buscar por valor é Θ(n).',
   },
   code: {
-    java: `
+    java: lines(`
 class No { int val; No prox; No(int v){val=v;} }
 No head = null;
 void inserirInicio(int x) {
@@ -34,10 +35,8 @@ void remover(int x) {
   if (at == null) return;
   if (ant == null) head = at.prox;
   else ant.prox = at.prox;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 typedef struct No { int val; struct No *prox; } No;
 No *head = NULL;
 void inserirInicio(int x) {
@@ -52,9 +51,7 @@ void remover(int x) {
   if (!at) return;
   if (!ant) head = at->prox;
   else ant->prox = at->prox;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(initial) {
     let idc = 0;

@@ -36,12 +36,12 @@ Deploy no [Vercel](https://vercel.com).
 │   │   └── theory/              # artigos (Complexidade, Provas por Indução)
 │   ├── engine/
 │   │   ├── types.ts             # Lesson, Step, Cell, Node…
+│   │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   │   └── usePlayback.ts       # play/pause/prev/next/velocidade
-│   ├── lib/cx.ts
+│   ├── lib/                     # utilitários (cx, lines)
 │   ├── pages/                   # HomePage, LessonPage, TheoryPage, NotFound
 │   ├── styles/index.css         # Tailwind + tokens do tema
 │   └── main.tsx
-├── scripts/convert-lessons.mjs  # codemod usado na migração (legado → TS)
 ├── index.html
 ├── vercel.json
 └── vite.config.ts
@@ -148,9 +148,8 @@ painel indica.
 
 ## Migração do site estático
 
-Este app substitui o site estático original (HTML/CSS/JS, publicado via GitHub Pages). A conversão
-das 20 visualizações foi feita com `scripts/convert-lessons.mjs`, que transforma cada
-`viz.register(id, { … })` em um módulo TS tipado. As páginas de teoria e os laços `while`/`do-while`
-(incompletos no original) foram reescritos.
+As 20 visualizações originais foram convertidas para módulos TS tipados (a lógica de `steps()` foi
+preservada). As páginas de teoria e os laços `while`/`do-while` (incompletos no original) foram
+reescritos.
 
 <!-- Projeto acadêmico — AEDS I/II -->

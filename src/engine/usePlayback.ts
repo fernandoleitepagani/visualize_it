@@ -15,7 +15,6 @@ export interface Playback {
   next(): void;
   prev(): void;
   reset(): void;
-  goTo(index: number): void;
   setSpeedMs(ms: number): void;
 }
 
@@ -46,13 +45,11 @@ export function usePlayback(steps: Step[], initialSpeedMs = 900): Playback {
   const index = Math.min(cursor.index, Math.max(total - 1, 0));
   const isPlaying = cursor.playing;
 
-  const clamp = useCallback((i: number) => Math.max(0, Math.min(total - 1, i)), [total]);
   const next = useCallback(
     () => setCursor((c) => ({ ...c, index: Math.min(c.index + 1, total - 1) })),
     [total],
   );
   const prev = useCallback(() => setCursor((c) => ({ ...c, index: Math.max(c.index - 1, 0) })), []);
-  const goTo = useCallback((i: number) => setCursor((c) => ({ ...c, index: clamp(i) })), [clamp]);
   const reset = useCallback(() => setCursor((c) => ({ ...c, index: 0, playing: false })), []);
   const play = useCallback(
     () => setCursor((c) => ({ ...c, index: c.index >= total - 1 ? 0 : c.index, playing: true })),
@@ -89,7 +86,6 @@ export function usePlayback(steps: Step[], initialSpeedMs = 900): Playback {
     next,
     prev,
     reset,
-    goTo,
     setSpeedMs,
   };
 }

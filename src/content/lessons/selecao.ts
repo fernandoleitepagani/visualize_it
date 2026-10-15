@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'selecao',
@@ -13,7 +14,7 @@ export const lesson: Lesson = {
     note: 'Sempre faz ~n²/2 comparações, mas no máximo n−1 trocas.',
   },
   code: {
-    java: `
+    java: lines(`
 void selectionSort(int[] v) {
   for (int i = 0; i < v.length - 1; i++) {
     int menor = i;
@@ -24,10 +25,8 @@ void selectionSort(int[] v) {
     v[i] = v[menor]; 
     v[menor] = tmp;
   }
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 void selectionSort(int v[], int n) {
   for (int i = 0; i < n - 1; i++) {
     int menor = i;
@@ -38,9 +37,7 @@ void selectionSort(int v[], int n) {
     v[i] = v[menor]; 
     v[menor] = tmp;
   }
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice();

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { cx } from '@/lib/cx';
+import { Panel } from './Panel';
 
 export type CodeLang = 'java' | 'c';
 
@@ -49,29 +50,26 @@ interface Props {
 }
 
 export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
-  return (
-    <section className="overflow-hidden rounded-xl border border-line bg-surface">
-      <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3 text-xs font-semibold tracking-wider text-dim uppercase">
-        <span>código</span>
-        <div className="flex gap-1 rounded-md bg-surface-2 p-1">
-          {(['java', 'c'] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => onLangChange(option)}
-              className={cx(
-                'rounded-md px-2.5 py-1 font-mono text-xs uppercase transition-colors',
-                lang === option
-                  ? 'bg-accent font-semibold text-canvas'
-                  : 'text-muted hover:text-ink',
-              )}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
+  const tabs = (
+    <div className="flex gap-1 rounded-md bg-surface-2 p-1">
+      {(['java', 'c'] as const).map((option) => (
+        <button
+          key={option}
+          type="button"
+          onClick={() => onLangChange(option)}
+          className={cx(
+            'rounded-md px-2.5 py-1 font-mono text-xs uppercase transition-colors',
+            lang === option ? 'bg-accent font-semibold text-canvas' : 'text-muted hover:text-ink',
+          )}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
 
+  return (
+    <Panel label="código" aside={tabs}>
       <div className="max-h-[480px] overflow-auto bg-surface-2 py-3 font-mono text-[12.5px] leading-relaxed">
         {code.map((line, i) => (
           <div
@@ -93,6 +91,6 @@ export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
           </div>
         ))}
       </div>
-    </section>
+    </Panel>
   );
 }

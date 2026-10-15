@@ -1,4 +1,5 @@
 import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
   id: 'busca-sequencial',
@@ -14,24 +15,20 @@ export const lesson: Lesson = {
     note: 'Melhor caso: alvo na primeira posição. Pior caso: alvo na última posição ou ausente.',
   },
   code: {
-    java: `
+    java: lines(`
 int buscaSequencial(int[] v, int x) {
   for (int i = 0; i < v.length; i++) {
     if (v[i] == x) return i;
   }
   return -1;
-}`
-      .trim()
-      .split('\n'),
-    c: `
+}`),
+    c: lines(`
 int buscaSequencial(int v[], int n, int x) {
   for (int i = 0; i < n; i++) {
     if (v[i] == x) return i;
   }
   return -1;
-}`
-      .trim()
-      .split('\n'),
+}`),
   },
   steps(arr) {
     const v = arr.slice();
