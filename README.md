@@ -57,3 +57,42 @@ python3 -m http.server 5173
 
 Depois abra [http://localhost:5173](http://localhost:5173).
 
+## Deploy no Vercel
+
+O site é publicado no [Vercel](https://vercel.com) a cada push na `main`. Por
+ser estático, não há comando de build nem diretório de saída — o Vercel serve
+os arquivos da raiz do repositório.
+
+### Primeira configuração
+
+1. Faça push do repositório no GitHub.
+2. Acesse [vercel.com](https://vercel.com) e entre com o GitHub.
+3. **Add New → Project** → importe o repositório `visualize_it`.
+4. O Vercel detecta um site estático. Aceite os padrões:
+   - **Framework Preset:** Other
+   - **Build Command:** (vazio)
+   - **Output Directory:** (vazio — raiz do repositório)
+   - **Install Command:** (vazio)
+5. Deploy.
+
+### `vercel.json`
+
+Diferente de uma SPA — que precisa reescrever todas as rotas para `/` para o
+roteador do cliente funcionar, como no `fernandoleitepagani-portfolio` —, aqui
+as páginas são arquivos HTML reais e não precisam de rewrite. A configuração
+apenas ativa URLs limpas:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true
+}
+```
+
+Com `cleanUrls`, `/pages/for.html` também responde em `/pages/for`; os links
+internos que usam `.html` continuam funcionando (o Vercel redireciona).
+
+### Domínio próprio
+
+Vercel → **Project Settings → Domains**. Adicione o domínio e aponte os
+registros DNS conforme indicado no painel.
