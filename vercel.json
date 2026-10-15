@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }],
+  "redirects": [
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/pages/complexidade.html", "destination": "/teoria/complexidade", "permanent": true },
+    { "source": "/pages/inducao.html", "destination": "/teoria/inducao", "permanent": true },
+    { "source": "/pages/:slug.html", "destination": "/algoritmos/:slug", "permanent": true }
+  ]
 }
