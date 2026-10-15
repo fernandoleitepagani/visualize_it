@@ -1,0 +1,17 @@
+/* Base tweaks on top of Mantine's stylesheet. */
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Catalog cards: a subtle lift on hover (not expressible through props). */
+.catalog-card {
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease;
+}
+
+.catalog-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--mantine-color-amber-7);
+}
