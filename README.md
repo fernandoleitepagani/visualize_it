@@ -15,10 +15,11 @@ Deploy no [Vercel](https://vercel.com).
 | Framework | React 19 |
 | Linguagem | TypeScript 6 (strict) |
 | Build | Vite 8 |
-| Estilo | Tailwind CSS 4 |
+| UI | Mantine 9 (tema dark + âmbar) |
+| Fonte | JetBrains Mono (self-hosted) |
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
-| Lint | ESLint 9 (flat) |
+| Lint | ESLint 10 (flat) |
 | Hospedagem | Vercel |
 
 ---
@@ -38,9 +39,11 @@ Deploy no [Vercel](https://vercel.com).
 │   │   ├── types.ts             # Lesson, Step, Cell, Node…
 │   │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   │   └── usePlayback.ts       # play/pause/prev/next/velocidade
-│   ├── lib/                     # utilitários (cx, lines)
+│   ├── lib/                     # utilitários (lines)
 │   ├── pages/                   # HomePage, LessonPage, TheoryPage, NotFound
-│   ├── styles/index.css         # Tailwind + tokens do tema
+│   ├── styles/index.css         # estilos base sobre o CSS do Mantine
+│   ├── test/                    # helpers de render + setup do Vitest
+│   ├── theme.ts                 # tema Mantine (paleta dark/âmbar, tipografia)
 │   └── main.tsx
 ├── index.html
 ├── vercel.json

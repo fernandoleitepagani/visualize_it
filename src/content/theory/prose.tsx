@@ -1,16 +1,121 @@
-/** Shared Tailwind class names for the theory/prose articles. */
-export const h2 = 'mt-9 mb-3 text-lg font-semibold';
-export const h3 = 'mt-6 mb-2 text-[15px] font-semibold';
-export const p = 'mb-3 max-w-[76ch]';
-export const pre =
-  'mb-4 max-w-[76ch] overflow-x-auto rounded-md border border-line bg-surface-2 px-4 py-3.5 font-mono text-[12.5px] leading-relaxed whitespace-pre';
-export const inlineCode =
-  'rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[12.5px] text-accent';
-export const ul = 'mb-3.5 max-w-[76ch] list-disc pl-6';
-export const ol = 'mb-3.5 max-w-[76ch] list-decimal pl-6';
-export const li = 'mb-1.5';
-export const blockquote = 'mb-4 max-w-[76ch] border-l-2 border-accent-dim pl-4 text-muted italic';
-export const table = 'w-full border-collapse text-[13.5px]';
-export const th =
-  'border-b border-line px-3.5 py-2.5 text-left text-[11.5px] font-medium tracking-wider text-dim uppercase';
-export const td = 'border-b border-line px-3.5 py-2.5';
+import type { ReactNode } from 'react';
+import {
+  Blockquote,
+  Box,
+  Code as MantineCode,
+  List,
+  Table as MantineTable,
+  Text,
+  Title,
+} from '@mantine/core';
+
+/** Mantine-backed building blocks shared by the theory/prose articles. */
+interface Props {
+  children?: ReactNode;
+}
+
+export function H2({ children }: Props) {
+  return (
+    <Title order={2} fz="lg" fw={600} mt="xl" mb="sm">
+      {children}
+    </Title>
+  );
+}
+
+export function H3({ children }: Props) {
+  return (
+    <Title order={3} fz={15} fw={600} mt="lg" mb="xs">
+      {children}
+    </Title>
+  );
+}
+
+export function P({ children }: Props) {
+  return (
+    <Text component="p" mb="sm" maw="76ch">
+      {children}
+    </Text>
+  );
+}
+
+export function Pre({ children }: Props) {
+  return (
+    <Box
+      component="pre"
+      mb="md"
+      maw="76ch"
+      ff="monospace"
+      fz={12.5}
+      bg="dark.5"
+      px="md"
+      py="sm"
+      style={{
+        overflowX: 'auto',
+        whiteSpace: 'pre',
+        lineHeight: 1.6,
+        border: '1px solid var(--mantine-color-dark-4)',
+        borderRadius: 6,
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+export function Quote({ children }: Props) {
+  return (
+    <Blockquote color="amber" mb="md" maw="76ch">
+      <Text component="span" c="dimmed" fs="italic">
+        {children}
+      </Text>
+    </Blockquote>
+  );
+}
+
+export function Code({ children }: Props) {
+  return <MantineCode c="amber">{children}</MantineCode>;
+}
+
+export function Ul({ children }: Props) {
+  return (
+    <List mb="sm" maw="76ch" spacing="xs">
+      {children}
+    </List>
+  );
+}
+
+export function Ol({ children }: Props) {
+  return (
+    <List type="ordered" mb="sm" maw="76ch" spacing="xs">
+      {children}
+    </List>
+  );
+}
+
+export function Li({ children }: Props) {
+  return <List.Item>{children}</List.Item>;
+}
+
+export function Table({ children }: Props) {
+  return <MantineTable maw="76ch">{children}</MantineTable>;
+}
+
+export function Thead({ children }: Props) {
+  return <MantineTable.Thead>{children}</MantineTable.Thead>;
+}
+
+export function Tbody({ children }: Props) {
+  return <MantineTable.Tbody>{children}</MantineTable.Tbody>;
+}
+
+export function Tr({ children }: Props) {
+  return <MantineTable.Tr>{children}</MantineTable.Tr>;
+}
+
+export function Th({ children }: Props) {
+  return <MantineTable.Th>{children}</MantineTable.Th>;
+}
+
+export function Td({ children }: Props) {
+  return <MantineTable.Td>{children}</MantineTable.Td>;
+}

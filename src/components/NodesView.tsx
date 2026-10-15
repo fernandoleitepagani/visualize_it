@@ -1,6 +1,21 @@
 import { Fragment } from 'react';
+import type { CSSProperties } from 'react';
+import { Flex, Text } from '@mantine/core';
 import type { LinkedKind, Node } from '@/engine/types';
-import { cx } from '@/lib/cx';
+import { viz } from '@/theme';
+
+function nodeStyle(state: string): CSSProperties {
+  const base: CSSProperties = { borderColor: viz.line2 };
+  if (state === 'active')
+    return { borderColor: viz.accent, boxShadow: '0 0 0 3px rgba(251, 191, 36, 0.2)' };
+  if (state === 'compare') return { borderColor: viz.green };
+  if (state === 'write') return { borderColor: viz.accent };
+  return base;
+}
+
+const transition: CSSProperties = {
+  transition: 'border-color 150ms ease-out, box-shadow 150ms ease-out',
+};
 
 /** Nodes view — linked structures (singly/doubly linked lists, queues, stacks). */
 export function NodesView({
@@ -13,7 +28,7 @@ export function NodesView({
   const list = nodes ?? [];
 
   return (
-    <div className="flex min-h-60 flex-wrap items-center justify-center gap-2.5 pt-8 pb-2.5">
+    <Flex gap="sm" align="center" justify="center" wrap="wrap" pt="xl" pb="sm" mih={240}>
       {list.map((node, i) => {
         const state = node.state || '';
         const prev = node.prev ?? null;
@@ -21,40 +36,64 @@ export function NodesView({
 
         return (
           <Fragment key={node.id}>
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="flex h-3.5 gap-1 whitespace-nowrap font-mono text-[10px] text-accent">
+            <Flex direction="column" align="center" gap={6}>
+              <Flex gap={4} wrap="nowrap" h={14} ff="monospace" fz={10} c="amber">
                 {(node.labels ?? []).map((label, j) => (
-                  <i key={j} className="not-italic">
+                  <Text key={j} span>
                     {label}
-                  </i>
+                  </Text>
                 ))}
-              </div>
-              <div
-                className={cx(
-                  'flex items-stretch overflow-hidden rounded-md border-[1.5px] bg-surface-2 transition',
-                  state === 'active' && 'border-accent shadow-[0_0_0_3px_rgba(251,191,36,0.2)]',
-                  state === 'compare' && 'border-green',
-                  state === 'write' && 'border-accent',
-                  state === '' && 'border-line-2',
-                )}
+              </Flex>
+              <Flex
+                align="stretch"
+                bg="dark.5"
+                style={{
+                  border: '1.5px solid',
+                  borderRadius: 6,
+                  overflow: 'hidden',
+                  ...transition,
+                  ...nodeStyle(state),
+                }}
               >
                 {linked === 'doubly' && (
-                  <span className="flex items-center border-r border-line-2 bg-surface-3 px-2.5 py-2 font-mono text-[11px] text-muted">
+                  <Flex
+                    align="center"
+                    px="xs"
+                    py={8}
+                    bg="dark.8"
+                    ff="monospace"
+                    fz={11}
+                    c="dimmed"
+                    style={{ borderRight: '1px solid var(--mantine-color-dark-4)' }}
+                  >
                     {prev ? `←${prev}` : '∅'}
-                  </span>
+                  </Flex>
                 )}
-                <span className="flex items-center px-3 py-2 font-mono text-sm font-semibold">
+                <Flex align="center" px="sm" py={8} ff="monospace" fz="sm" fw={600}>
                   {node.val}
-                </span>
-                <span className="flex items-center border-l border-line-2 bg-surface-3 px-2.5 py-2 font-mono text-[11px] text-muted">
+                </Flex>
+                <Flex
+                  align="center"
+                  px="xs"
+                  py={8}
+                  bg="dark.8"
+                  ff="monospace"
+                  fz={11}
+                  c="dimmed"
+                  style={{ borderLeft: '1px solid var(--mantine-color-dark-4)' }}
+                >
                   {next ? `→${next}` : '∅'}
-                </span>
-              </div>
-            </div>
-            {i < list.length - 1 && <span className="font-mono text-sm text-dim">→</span>}
+                </Flex>
+              </Flex>
+            </Flex>
+            {i < list.length - 1 && (
+              <Text ff="monospace" fz="sm" c="dimmed">
+                →
+              </Text>
+            )}
           </Fragment>
         );
       })}
-    </div>
+    </Flex>
   );
 }

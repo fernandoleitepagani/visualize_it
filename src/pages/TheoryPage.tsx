@@ -1,3 +1,4 @@
+import { Box } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/PageHeader';
 import { theory } from '@/content/theory';
@@ -12,9 +13,9 @@ export function TheoryPage() {
   const Article = page.Component;
 
   return (
-    <article className="pb-10">
+    <Box component="article" pb={40}>
       <PageHeader title={page.title} subtitle={page.subtitle} />
       <Article />
-    </article>
+    </Box>
   );
 }

@@ -1,3 +1,4 @@
+import { Box, Table, Text } from '@mantine/core';
 import type { Complexity } from '@/engine/types';
 
 const dash = (value: string | undefined) => (value && value.length > 0 ? value : '—');
@@ -11,39 +12,39 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
   ];
 
   return (
-    <div>
-      <table className="w-full border-collapse text-[13.5px]">
-        <thead>
-          <tr>
-            <th className="border-b border-line px-3.5 py-2.5 text-left text-[11.5px] font-medium tracking-wider text-dim uppercase" />
+    <Box>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th />
             {['melhor', 'médio', 'pior'].map((heading) => (
-              <th
-                key={heading}
-                className="border-b border-line px-3.5 py-2.5 text-left text-[11.5px] font-medium tracking-wider text-dim uppercase"
-              >
-                {heading}
-              </th>
+              <Table.Th key={heading}>{heading}</Table.Th>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {rows.map((row) => (
-            <tr key={row.label}>
-              <td className="border-b border-line px-3.5 py-2.5 text-muted">{row.label}</td>
+            <Table.Tr key={row.label}>
+              <Table.Td c="dimmed">{row.label}</Table.Td>
               {row.cells.map((cell, i) => (
-                <td
+                <Table.Td
                   key={i}
                   colSpan={row.cells.length === 1 ? 3 : 1}
-                  className={`border-b border-line px-3.5 py-2.5 ${row.mono ? 'font-mono text-[13px] text-accent' : ''}`}
+                  ff={row.mono ? 'monospace' : undefined}
+                  c={row.mono ? 'amber' : undefined}
                 >
                   {cell}
-                </td>
+                </Table.Td>
               ))}
-            </tr>
+            </Table.Tr>
           ))}
-        </tbody>
-      </table>
-      {complexity.note ? <p className="mt-3 text-[13px] text-muted">{complexity.note}</p> : null}
-    </div>
+        </Table.Tbody>
+      </Table>
+      {complexity.note ? (
+        <Text fz="sm" c="dimmed" mt="sm">
+          {complexity.note}
+        </Text>
+      ) : null}
+    </Box>
   );
 }

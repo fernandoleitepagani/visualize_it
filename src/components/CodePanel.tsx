@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { cx } from '@/lib/cx';
+import { Box, SegmentedControl } from '@mantine/core';
+import { viz } from '@/theme';
 import { Panel } from './Panel';
 
 export type CodeLang = 'java' | 'c';
@@ -20,19 +21,19 @@ function highlight(line: string): ReactNode[] {
     if (match.index > last) nodes.push(line.slice(last, match.index));
     if (match[1])
       nodes.push(
-        <i key={key++} className="text-dim italic">
+        <span key={key++} style={{ color: viz.dim, fontStyle: 'italic' }}>
           {match[1]}
-        </i>,
+        </span>,
       );
     else if (match[2])
       nodes.push(
-        <span key={key++} className="text-accent">
+        <span key={key++} style={{ color: viz.accent }}>
           {match[2]}
         </span>,
       );
     else
       nodes.push(
-        <span key={key++} className="text-purple">
+        <span key={key++} style={{ color: viz.purple }}>
           {match[3]}
         </span>,
       );
@@ -50,47 +51,59 @@ interface Props {
 }
 
 export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
-  const tabs = (
-    <div className="flex gap-1 rounded-md bg-surface-2 p-1">
-      {(['java', 'c'] as const).map((option) => (
-        <button
-          key={option}
-          type="button"
-          onClick={() => onLangChange(option)}
-          className={cx(
-            'rounded-md px-2.5 py-1 font-mono text-xs uppercase transition-colors',
-            lang === option ? 'bg-accent font-semibold text-canvas' : 'text-muted hover:text-ink',
-          )}
-        >
-          {option}
-        </button>
-      ))}
-    </div>
-  );
-
   return (
-    <Panel label="código" aside={tabs}>
-      <div className="max-h-[480px] overflow-auto bg-surface-2 py-3 font-mono text-[12.5px] leading-relaxed">
-        {code.map((line, i) => (
-          <div
-            key={i}
-            className={cx(
-              'flex border-l-2 pr-4 whitespace-pre',
-              i === activeLine ? 'border-accent bg-accent/10' : 'border-transparent',
-            )}
-          >
-            <span
-              className={cx(
-                'flex-[0_0_34px] pr-3.5 text-right text-[11px] select-none',
-                i === activeLine ? 'text-accent' : 'text-dim',
-              )}
+    <Panel
+      label="código"
+      aside={
+        <SegmentedControl
+          size="xs"
+          value={lang}
+          onChange={(value) => onLangChange(value as CodeLang)}
+          data={[
+            { label: 'java', value: 'java' },
+            { label: 'c', value: 'c' },
+          ]}
+        />
+      }
+    >
+      <Box
+        mah={480}
+        py="sm"
+        ff="monospace"
+        fz={12.5}
+        bg="dark.5"
+        style={{ overflow: 'auto', lineHeight: 1.6 }}
+      >
+        {code.map((line, i) => {
+          const active = i === activeLine;
+          return (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                whiteSpace: 'pre',
+                paddingRight: 16,
+                borderLeft: `2px solid ${active ? viz.accent : 'transparent'}`,
+                background: active ? 'rgba(251, 191, 36, 0.1)' : undefined,
+              }}
             >
-              {i + 1}
-            </span>
-            <span>{highlight(line)}</span>
-          </div>
-        ))}
-      </div>
+              <span
+                style={{
+                  flex: '0 0 34px',
+                  textAlign: 'right',
+                  paddingRight: 14,
+                  fontSize: 11,
+                  userSelect: 'none',
+                  color: active ? viz.accent : viz.dim,
+                }}
+              >
+                {i + 1}
+              </span>
+              <span>{highlight(line)}</span>
+            </div>
+          );
+        })}
+      </Box>
     </Panel>
   );
 }

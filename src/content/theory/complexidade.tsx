@@ -1,239 +1,239 @@
-import { blockquote, h2, h3, inlineCode, li, p, pre, table, td, th, ul } from './prose';
+import { Code, H2, H3, Li, P, Pre, Quote, Table, Tbody, Td, Th, Thead, Tr, Ul } from './prose';
 
 export function Complexidade() {
   return (
     <>
-      <h2 className={h2}>Por que medir o custo de um algoritmo?</h2>
-      <p className={p}>
+      <H2>Por que medir o custo de um algoritmo?</H2>
+      <P>
         Um algoritmo pode ser correto e ainda assim ser inútil na prática — basta que ele leve
         séculos para terminar. Antes de escolher entre duas soluções, precisamos comparar{' '}
         <em>quanto</em> cada uma consome de tempo e de memória conforme o tamanho da entrada{' '}
-        <code className={inlineCode}>n</code> cresce.
-      </p>
-      <p className={p}>
+        <Code>n</Code> cresce.
+      </P>
+      <P>
         Essa medição é feita através de uma <strong>função de complexidade</strong>, que conta
         operações relevantes (comparações, movimentações, somas) sem se prender a detalhes de
         hardware ou de compilador.
-      </p>
+      </P>
 
-      <h2 className={h2}>Contagem de operações</h2>
-      <p className={p}>
+      <H2>Contagem de operações</H2>
+      <P>
         A ideia central é simples: para cada trecho do código, somamos quantas vezes a operação de
         interesse acontece.
-      </p>
+      </P>
 
-      <h3 className={h3}>Condicional</h3>
-      <p className={p}>
+      <H3>Condicional</H3>
+      <P>
         O custo é o da condição mais o da lista executada. Melhor caso é o mínimo entre os dois
         ramos; pior caso é o máximo.
-      </p>
-      <pre className={pre}>{`if (a - 5 < b - 3 || c - 1 < d - 3) {
+      </P>
+      <Pre>{`if (a - 5 < b - 3 || c - 1 < d - 3) {
   i--; --b; a -= 3;      // 4 subtrações
 } else {
   j--;                    // 1 subtração
-}`}</pre>
-      <p className={p}>
+}`}</Pre>
+      <P>
         Melhor caso: 5 subtrações. Pior caso: 7 subtrações (o operador{' '}
-        <code className={inlineCode}>||</code> curto-circuita quando a primeira condição é
+        <Code>||</Code> curto-circuita quando a primeira condição é
         verdadeira).
-      </p>
+      </P>
 
-      <h3 className={h3}>Repetição simples</h3>
-      <p className={p}>
-        Um laço <code className={inlineCode}>for (i = 0; i &lt; n; i++)</code> executa o corpo{' '}
-        <code className={inlineCode}>n</code> vezes. Se o corpo faz 2 subtrações, o total é{' '}
-        <code className={inlineCode}>2n</code>.
-      </p>
+      <H3>Repetição simples</H3>
+      <P>
+        Um laço <Code>for (i = 0; i &lt; n; i++)</Code> executa o corpo{' '}
+        <Code>n</Code> vezes. Se o corpo faz 2 subtrações, o total é{' '}
+        <Code>2n</Code>.
+      </P>
 
-      <h3 className={h3}>Laço duplo</h3>
-      <pre className={pre}>{`for (i = 0; i < n; i++)
+      <H3>Laço duplo</H3>
+      <Pre>{`for (i = 0; i < n; i++)
   for (j = 0; j < n; j++)
-    a--;                    // n·n = n² operações`}</pre>
+    a--;                    // n·n = n² operações`}</Pre>
 
-      <h3 className={h3}>Laço logarítmico</h3>
-      <p className={p}>
+      <H3>Laço logarítmico</H3>
+      <P>
         Quando o contador é dividido por 2 a cada passo, o número de iterações é{' '}
-        <code className={inlineCode}>⌊lg n⌋ + 1</code>:
-      </p>
-      <pre className={pre}>{`for (i = n; i > 0; i /= 2)
-  a *= 2;`}</pre>
+        <Code>⌊lg n⌋ + 1</Code>:
+      </P>
+      <Pre>{`for (i = n; i > 0; i /= 2)
+  a *= 2;`}</Pre>
 
-      <h2 className={h2}>Notações assintóticas</h2>
-      <p className={p}>
+      <H2>Notações assintóticas</H2>
+      <P>
         Contar operações exatas é útil, mas o que realmente importa é <em>como a função cresce</em>.
         As notações assintóticas capturam essa tendência — ignoram constantes e termos de menor
         grau.
-      </p>
+      </P>
 
-      <h3 className={h3}>Notação Θ — limite justo</h3>
-      <p className={p}>
-        <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>Θ(f(n))</code> se
-        existem constantes positivas <code className={inlineCode}>c₁</code>,{' '}
-        <code className={inlineCode}>c₂</code> e <code className={inlineCode}>m</code> tais que,
-        para todo <code className={inlineCode}>n ≥ m</code>:
-      </p>
-      <pre className={pre}>{`c₁ · f(n) ≤ g(n) ≤ c₂ · f(n)`}</pre>
-      <p className={p}>
-        Ou seja, <code className={inlineCode}>g</code> é limitada por{' '}
-        <code className={inlineCode}>f</code> tanto por baixo quanto por cima.
-      </p>
+      <H3>Notação Θ — limite justo</H3>
+      <P>
+        <Code>g(n)</Code> é <Code>Θ(f(n))</Code> se
+        existem constantes positivas <Code>c₁</Code>,{' '}
+        <Code>c₂</Code> e <Code>m</Code> tais que,
+        para todo <Code>n ≥ m</Code>:
+      </P>
+      <Pre>{`c₁ · f(n) ≤ g(n) ≤ c₂ · f(n)`}</Pre>
+      <P>
+        Ou seja, <Code>g</Code> é limitada por{' '}
+        <Code>f</Code> tanto por baixo quanto por cima.
+      </P>
 
-      <h3 className={h3}>Notação O — limite superior</h3>
-      <p className={p}>
-        <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>O(f(n))</code> se
-        existe <code className={inlineCode}>c &gt; 0</code> e{' '}
-        <code className={inlineCode}>m &gt; 0</code> tais que, para todo{' '}
-        <code className={inlineCode}>n ≥ m</code>:
-      </p>
-      <pre className={pre}>{`|g(n)| ≤ c · |f(n)|`}</pre>
-      <p className={p}>
+      <H3>Notação O — limite superior</H3>
+      <P>
+        <Code>g(n)</Code> é <Code>O(f(n))</Code> se
+        existe <Code>c &gt; 0</Code> e{' '}
+        <Code>m &gt; 0</Code> tais que, para todo{' '}
+        <Code>n ≥ m</Code>:
+      </P>
+      <Pre>{`|g(n)| ≤ c · |f(n)|`}</Pre>
+      <P>
         É um teto assintótico — diz que a função não cresce mais rápido que{' '}
-        <code className={inlineCode}>f</code>.
-      </p>
+        <Code>f</Code>.
+      </P>
 
-      <h3 className={h3}>Notação Ω — limite inferior</h3>
-      <p className={p}>
-        <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>Ω(f(n))</code> se
-        existe <code className={inlineCode}>c &gt; 0</code> e{' '}
-        <code className={inlineCode}>m &gt; 0</code> tais que, para todo{' '}
-        <code className={inlineCode}>n ≥ m</code>:
-      </p>
-      <pre className={pre}>{`|g(n)| ≥ c · |f(n)|`}</pre>
-      <p className={p}>
+      <H3>Notação Ω — limite inferior</H3>
+      <P>
+        <Code>g(n)</Code> é <Code>Ω(f(n))</Code> se
+        existe <Code>c &gt; 0</Code> e{' '}
+        <Code>m &gt; 0</Code> tais que, para todo{' '}
+        <Code>n ≥ m</Code>:
+      </P>
+      <Pre>{`|g(n)| ≥ c · |f(n)|`}</Pre>
+      <P>
         É um piso assintótico — diz que a função cresce pelo menos como{' '}
-        <code className={inlineCode}>f</code>.
-      </p>
+        <Code>f</Code>.
+      </P>
 
-      <h3 className={h3}>Relação entre as três</h3>
-      <pre className={pre}>{`g(n) é Θ(f(n))   ⇔   g(n) é O(f(n))  e  g(n) é Ω(f(n))`}</pre>
+      <H3>Relação entre as três</H3>
+      <Pre>{`g(n) é Θ(f(n))   ⇔   g(n) é O(f(n))  e  g(n) é Ω(f(n))`}</Pre>
 
-      <h2 className={h2}>Regras práticas</h2>
-      <ul className={ul}>
-        <li className={li}>
-          Ignore constantes multiplicativas: <code className={inlineCode}>3n²</code>,{' '}
-          <code className={inlineCode}>5n²</code> e <code className={inlineCode}>n²</code> são todas{' '}
-          <code className={inlineCode}>Θ(n²)</code>.
-        </li>
-        <li className={li}>
-          Ignore termos de menor grau: <code className={inlineCode}>3n + 2n²</code> é{' '}
-          <code className={inlineCode}>Θ(n²)</code>; <code className={inlineCode}>lg n + n</code> é{' '}
-          <code className={inlineCode}>Θ(n)</code>.
-        </li>
-        <li className={li}>
-          <code className={inlineCode}>O</code> e <code className={inlineCode}>Ω</code> são
-          independentes: uma função pode ser <code className={inlineCode}>O(n³)</code> e{' '}
-          <code className={inlineCode}>Ω(n)</code> ao mesmo tempo — só{' '}
-          <code className={inlineCode}>Θ</code> exige casamento dos dois.
-        </li>
-      </ul>
+      <H2>Regras práticas</H2>
+      <Ul>
+        <Li>
+          Ignore constantes multiplicativas: <Code>3n²</Code>,{' '}
+          <Code>5n²</Code> e <Code>n²</Code> são todas{' '}
+          <Code>Θ(n²)</Code>.
+        </Li>
+        <Li>
+          Ignore termos de menor grau: <Code>3n + 2n²</Code> é{' '}
+          <Code>Θ(n²)</Code>; <Code>lg n + n</Code> é{' '}
+          <Code>Θ(n)</Code>.
+        </Li>
+        <Li>
+          <Code>O</Code> e <Code>Ω</Code> são
+          independentes: uma função pode ser <Code>O(n³)</Code> e{' '}
+          <Code>Ω(n)</Code> ao mesmo tempo — só{' '}
+          <Code>Θ</Code> exige casamento dos dois.
+        </Li>
+      </Ul>
 
-      <h2 className={h2}>Classes de complexidade</h2>
-      <table className={table}>
-        <thead>
-          <tr>
-            <th className={th}>classe</th>
-            <th className={th}>nome</th>
-            <th className={th}>exemplo</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className={td}>Θ(1)</td>
-            <td className={td}>constante</td>
-            <td className={td}>acessar v[0]</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(lg n)</td>
-            <td className={td}>logarítmica</td>
-            <td className={td}>busca binária</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(n)</td>
-            <td className={td}>linear</td>
-            <td className={td}>busca sequencial, counting sort</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(n·lg n)</td>
-            <td className={td}>linearítmica</td>
-            <td className={td}>mergesort, heapsort</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(n²)</td>
-            <td className={td}>quadrática</td>
-            <td className={td}>selection, insertion, bubble</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(n³)</td>
-            <td className={td}>cúbica</td>
-            <td className={td}>multiplicação ingênua de matrizes</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(2ⁿ)</td>
-            <td className={td}>exponencial</td>
-            <td className={td}>força bruta do caixeiro viajante</td>
-          </tr>
-          <tr>
-            <td className={td}>Θ(n!)</td>
-            <td className={td}>fatorial</td>
-            <td className={td}>todas as permutações</td>
-          </tr>
-        </tbody>
-      </table>
+      <H2>Classes de complexidade</H2>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>classe</Th>
+            <Th>nome</Th>
+            <Th>exemplo</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          <Tr>
+            <Td>Θ(1)</Td>
+            <Td>constante</Td>
+            <Td>acessar v[0]</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(lg n)</Td>
+            <Td>logarítmica</Td>
+            <Td>busca binária</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(n)</Td>
+            <Td>linear</Td>
+            <Td>busca sequencial, counting sort</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(n·lg n)</Td>
+            <Td>linearítmica</Td>
+            <Td>mergesort, heapsort</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(n²)</Td>
+            <Td>quadrática</Td>
+            <Td>selection, insertion, bubble</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(n³)</Td>
+            <Td>cúbica</Td>
+            <Td>multiplicação ingênua de matrizes</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(2ⁿ)</Td>
+            <Td>exponencial</Td>
+            <Td>força bruta do caixeiro viajante</Td>
+          </Tr>
+          <Tr>
+            <Td>Θ(n!)</Td>
+            <Td>fatorial</Td>
+            <Td>todas as permutações</Td>
+          </Tr>
+        </Tbody>
+      </Table>
 
-      <h2 className={h2}>Exemplo completo</h2>
-      <p className={p}>
-        Seja <code className={inlineCode}>g(n) = 3n² + 5n + 1</code>. Afirmações:
-      </p>
-      <ul className={ul}>
-        <li className={li}>
-          <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>O(n²)</code> —
-          verdadeira (basta <code className={inlineCode}>c = 4</code>,{' '}
-          <code className={inlineCode}>m = 5</code>).
-        </li>
-        <li className={li}>
-          <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>O(n³)</code> —
+      <H2>Exemplo completo</H2>
+      <P>
+        Seja <Code>g(n) = 3n² + 5n + 1</Code>. Afirmações:
+      </P>
+      <Ul>
+        <Li>
+          <Code>g(n)</Code> é <Code>O(n²)</Code> —
+          verdadeira (basta <Code>c = 4</Code>,{' '}
+          <Code>m = 5</Code>).
+        </Li>
+        <Li>
+          <Code>g(n)</Code> é <Code>O(n³)</Code> —
           verdadeira (afrouxar o teto é permitido).
-        </li>
-        <li className={li}>
-          <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>Ω(n²)</code> —
+        </Li>
+        <Li>
+          <Code>g(n)</Code> é <Code>Ω(n²)</Code> —
           verdadeira.
-        </li>
-        <li className={li}>
-          <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>Ω(n³)</code> —{' '}
+        </Li>
+        <Li>
+          <Code>g(n)</Code> é <Code>Ω(n³)</Code> —{' '}
           <strong>falsa</strong> (a função não cresce tão rápido).
-        </li>
-        <li className={li}>
-          <code className={inlineCode}>g(n)</code> é <code className={inlineCode}>Θ(n²)</code> —
+        </Li>
+        <Li>
+          <Code>g(n)</Code> é <Code>Θ(n²)</Code> —
           verdadeira, é a caracterização justa.
-        </li>
-      </ul>
+        </Li>
+      </Ul>
 
-      <h2 className={h2}>Operações válidas</h2>
-      <pre className={pre}>{`f(n) = Θ(f(n))
+      <H2>Operações válidas</H2>
+      <Pre>{`f(n) = Θ(f(n))
 c · Θ(f(n)) = Θ(f(n))
 Θ(f(n)) + Θ(f(n)) = Θ(f(n))
 Θ(f(n)) + Θ(g(n)) = Θ(max(f(n), g(n)))
-Θ(f(n)) · Θ(g(n)) = Θ(f(n) · g(n))`}</pre>
-      <p className={p}>
-        As mesmas regras valem para <code className={inlineCode}>O</code> e{' '}
-        <code className={inlineCode}>Ω</code>.
-      </p>
+Θ(f(n)) · Θ(g(n)) = Θ(f(n) · g(n))`}</Pre>
+      <P>
+        As mesmas regras valem para <Code>O</Code> e{' '}
+        <Code>Ω</Code>.
+      </P>
 
-      <h2 className={h2}>Algoritmos polinomiais × intratáveis</h2>
-      <p className={p}>
+      <H2>Algoritmos polinomiais × intratáveis</H2>
+      <P>
         Um algoritmo é <strong>polinomial</strong> se seu custo é{' '}
-        <code className={inlineCode}>Θ(nᵖ)</code> para algum inteiro{' '}
-        <code className={inlineCode}>p</code>. Problemas que admitem solução polinomial são
+        <Code>Θ(nᵖ)</Code> para algum inteiro{' '}
+        <Code>p</Code>. Problemas que admitem solução polinomial são
         considerados <em>tratáveis</em>. Problemas para os quais nenhum algoritmo polinomial é
         conhecido — como o Caixeiro Viajante na formulação exata — são chamados de{' '}
         <em>intratáveis</em>.
-      </p>
+      </P>
 
-      <blockquote className={blockquote}>
-        O limite <code className={inlineCode}>Ω(n lg n)</code> vale para qualquer algoritmo de
+      <Quote>
+        O limite <Code>Ω(n lg n)</Code> vale para qualquer algoritmo de
         ordenação que decida apenas por comparações entre chaves. Algoritmos como counting sort
         escapam desse limite ao ordenar pelo valor das chaves, não por comparação.
-      </blockquote>
+      </Quote>
     </>
   );
 }

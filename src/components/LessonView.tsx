@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Button, Flex, Paper, SimpleGrid, Text, TextInput, Title } from '@mantine/core';
 import type { Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
@@ -12,9 +13,6 @@ import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { VarsPanel } from './VarsPanel';
-
-const button =
-  'rounded-md border border-line-2 bg-surface-2 px-3.5 py-1.5 text-[13.5px] text-ink transition-colors hover:border-accent-dim';
 
 function parseInput(raw: string): number[] | null {
   const parts = raw
@@ -43,6 +41,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const steps = useMemo(() => lesson.steps(input), [lesson, input]);
   const playback = usePlayback(steps);
   const step = playback.step ?? steps[0];
+  const { next, prev, toggle, reset, pause } = playback;
 
   // Element identities let the bars view animate swaps (only the bars view uses them).
   const ids = useMemo(
@@ -75,45 +74,56 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       if (target && target.tagName === 'INPUT') return;
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        playback.pause();
-        playback.next();
+        pause();
+        next();
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        playback.pause();
-        playback.prev();
+        pause();
+        prev();
       } else if (event.key === ' ') {
         event.preventDefault();
-        playback.toggle();
+        toggle();
       } else if (event.key === 'Home') {
         event.preventDefault();
-        playback.reset();
+        reset();
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [playback]);
+  }, [next, prev, toggle, reset, pause]);
 
   return (
     <>
-      <div className="grid gap-5 lg:grid-cols-2">
+      <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
         <Panel
           label={lesson.panelLabel ?? 'vetor'}
           aside={
-            <span className="font-mono text-[12.5px] text-muted normal-case">
+            <Text fz={12.5} ff="monospace" c="dimmed">
               {playback.index + 1} / {playback.total}
-            </span>
+            </Text>
           }
         >
-          <div className="flex flex-col justify-center px-4 pt-5 pb-4">
+          <Box px="md" pt="lg" pb="md">
             <Canvas lesson={lesson} step={step} ids={ids[playback.index] ?? []} />
-            <div className="mt-4 min-h-[52px] border-t border-line pt-4">
-              <div className="mb-1 text-[11px] font-semibold tracking-widest text-dim uppercase">
+            <Box
+              mt="md"
+              pt="md"
+              style={{ minHeight: 52, borderTop: '1px solid var(--mantine-color-dark-4)' }}
+            >
+              <Text
+                fz={11}
+                fw={600}
+                tt="uppercase"
+                c="dimmed"
+                mb={4}
+                style={{ letterSpacing: '0.1em' }}
+              >
                 passo atual
-              </div>
-              <p className="text-sm leading-relaxed text-ink">{step?.desc}</p>
-            </div>
+              </Text>
+              <Text fz="sm">{step?.desc}</Text>
+            </Box>
             <VarsPanel vars={step?.vars} />
-          </div>
+          </Box>
         </Panel>
 
         <CodePanel
@@ -122,37 +132,48 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           lang={lang}
           onLangChange={setLang}
         />
-      </div>
+      </SimpleGrid>
 
       <PlayerControls playback={playback} />
 
-      <div className="mt-3 flex flex-wrap items-end gap-2 rounded-xl border border-line bg-surface px-4 py-3.5">
-        <label className="flex flex-col gap-1.5 text-xs text-muted">
-          valores
-          <input
+      <Paper withBorder radius="md" px="md" py="sm" mt="sm">
+        <Flex align="flex-end" gap="sm" wrap="wrap">
+          <TextInput
+            label="valores"
             value={inputValue}
-            onChange={(event) => setInputValue(event.target.value)}
+            onChange={(event) => setInputValue(event.currentTarget.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter') apply();
             }}
-            className="w-[260px] rounded-md border border-line-2 bg-surface-2 px-2.5 py-1.5 font-mono text-[13px] text-ink focus:border-accent focus:outline-none"
+            w={260}
+            size="sm"
           />
-        </label>
-        <button type="button" className={button} onClick={apply}>
-          Aplicar
-        </button>
-        <button type="button" className={button} onClick={randomize}>
-          Sortear
-        </button>
-      </div>
-      {error ? <p className="mt-1.5 text-[12.5px] text-red">{error}</p> : null}
+          <Button variant="default" size="sm" onClick={apply}>
+            Aplicar
+          </Button>
+          <Button variant="default" size="sm" onClick={randomize}>
+            Sortear
+          </Button>
+        </Flex>
+      </Paper>
+      {error ? (
+        <Text c="red" fz={12.5} mt={6}>
+          {error}
+        </Text>
+      ) : null}
 
-      <section className="mt-6">
-        <h2 className="mb-2.5 text-base font-semibold">Sobre</h2>
-        <p className="mb-3 text-muted">{lesson.description}</p>
-        <h2 className="mt-7 mb-2.5 text-base font-semibold">Complexidade</h2>
+      <Box mt="xl">
+        <Title order={2} fz="md" fw={600} mb="xs">
+          Sobre
+        </Title>
+        <Text c="dimmed" mb="md">
+          {lesson.description}
+        </Text>
+        <Title order={2} fz="md" fw={600} mt="lg" mb="xs">
+          Complexidade
+        </Title>
         <ComplexityTable complexity={lesson.complexity} />
-      </section>
+      </Box>
     </>
   );
 }

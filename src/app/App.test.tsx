@@ -1,19 +1,11 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { renderWithProviders } from '@/test/render';
 import { App } from './App';
-
-function renderAt(path: string) {
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <App />
-    </MemoryRouter>,
-  );
-}
 
 describe('App', () => {
   it('lists the catalog on the home page', () => {
-    renderAt('/');
+    renderWithProviders(<App />, '/');
     expect(screen.getByText(/Visualize It/)).toBeInTheDocument();
     expect(screen.getByText('Selection Sort')).toBeInTheDocument();
     expect(screen.getByText('Quicksort')).toBeInTheDocument();
@@ -21,27 +13,27 @@ describe('App', () => {
   });
 
   it('renders a bars lesson', () => {
-    renderAt('/algoritmos/selecao');
+    renderWithProviders(<App />, '/algoritmos/selecao');
     expect(screen.getByRole('heading', { name: 'Selection Sort' })).toBeInTheDocument();
   });
 
   it('renders a cells lesson', () => {
-    renderAt('/algoritmos/pilha-sequencial');
+    renderWithProviders(<App />, '/algoritmos/pilha-sequencial');
     expect(screen.getByRole('heading', { name: 'Pilha Sequencial' })).toBeInTheDocument();
   });
 
   it('renders a nodes lesson', () => {
-    renderAt('/algoritmos/lista-encadeada');
+    renderWithProviders(<App />, '/algoritmos/lista-encadeada');
     expect(screen.getByRole('heading', { name: 'Lista Encadeada' })).toBeInTheDocument();
   });
 
   it('renders a theory article', () => {
-    renderAt('/teoria/complexidade');
+    renderWithProviders(<App />, '/teoria/complexidade');
     expect(screen.getByRole('heading', { name: 'Complexidade de Algoritmos' })).toBeInTheDocument();
   });
 
   it('renders the 404 page for unknown routes', () => {
-    renderAt('/nao-existe');
+    renderWithProviders(<App />, '/nao-existe');
     expect(screen.getByText('Página não encontrada')).toBeInTheDocument();
   });
 });

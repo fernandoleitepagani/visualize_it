@@ -1,50 +1,26 @@
-@import 'tailwindcss';
+/* Base tweaks on top of Mantine's stylesheet. */
 
-/* Design tokens — a dark + amber terminal palette. */
-@theme {
-  --font-sans: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-  --color-canvas: #0a0a0a;
-  --color-surface: #111111;
-  --color-surface-2: #181818;
-  --color-surface-3: #1f1f1f;
-  --color-line: #262626;
-  --color-line-2: #333333;
-
-  --color-ink: #e8e8e8;
-  --color-muted: #8a8a8a;
-  --color-dim: #565656;
-
-  --color-accent: #fbbf24;
-  --color-accent-dim: #b07d0a;
-
-  --color-green: #4ade80;
-  --color-blue: #60a5fa;
-  --color-purple: #c084fc;
-  --color-red: #f87171;
+body {
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer base {
-  html {
-    color-scheme: dark;
-  }
+a {
+  color: var(--mantine-color-amber-6);
+  text-decoration: none;
+}
 
-  body {
-    background-color: var(--color-canvas);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
-    font-size: 15px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+a:hover {
+  text-decoration: underline;
+}
 
-  a {
-    color: var(--color-accent);
-    text-decoration: none;
-  }
+/* Catalog cards: a subtle lift on hover (not expressible through props). */
+.catalog-card {
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease;
+}
 
-  a:hover {
-    text-decoration: underline;
-  }
+.catalog-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--mantine-color-amber-7);
 }

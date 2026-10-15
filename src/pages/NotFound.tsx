@@ -1,14 +1,19 @@
+import { Anchor, Stack, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
 
 export function NotFound() {
   return (
-    <div className="py-24 text-center">
-      <p className="font-mono text-accent">404</p>
-      <h1 className="mt-2 text-2xl font-semibold">Página não encontrada</h1>
-      <p className="mt-2 text-muted">O conteúdo que você procura não existe (ou mudou de lugar).</p>
-      <Link to="/" className="mt-6 inline-block">
+    <Stack align="center" py={96} gap="xs">
+      <Text ff="monospace" c="amber">
+        404
+      </Text>
+      <Title order={1} fz={24} fw={600}>
+        Página não encontrada
+      </Title>
+      <Text c="dimmed">O conteúdo que você procura não existe (ou mudou de lugar).</Text>
+      <Anchor component={Link} to="/" mt="md">
         ← voltar para todos os algoritmos
-      </Link>
-    </div>
+      </Anchor>
+    </Stack>
   );
 }

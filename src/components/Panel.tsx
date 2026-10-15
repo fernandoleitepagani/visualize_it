@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Group, Paper, Text } from '@mantine/core';
 
 interface Props {
   /** Left-aligned header text. */
@@ -11,12 +12,21 @@ interface Props {
 /** Shared card chrome: a header strip over a body. */
 export function Panel({ label, aside, children }: Props) {
   return (
-    <section className="overflow-hidden rounded-xl border border-line bg-surface">
-      <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3 text-xs font-semibold tracking-wider text-dim uppercase">
-        <span>{label}</span>
+    <Paper withBorder radius="md" style={{ overflow: 'hidden' }}>
+      <Group
+        justify="space-between"
+        gap="xs"
+        px="md"
+        py="sm"
+        wrap="nowrap"
+        style={{ borderBottom: '1px solid var(--mantine-color-dark-4)' }}
+      >
+        <Text fz="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>
+          {label}
+        </Text>
         {aside}
-      </div>
+      </Group>
       {children}
-    </section>
+    </Paper>
   );
 }

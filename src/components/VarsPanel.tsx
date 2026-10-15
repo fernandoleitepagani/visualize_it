@@ -1,3 +1,4 @@
+import { Group, Text } from '@mantine/core';
 import type { VarValue } from '@/engine/types';
 
 /** Chips showing the named variables captured by the current step. */
@@ -6,20 +7,38 @@ export function VarsPanel({ vars }: { vars?: Record<string, VarValue> }) {
   if (entries.length === 0) return null;
 
   return (
-    <div className="mt-3.5 flex flex-wrap justify-center gap-2.5 border-t border-line pt-3 font-mono text-xs">
+    <Group
+      justify="center"
+      gap="xs"
+      mt="md"
+      pt="sm"
+      ff="monospace"
+      fz="xs"
+      style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}
+    >
       {entries.map(([name, value]) => (
-        <span
+        <Group
           key={name}
-          className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2.5 py-1"
+          gap={6}
+          px="xs"
+          py={2}
+          bg="dark.5"
+          style={{ border: '1px solid var(--mantine-color-dark-4)', borderRadius: 6 }}
         >
-          <span className="italic text-dim">{name}</span>
+          <Text span fs="italic" c="dimmed">
+            {name}
+          </Text>
           {value === null || value === undefined ? (
-            <span className="text-dim">—</span>
+            <Text span c="dimmed">
+              —
+            </Text>
           ) : (
-            <span className="min-w-3.5 text-center font-semibold text-accent">{String(value)}</span>
+            <Text span fw={600} c="amber">
+              {String(value)}
+            </Text>
           )}
-        </span>
+        </Group>
       ))}
-    </div>
+    </Group>
   );
 }
