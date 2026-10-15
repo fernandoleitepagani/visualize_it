@@ -18,7 +18,7 @@ Deploy no [Vercel](https://vercel.com).
 | Estilo | Tailwind CSS 4 |
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
-| Lint/Format | ESLint 9 (flat) + Prettier |
+| Lint | ESLint 9 (flat) |
 | Hospedagem | Vercel |
 
 ---
@@ -93,7 +93,6 @@ npm run dev      # http://localhost:5173
 | `npm run build` | Type-check (`tsc -b`) + build em `dist/` |
 | `npm run preview` | Serve o build de produção localmente |
 | `npm run lint` | ESLint |
-| `npm run format` | Prettier |
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
 
