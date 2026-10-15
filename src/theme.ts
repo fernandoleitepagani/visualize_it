@@ -24,10 +24,10 @@ const amber: MantineColorsTuple = [
   '#ffda58',
   '#ffd033',
   '#ffc91a',
-  '#fbbf24',
+  viz.accent,
   '#f0ab0e',
   '#d99405',
-  '#b07d0a',
+  viz.accentDim,
 ];
 
 const dark: MantineColorsTuple = [

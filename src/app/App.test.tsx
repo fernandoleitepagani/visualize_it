@@ -3,6 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { App } from './App';
 
+/** One row per `view`, asserting the page header renders for its route. */
+const views = [
+  { name: 'bars', route: '/algoritmos/selecao', heading: 'Selection Sort' },
+  { name: 'cells', route: '/algoritmos/pilha-sequencial', heading: 'Pilha Sequencial' },
+  { name: 'nodes', route: '/algoritmos/lista-encadeada', heading: 'Lista Encadeada' },
+  { name: 'theory', route: '/teoria/complexidade', heading: 'Complexidade de Algoritmos' },
+];
+
 describe('App', () => {
   it('lists the catalog on the home page', () => {
     renderWithProviders(<App />, '/');
@@ -12,24 +20,9 @@ describe('App', () => {
     expect(screen.getByText('Fila Circular')).toBeInTheDocument();
   });
 
-  it('renders a bars lesson', () => {
-    renderWithProviders(<App />, '/algoritmos/selecao');
-    expect(screen.getByRole('heading', { name: 'Selection Sort' })).toBeInTheDocument();
-  });
-
-  it('renders a cells lesson', () => {
-    renderWithProviders(<App />, '/algoritmos/pilha-sequencial');
-    expect(screen.getByRole('heading', { name: 'Pilha Sequencial' })).toBeInTheDocument();
-  });
-
-  it('renders a nodes lesson', () => {
-    renderWithProviders(<App />, '/algoritmos/lista-encadeada');
-    expect(screen.getByRole('heading', { name: 'Lista Encadeada' })).toBeInTheDocument();
-  });
-
-  it('renders a theory article', () => {
-    renderWithProviders(<App />, '/teoria/complexidade');
-    expect(screen.getByRole('heading', { name: 'Complexidade de Algoritmos' })).toBeInTheDocument();
+  it.each(views)('renders the $name view at $route', ({ route, heading }) => {
+    renderWithProviders(<App />, route);
+    expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
   });
 
   it('renders the 404 page for unknown routes', () => {
