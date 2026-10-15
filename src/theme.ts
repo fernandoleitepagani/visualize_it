@@ -14,9 +14,7 @@ export const viz = {
   accent: '#fbbf24',
   accentDim: '#b07d0a',
   green: '#4ade80',
-  blue: '#60a5fa',
   purple: '#c084fc',
-  red: '#f87171',
 } as const;
 
 const amber: MantineColorsTuple = [
