@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+
+/* Design tokens — a dark + amber terminal palette. */
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-canvas: #0a0a0a;
+  --color-surface: #111111;
+  --color-surface-2: #181818;
+  --color-surface-3: #1f1f1f;
+  --color-line: #262626;
+  --color-line-2: #333333;
+
+  --color-ink: #e8e8e8;
+  --color-muted: #8a8a8a;
+  --color-dim: #565656;
+
+  --color-accent: #fbbf24;
+  --color-accent-dim: #b07d0a;
+
+  --color-green: #4ade80;
+  --color-blue: #60a5fa;
+  --color-purple: #c084fc;
+  --color-red: #f87171;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
