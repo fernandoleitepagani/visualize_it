@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import type { CSSProperties } from 'react';
 import { Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { LinkedKind, Node } from '@/engine/types';
 import { tint, vizVar } from '@/theme';
 
@@ -13,9 +14,9 @@ function nodeStyle(state: string): CSSProperties {
   return base;
 }
 
-const transition: CSSProperties = {
-  transition: 'border-color 150ms ease-out, box-shadow 150ms ease-out',
-};
+const nodeTransition = (reducedMotion: boolean): CSSProperties => ({
+  transition: reducedMotion ? 'none' : 'border-color 150ms ease-out, box-shadow 150ms ease-out',
+});
 
 /** Nodes view — linked structures (singly/doubly linked lists, queues, stacks). */
 export function NodesView({
@@ -25,6 +26,7 @@ export function NodesView({
   nodes: Node[] | undefined;
   linked?: LinkedKind;
 }) {
+  const reducedMotion = useReducedMotion();
   const list = nodes ?? [];
 
   return (
@@ -51,7 +53,7 @@ export function NodesView({
                   border: '1.5px solid',
                   borderRadius: 6,
                   overflow: 'hidden',
-                  ...transition,
+                  ...nodeTransition(reducedMotion),
                   ...nodeStyle(state),
                 }}
               >

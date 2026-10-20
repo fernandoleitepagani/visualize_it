@@ -146,7 +146,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               >
                 passo atual
               </Text>
-              <Text fz="sm">{step?.desc}</Text>
+              <Text fz="sm" aria-live="polite" aria-atomic="true">
+                {step?.desc}
+              </Text>
             </Box>
             <VarsPanel vars={step?.vars} />
           </Box>

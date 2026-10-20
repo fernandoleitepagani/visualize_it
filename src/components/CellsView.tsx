@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { Cell } from '@/engine/types';
 import { tint, vizVar } from '@/theme';
 
@@ -19,6 +20,7 @@ function boxStyle(state: string): CSSProperties {
 
 /** Cells view — array-backed structures (stacks, queues, lists, loop vars). */
 export function CellsView({ cells }: { cells: Cell[] | undefined }) {
+  const reducedMotion = useReducedMotion();
   const list = cells ?? [];
 
   return (
@@ -57,7 +59,7 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
               style={{
                 border: '1.5px solid',
                 borderRadius: 6,
-                transition: 'background-color 150ms, border-color 150ms',
+                transition: reducedMotion ? 'none' : 'background-color 150ms, border-color 150ms',
                 ...boxStyle(state),
               }}
             >

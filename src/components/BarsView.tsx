@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Box, Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { Step } from '@/engine/types';
 import { tint, vizVar } from '@/theme';
 
@@ -34,6 +35,7 @@ function labelColor(flags: Flags): string {
 
 /** Bars view — sorting and search over a numeric vector. */
 export function BarsView({ state, ids = [] }: Props) {
+  const reducedMotion = useReducedMotion();
   const arr = state?.arr ?? [];
 
   if (arr.length === 0) {
@@ -84,8 +86,9 @@ export function BarsView({ state, ids = [] }: Props) {
               borderTopLeftRadius: 6,
               borderTopRightRadius: 6,
               opacity: flags.dim ? 0.3 : 1,
-              transition:
-                'left 300ms ease-out, height 300ms ease-out, background-color 300ms, border-color 300ms',
+              transition: reducedMotion
+                ? 'none'
+                : 'left 300ms ease-out, height 300ms ease-out, background-color 300ms, border-color 300ms',
               ...barStyle(flags),
             }}
           >
