@@ -214,6 +214,33 @@ tem prioridade sobre o valor salvo.
 
 ---
 
+## Quiz e playground
+
+**Quiz** — nas lições de vetor (`bars`), ligue **quiz** no player. A cada passo você escolhe qual
+vetor o próximo passo produz; o placar (`acertos / tentativas`) fica no painel. As opções erradas
+vêm de trocas plausíveis no vetor atual.
+
+**Playground** — em `/playground` você escreve `generateSteps(arr)` em JavaScript e vê o resultado
+com o mesmo player. O código roda em um **Web Worker isolado** (sem acesso ao DOM) com timeout de
+1,5 s, e o botão **Compartilhar** guarda o código na URL (`?code=`).
+
+Formato mínimo de um passo:
+
+```js
+function generateSteps(arr) {
+  return arr.map((value, i) => ({
+    line: 0,
+    desc: `passo ${i + 1}: ${value}`,
+    arr,
+    cmp: [i],
+  }));
+}
+```
+
+Campos aceitos: `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`, `cells` e `nodes`.
+
+---
+
 ## Hospedagem (Vercel)
 
 O site é publicado no Vercel a cada push na `main`. É um SPA (React Router), então o `vercel.json`

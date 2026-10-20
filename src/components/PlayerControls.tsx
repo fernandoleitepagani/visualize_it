@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Button, Group, Paper, Slider, Text } from '@mantine/core';
+import { Button, Group, Paper, Slider, Switch, Text } from '@mantine/core';
 import type { Playback } from '@/engine/usePlayback';
 
 const BASE_MS = 1600;
@@ -10,7 +10,16 @@ const toSlider = (speedMs: number) =>
   Math.min(MAX_SPEED, Math.max(MIN_SPEED, Math.round(BASE_MS / Math.max(speedMs, 1))));
 const toMs = (slider: number) => Math.round(BASE_MS / slider);
 
-export function PlayerControls({ playback }: { playback: Playback }) {
+export function PlayerControls({
+  playback,
+  quiz,
+  onQuizChange,
+}: {
+  playback: Playback;
+  /** Enables the quiz toggle; omit it on views that cannot quiz. */
+  quiz?: boolean;
+  onQuizChange?: (value: boolean) => void;
+}) {
   const { isPlaying, atStart, atEnd, index, total, speedMs } = playback;
   const [copied, setCopied] = useState(false);
 
@@ -58,6 +67,15 @@ export function PlayerControls({ playback }: { playback: Playback }) {
         <Text fz="xs" c="dimmed" ff="monospace">
           {index + 1} / {total}
         </Text>
+
+        {onQuizChange ? (
+          <Switch
+            size="xs"
+            label="quiz"
+            checked={quiz ?? false}
+            onChange={(event) => onQuizChange(event.currentTarget.checked)}
+          />
+        ) : null}
 
         <Button variant="subtle" size="sm" onClick={copyLink}>
           {copied ? 'Copiado!' : 'Copiar link'}
