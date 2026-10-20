@@ -15,11 +15,7 @@ describe('CodePanel', () => {
     const onApproachChange = vi.fn();
 
     renderWithProviders(
-      <CodePanel
-        {...baseProps}
-        approach="iterativo"
-        onApproachChange={onApproachChange}
-      />,
+      <CodePanel {...baseProps} approach="iterativo" onApproachChange={onApproachChange} />,
     );
 
     expect(screen.getByLabelText('implementação')).toBeInTheDocument();
@@ -31,5 +27,30 @@ describe('CodePanel', () => {
     renderWithProviders(<CodePanel {...baseProps} />);
 
     expect(screen.queryByLabelText('implementação')).not.toBeInTheDocument();
+  });
+
+  it('marks the active line for assistive technology', () => {
+    const { container } = renderWithProviders(
+      <CodePanel code={['int soma = 0;', 'return soma;']} activeLine={1} lang="java" onLangChange={vi.fn()} />,
+    );
+
+    const active = container.querySelector('[aria-current="step"]');
+    expect(active).toHaveTextContent('return soma;');
+  });
+
+  it('switches the language through the segmented control', () => {
+    const onLangChange = vi.fn();
+    renderWithProviders(
+      <CodePanel
+        code={['int soma = 0;', 'return soma;']}
+        activeLine={0}
+        lang="java"
+        onLangChange={onLangChange}
+      />,
+    );
+
+    fireEvent.click(screen.getByText('c'));
+
+    expect(onLangChange).toHaveBeenCalledWith('c');
   });
 });

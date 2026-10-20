@@ -1,105 +1,77 @@
-import { Box, Group, Paper, Text, Title } from '@mantine/core';
+import { Anchor, Box, Group, SimpleGrid, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { catalog } from '@/content/catalog';
-import { getLesson } from '@/content/lessons';
+import { AlgorithmCard } from '@/components/AlgorithmCard';
+import { GlobalSearch } from '@/components/GlobalSearch';
+import { SubjectCard } from '@/components/SubjectCard';
+import type { EntryLocation } from '@/content/subjects';
+import { getEntryLocation, subjects } from '@/content/subjects';
+import { font, space } from '@/theme';
+
+const featuredSlugs = ['selecao', 'busca-binaria', 'pilha-sequencial'];
 
 export function HomePage() {
+  const featured = featuredSlugs
+    .map((slug) => getEntryLocation(slug))
+    .filter((location): location is EntryLocation => Boolean(location));
+
   return (
     <>
-      <Group
-        justify="space-between"
+      <Box
+        pt="md"
+        pb="xl"
         mb="lg"
-        pb="md"
-        style={{ borderBottom: '1px solid var(--mantine-color-dark-4)' }}
+        style={{
+          background:
+            'radial-gradient(ellipse 65% 50% at 50% 0%, rgba(251, 191, 36, 0.05), transparent 70%)',
+        }}
       >
-        <Title order={1} fz={22} fw={600}>
-          Visualize It
-          <Text span c="amber">
-            .
-          </Text>
+        <Title order={1} fz={{ base: font.h2, sm: font.h1 }} fw={600} mb="sm">
+          Escolha uma matéria para começar.
         </Title>
-      </Group>
-
-      <Box pt="sm" pb="xl">
-        <Title order={1} fz={34} fw={600} mb="xs">
-          Veja os algoritmos{' '}
-          <Text span c="amber">
-            funcionando
-          </Text>
-          .
-        </Title>
-        <Text c="dimmed" fz={15.5} maw={640}>
+        <Text c="dimmed" fz={font.lead} maw={720} mb="lg">
           Percorra cada algoritmo linha por linha, com a estrutura animada, código em Java ou C e a
           análise assintótica lado a lado.
         </Text>
+        <Box maw={640}>
+          <GlobalSearch
+            trigger="input"
+            fullWidth
+            placeholder="Buscar por algoritmo, matéria ou tag..."
+          />
+        </Box>
       </Box>
 
-      {catalog.map((section) => (
-        <Box key={section.title} mt={8}>
-          <Title order={2} fz={19} fw={600} mb="md">
-            {section.title}
-          </Title>
-          {section.groups.map((group) => (
-            <Box key={group.title}>
-              <Text
-                fz="xs"
-                fw={600}
-                tt="uppercase"
-                c="dimmed"
-                mt="lg"
-                mb="sm"
-                style={{ letterSpacing: '0.12em' }}
-              >
-                {group.title}
-              </Text>
-              <Box
-                style={{
-                  display: 'grid',
-                  gap: 12,
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                }}
-              >
-                {group.entries.map((entry) => {
-                  const to =
-                    entry.kind === 'lesson' ? `/algoritmos/${entry.slug}` : `/teoria/${entry.slug}`;
-                  const title =
-                    entry.kind === 'lesson'
-                      ? (getLesson(entry.slug)?.title ?? entry.slug)
-                      : entry.title;
-
-                  return (
-                    <Paper
-                      key={entry.slug}
-                      component={Link}
-                      to={to}
-                      withBorder
-                      radius="md"
-                      p="md"
-                      className="catalog-card"
-                      style={{ display: 'block', textDecoration: 'none' }}
-                    >
-                      <Title order={3} fz={15} fw={600} mb={6}>
-                        {title}
-                      </Title>
-                      <Text fz={13} c="dimmed" lh={1.35}>
-                        {entry.blurb}
-                      </Text>
-                      <Text ff="monospace" fz={11} c="amber" mt="sm" style={{ opacity: 0.85 }}>
-                        {entry.tag}
-                      </Text>
-                    </Paper>
-                  );
-                })}
-              </Box>
-            </Box>
+      <Box component="section" aria-labelledby="materias" mb={space.xxl}>
+        <Title order={2} id="materias" fz={font.h3} fw={600} mb="md">
+          Matérias
+        </Title>
+        <SimpleGrid cols={{ base: 1, md: 3 }} spacing="lg">
+          {subjects.map((subject) => (
+            <SubjectCard key={subject.id} subject={subject} />
           ))}
-        </Box>
-      ))}
+        </SimpleGrid>
+      </Box>
 
-      <Box mt={56} pt="md" style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}>
-        <Text fz={12.5} c="dimmed">
-          Última fase — busca, complexidade e provas por indução.
-        </Text>
+      <Box component="section" aria-labelledby="comece-por-aqui" mb={space.xxl}>
+        <Title order={2} id="comece-por-aqui" fz={font.h3} fw={600} mb="md">
+          Comece por aqui
+        </Title>
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+          {featured.map((location) => (
+            <AlgorithmCard key={location.entry.slug} location={location} />
+          ))}
+        </SimpleGrid>
+      </Box>
+
+      <Box mt={space.xxl} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
+        <Group justify="space-between" gap="sm">
+          <Text fz={font.small} c="dimmed">
+            Última fase — busca, complexidade e provas por indução.
+          </Text>
+          <Anchor component={Link} to="/playground" fz={font.small}>
+            playground
+          </Anchor>
+        </Group>
       </Box>
     </>
   );

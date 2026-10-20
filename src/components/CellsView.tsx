@@ -1,74 +1,114 @@
 import type { CSSProperties } from 'react';
-import { Flex, Text } from '@mantine/core';
+import { Box, Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { Cell } from '@/engine/types';
-import { viz } from '@/theme';
+import { radius, font, transition, shadow, space, tint, vizVar } from '@/theme';
+import { ViewLegend } from './ViewLegend';
 
 function boxStyle(state: string): CSSProperties {
   switch (state) {
     case 'active':
     case 'write':
-      return { borderColor: viz.accent, background: 'rgba(251, 191, 36, 0.15)' };
+      return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15), boxShadow: shadow.focus };
     case 'compare':
-      return { borderColor: viz.green, background: 'rgba(74, 222, 128, 0.1)' };
+      return { borderColor: vizVar.green, background: tint(vizVar.green, 12) };
     case 'empty':
-      return { borderColor: viz.line2, borderStyle: 'dashed', background: 'transparent' };
+      return { borderColor: vizVar.line2, borderStyle: 'dashed', background: 'transparent' };
     default:
-      return { borderColor: viz.line2, background: viz.surface2 };
+      return { borderColor: vizVar.line2, background: vizVar.surface2 };
   }
 }
 
+const LEGEND = [
+  { key: 'active', label: 'ativo', color: vizVar.accent },
+  { key: 'compare', label: 'comparação', color: vizVar.green },
+  { key: 'empty', label: 'vazio', color: vizVar.line2 },
+] as const;
+
 /** Cells view — array-backed structures (stacks, queues, lists, loop vars). */
 export function CellsView({ cells }: { cells: Cell[] | undefined }) {
+  const reducedMotion = useReducedMotion();
   const list = cells ?? [];
+  const states = new Set(
+    list.map((cell) => {
+      const empty = cell.val === null || cell.val === undefined;
+      return cell.state || (empty ? 'empty' : '');
+    }),
+  );
+  const hasActive = states.has('active') || states.has('write');
+  const activeLegend = LEGEND.filter((item) => {
+    if (item.key === 'active') return hasActive;
+    return states.has(item.key);
+  });
 
   return (
-    <Flex
-      gap="xs"
-      align="flex-end"
-      justify="center"
-      wrap="nowrap"
-      pt="xl"
-      pb="sm"
-      mih={240}
-      style={{ overflowX: 'auto' }}
-    >
-      {list.map((cell, i) => {
-        const empty = cell.val === null || cell.val === undefined;
-        const state = cell.state || (empty ? 'empty' : '');
+    <Box>
+      <Flex
+        gap={6}
+        align="flex-end"
+        justify="center"
+        wrap="nowrap"
+        pt="xl"
+        pb="sm"
+        mih={240}
+        style={{ overflowX: 'auto' }}
+        role="img"
+        aria-label={list.length > 0 ? `Estrutura com ${list.length} células` : 'Estrutura vazia'}
+      >
+        {list.length === 0 ? (
+          <Text fz="sm" c="dimmed" pb="xl">
+            Estrutura vazia
+          </Text>
+        ) : null}
+        {list.map((cell, i) => {
+          const empty = cell.val === null || cell.val === undefined;
+          const state = cell.state || (empty ? 'empty' : '');
+          const isActive = state === 'active' || state === 'write' || state === 'compare';
 
-        return (
-          <Flex key={i} direction="column" align="center" gap={6} style={{ flexShrink: 0, minWidth: 52 }}>
-            <Flex gap={4} wrap="nowrap" h={14} ff="monospace" fz={10} c="amber">
-              {(cell.labels ?? []).map((label, j) => (
-                <Text key={j} span>
-                  {label}
-                </Text>
-              ))}
-            </Flex>
+          return (
             <Flex
-              w={48}
-              h={44}
+              key={i}
+              direction="column"
               align="center"
-              justify="center"
-              ff="monospace"
-              fz="sm"
-              fw={600}
-              c={empty ? 'dimmed' : undefined}
-              style={{
-                border: '1.5px solid',
-                borderRadius: 6,
-                transition: 'background-color 150ms, border-color 150ms',
-                ...boxStyle(state),
-              }}
+              gap={6}
+              style={{ flexShrink: 0, minWidth: 50 }}
             >
-              {empty ? '' : cell.val}
+              <Flex gap={space.xs} wrap="nowrap" h={14} ff="monospace" fz={font.micro} c="amber">
+                {(cell.labels ?? []).map((label, j) => (
+                  <Text key={j} span className="viz-pointer-badge">
+                    {label}
+                  </Text>
+                ))}
+              </Flex>
+              <Flex
+                w={50}
+                h={48}
+                align="center"
+                justify="center"
+                ff="monospace"
+                fz="sm"
+                fw={600}
+                c={empty ? 'dimmed' : undefined}
+                style={{
+                  border: '1.5px solid',
+                  borderRadius: radius.sm,
+                  transform: isActive ? 'translateY(-3px)' : undefined,
+                  transition: reducedMotion
+                    ? 'none'
+                    : `transform ${transition.base}, background-color ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
+                  ...boxStyle(state),
+                }}
+              >
+                {empty ? '' : cell.val}
+              </Flex>
+              <Text ff="monospace" fz={font.micro} c="dimmed">
+                {i}
+              </Text>
             </Flex>
-            <Text ff="monospace" fz={10} c="dimmed">
-              {i}
-            </Text>
-          </Flex>
-        );
-      })}
-    </Flex>
+          );
+        })}
+      </Flex>
+      <ViewLegend items={activeLegend} />
+    </Box>
   );
 }

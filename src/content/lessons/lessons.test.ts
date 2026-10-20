@@ -102,3 +102,22 @@ describe('loop lessons', () => {
     expect(total).toBe(sumTo(n));
   });
 });
+
+describe('summation lesson', () => {
+  it('accumulates the total and ends on the last term', () => {
+    const steps = lessons.soma.steps([3, 5, 2]);
+    const last = steps[steps.length - 1];
+
+    expect(last.plot?.points.map((point) => point.value)).toEqual([3, 5, 2]);
+    expect(last.plot?.total).toBe(10);
+    expect(last.plot?.current).toBe(2);
+  });
+
+  it('never decreases the running total', () => {
+    const steps = lessons.soma.steps([3, 5, 2]);
+    const totals = steps.map((step) => step.plot?.total ?? 0);
+
+    expect(totals).toEqual([...totals].sort((a, b) => a - b));
+    expect(totals[0]).toBe(0);
+  });
+});
