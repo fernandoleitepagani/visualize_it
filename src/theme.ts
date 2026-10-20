@@ -48,7 +48,7 @@ const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, m
 /** Dark + amber terminal theme. */
 export const theme = createTheme({
   primaryColor: 'amber',
-  primaryShade: 6,
+  primaryShade: { light: 8, dark: 6 },
   autoContrast: true,
   fontFamily: mono,
   fontFamilyMonospace: mono,
