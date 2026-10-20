@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Paper, SimpleGrid, Text, TextInput, Title } from '@mantine/core';
-import type { Lesson, Step } from '@/engine/types';
+import type { CodeApproach, Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
@@ -8,6 +8,7 @@ import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
 import type { CodeLang } from './CodePanel';
+import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
 import { NodesView } from './NodesView';
 import { Panel } from './Panel';
@@ -37,8 +38,14 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const [inputValue, setInputValue] = useState(() => initialInput.join(', '));
   const [error, setError] = useState('');
   const [lang, setLang] = useState<CodeLang>('java');
+  const [approach, setApproach] = useState<CodeApproach>('iterativo');
 
-  const steps = useMemo(() => lesson.steps(input), [lesson, input]);
+  const hasApproaches = Boolean(
+    lesson.codeVariants?.iterativo && lesson.codeVariants?.recursivo,
+  );
+  const listing = lesson.codeVariants?.[approach] ?? lesson.code;
+
+  const steps = useMemo(() => lesson.steps(input, approach), [lesson, input, approach]);
   const playback = usePlayback(steps);
   const step = playback.step ?? steps[0];
   const { next, prev, toggle, reset, pause } = playback;
@@ -127,10 +134,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         </Panel>
 
         <CodePanel
-          code={lesson.code[lang]}
+          code={listing[lang]}
           activeLine={step?.line ?? 0}
           lang={lang}
           onLangChange={setLang}
+          approach={hasApproaches ? approach : undefined}
+          onApproachChange={hasApproaches ? setApproach : undefined}
         />
       </SimpleGrid>
 
@@ -160,6 +169,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         <Text c="red" fz={12.5} mt={6}>
           {error}
         </Text>
+      ) : null}
+
+      {lesson.complexityAnalysis ? (
+        <Box mt="xl">
+          <ComplexityAnalysisCard analysis={lesson.complexityAnalysis} />
+        </Box>
       ) : null}
 
       <Box mt="xl">

@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { App } from './App';
@@ -23,6 +23,48 @@ describe('App', () => {
   it.each(views)('renders the $name view at $route', ({ route, heading }) => {
     renderWithProviders(<App />, route);
     expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
+  });
+
+  it('switches selection sort between iterative and recursive listings', () => {
+    const { container } = renderWithProviders(<App />, '/algoritmos/selecao');
+
+    expect(container.textContent).not.toContain('selectionSort(array, i+1)');
+    fireEvent.click(screen.getByText('recursivo'));
+    expect(container.textContent).toContain('selectionSort(array, i+1)');
+
+    fireEvent.click(screen.getByText('c'));
+    expect(container.textContent).toContain('void selectionSort(int *array, int i, int n)');
+  });
+
+  it.each([
+    ['insercao', 'insertionSort(array, i+1)', 'void insertionSort(int *array, int i, int n)'],
+    ['bolha', 'bubbleSort(array, i+1)', 'void bubbleSort(int *array, int i, int n)'],
+  ])('switches %s between iterative and recursive listings', (slug, marker, cSignature) => {
+    const { container } = renderWithProviders(<App />, `/algoritmos/${slug}`);
+
+    expect(container.textContent).not.toContain(marker);
+    fireEvent.click(screen.getByText('recursivo'));
+    expect(container.textContent).toContain(marker);
+
+    fireEvent.click(screen.getByText('c'));
+    expect(container.textContent).toContain(cSignature);
+  });
+
+  it('places the complexity analysis card before Sobre on sorting lessons', () => {
+    renderWithProviders(<App />, '/algoritmos/selecao');
+
+    const analysis = screen.getByText('análise de complexidade');
+    const about = screen.getByRole('heading', { name: 'Sobre' });
+    expect(analysis.compareDocumentPosition(about) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    expect(screen.getByText(/n\(n − 1\) \/ 2/)).toBeInTheDocument();
+    expect(screen.getByText(/3 · \(n − 1\) = 3n − 3/)).toBeInTheDocument();
+  });
+
+  it('does not show the complexity analysis card on search lessons', () => {
+    renderWithProviders(<App />, '/algoritmos/busca-sequencial');
+
+    expect(screen.queryByText('análise de complexidade')).not.toBeInTheDocument();
   });
 
   it('renders the 404 page for unknown routes', () => {

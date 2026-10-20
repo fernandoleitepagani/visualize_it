@@ -12,6 +12,7 @@ export const lesson: Lesson = {
     stable: false,
     note: 'Depende da sequência de gaps. Com n/2, n/4, …, 1 fica perto de Θ(n^1.3) na prática.',
   },
+  complexityAnalysis: {},
   code: {
     java: lines(`
 void shellSort(int[] v) {
