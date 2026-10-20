@@ -18,6 +18,9 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'error',
+    },
   },
   {
     files: ['vite.config.ts'],
