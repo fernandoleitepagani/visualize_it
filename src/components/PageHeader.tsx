@@ -4,7 +4,6 @@ import { Anchor, Box, Group, Text, Title } from '@mantine/core';
 import { font, space } from '@/theme';
 import type { BreadcrumbItem } from './Breadcrumbs';
 import { Breadcrumbs } from './Breadcrumbs';
-import { ThemeToggle } from './ThemeToggle';
 
 interface Props {
   title: string;
@@ -36,10 +35,11 @@ export function PageHeader({ title, subtitle, breadcrumb, actions }: Props) {
             </Text>
           ) : null}
         </Box>
-        <Group gap="sm" wrap="nowrap">
-          {actions}
-          <ThemeToggle />
-        </Group>
+        {actions ? (
+          <Group gap="sm" wrap="nowrap">
+            {actions}
+          </Group>
+        ) : null}
       </Group>
     </Box>
   );
