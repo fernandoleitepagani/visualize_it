@@ -17,6 +17,26 @@ export const viz = {
   purple: '#c084fc',
 } as const;
 
+/** Theme-aware aliases for the visualization palette (resolved in CSS). */
+export const vizVar = {
+  surface: 'var(--viz-surface)',
+  surface2: 'var(--viz-surface-2)',
+  surface3: 'var(--viz-surface-3)',
+  line: 'var(--viz-line)',
+  line2: 'var(--viz-line-2)',
+  ink: 'var(--viz-ink)',
+  muted: 'var(--viz-muted)',
+  dim: 'var(--viz-dim)',
+  accent: 'var(--viz-accent)',
+  accentDim: 'var(--viz-accent-dim)',
+  green: 'var(--viz-green)',
+  purple: 'var(--viz-purple)',
+} as const;
+
+/** Translucent tint of a palette colour, for highlighted states. */
+export const tint = (color: string, percent: number) =>
+  `color-mix(in srgb, ${color} ${percent}%, transparent)`;
+
 const amber: MantineColorsTuple = [
   '#fff8e1',
   '#ffeeb8',
@@ -48,7 +68,7 @@ const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, m
 /** Dark + amber terminal theme. */
 export const theme = createTheme({
   primaryColor: 'amber',
-  primaryShade: 6,
+  primaryShade: { light: 8, dark: 6 },
   autoContrast: true,
   fontFamily: mono,
   fontFamilyMonospace: mono,

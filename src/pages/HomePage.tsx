@@ -2,6 +2,7 @@ import { Box, Group, Paper, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { catalog } from '@/content/catalog';
 import { getLesson } from '@/content/lessons';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function HomePage() {
   return (
@@ -10,7 +11,7 @@ export function HomePage() {
         justify="space-between"
         mb="lg"
         pb="md"
-        style={{ borderBottom: '1px solid var(--mantine-color-dark-4)' }}
+        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
       >
         <Title order={1} fz={22} fw={600}>
           Visualize It
@@ -18,6 +19,7 @@ export function HomePage() {
             .
           </Text>
         </Title>
+        <ThemeToggle />
       </Group>
 
       <Box pt="sm" pb="xl">
@@ -96,7 +98,7 @@ export function HomePage() {
         </Box>
       ))}
 
-      <Box mt={56} pt="md" style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}>
+      <Box mt={56} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
         <Text fz={12.5} c="dimmed">
           Última fase — busca, complexidade e provas por indução.
         </Text>

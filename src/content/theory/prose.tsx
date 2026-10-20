@@ -53,7 +53,7 @@ export function Pre({ children }: Props) {
         overflowX: 'auto',
         whiteSpace: 'pre',
         lineHeight: 1.6,
-        border: '1px solid var(--mantine-color-dark-4)',
+        border: '1px solid var(--mantine-color-default-border)',
         borderRadius: 6,
       }}
     >

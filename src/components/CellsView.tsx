@@ -1,24 +1,26 @@
 import type { CSSProperties } from 'react';
 import { Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { Cell } from '@/engine/types';
-import { viz } from '@/theme';
+import { tint, vizVar } from '@/theme';
 
 function boxStyle(state: string): CSSProperties {
   switch (state) {
     case 'active':
     case 'write':
-      return { borderColor: viz.accent, background: 'rgba(251, 191, 36, 0.15)' };
+      return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15) };
     case 'compare':
-      return { borderColor: viz.green, background: 'rgba(74, 222, 128, 0.1)' };
+      return { borderColor: vizVar.green, background: tint(vizVar.green, 12) };
     case 'empty':
-      return { borderColor: viz.line2, borderStyle: 'dashed', background: 'transparent' };
+      return { borderColor: vizVar.line2, borderStyle: 'dashed', background: 'transparent' };
     default:
-      return { borderColor: viz.line2, background: viz.surface2 };
+      return { borderColor: vizVar.line2, background: vizVar.surface };
   }
 }
 
 /** Cells view — array-backed structures (stacks, queues, lists, loop vars). */
 export function CellsView({ cells }: { cells: Cell[] | undefined }) {
+  const reducedMotion = useReducedMotion();
   const list = cells ?? [];
 
   return (
@@ -57,7 +59,7 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
               style={{
                 border: '1.5px solid',
                 borderRadius: 6,
-                transition: 'background-color 150ms, border-color 150ms',
+                transition: reducedMotion ? 'none' : 'background-color 150ms, border-color 150ms',
                 ...boxStyle(state),
               }}
             >

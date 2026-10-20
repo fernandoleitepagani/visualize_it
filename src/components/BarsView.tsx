@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
 import { Box, Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { Step } from '@/engine/types';
-import { viz } from '@/theme';
+import { tint, vizVar } from '@/theme';
 
 interface Props {
   state: Step | undefined;
@@ -18,22 +19,23 @@ interface Flags {
 }
 
 function barStyle(flags: Flags): CSSProperties {
-  if (flags.swap) return { borderColor: viz.green, background: 'rgba(74, 222, 128, 0.2)' };
-  if (flags.pivot) return { borderColor: viz.purple, background: 'rgba(192, 132, 252, 0.2)' };
-  if (flags.cmp) return { borderColor: viz.accent, background: 'rgba(251, 191, 36, 0.15)' };
-  if (flags.sorted) return { borderColor: viz.accentDim, background: 'rgba(251, 191, 36, 0.05)' };
-  return { borderColor: viz.line2, background: viz.surface3 };
+  if (flags.swap) return { borderColor: vizVar.green, background: tint(vizVar.green, 20) };
+  if (flags.pivot) return { borderColor: vizVar.purple, background: tint(vizVar.purple, 20) };
+  if (flags.cmp) return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15) };
+  if (flags.sorted) return { borderColor: vizVar.accentDim, background: tint(vizVar.accent, 6) };
+  return { borderColor: vizVar.line2, background: vizVar.surface2 };
 }
 
 function labelColor(flags: Flags): string {
-  if (flags.swap) return viz.green;
-  if (flags.pivot) return viz.purple;
-  if (flags.cmp) return viz.accent;
-  return viz.muted;
+  if (flags.swap) return vizVar.green;
+  if (flags.pivot) return vizVar.purple;
+  if (flags.cmp) return vizVar.accent;
+  return vizVar.muted;
 }
 
 /** Bars view — sorting and search over a numeric vector. */
 export function BarsView({ state, ids = [] }: Props) {
+  const reducedMotion = useReducedMotion();
   const arr = state?.arr ?? [];
 
   if (arr.length === 0) {
@@ -84,8 +86,9 @@ export function BarsView({ state, ids = [] }: Props) {
               borderTopLeftRadius: 6,
               borderTopRightRadius: 6,
               opacity: flags.dim ? 0.3 : 1,
-              transition:
-                'left 300ms ease-out, height 300ms ease-out, background-color 300ms, border-color 300ms',
+              transition: reducedMotion
+                ? 'none'
+                : 'left 300ms ease-out, height 300ms ease-out, background-color 300ms, border-color 300ms',
               ...barStyle(flags),
             }}
           >

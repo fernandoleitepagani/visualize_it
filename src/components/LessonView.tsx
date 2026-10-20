@@ -134,7 +134,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             <Box
               mt="md"
               pt="md"
-              style={{ minHeight: 52, borderTop: '1px solid var(--mantine-color-dark-4)' }}
+              style={{ minHeight: 52, borderTop: '1px solid var(--mantine-color-default-border)' }}
             >
               <Text
                 fz={11}
@@ -146,7 +146,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               >
                 passo atual
               </Text>
-              <Text fz="sm">{step?.desc}</Text>
+              <Text fz="sm" aria-live="polite" aria-atomic="true">
+                {step?.desc}
+              </Text>
             </Box>
             <VarsPanel vars={step?.vars} />
           </Box>
