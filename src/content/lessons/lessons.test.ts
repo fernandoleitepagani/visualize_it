@@ -41,6 +41,54 @@ describe('sorting invariants', () => {
   });
 });
 
+describe.each(['selecao', 'insercao', 'bolha'] as const)(
+  '%s — variantes de implementação',
+  (slug) => {
+    const input = [5, 2, 9, 1, 7];
+    const approaches = ['iterativo', 'recursivo'] as const;
+
+    it.each(approaches)('%s termina com o vetor ordenado', (approach) => {
+      const steps = lessons[slug].steps([...input], approach);
+      const lastWithArray = [...steps].reverse().find((step) => step.arr);
+      expect(lastWithArray?.arr).toEqual(sortedCopy(input));
+    });
+
+    it.each(approaches)('%s destaca apenas linhas existentes no código', (approach) => {
+      const listing = lessons[slug].codeVariants?.[approach] ?? lessons[slug].code;
+      const steps = lessons[slug].steps([...input], approach);
+
+      for (const step of steps) {
+        expect(step.line).toBeGreaterThanOrEqual(0);
+        expect(step.line).toBeLessThan(listing.java.length);
+        expect(step.line).toBeLessThan(listing.c.length);
+      }
+    });
+
+    it('tem as duas análises de complexidade preenchidas', () => {
+      expect(lessons[slug].complexityAnalysis?.comparisons).toBeTruthy();
+      expect(lessons[slug].complexityAnalysis?.movements).toBeTruthy();
+    });
+  },
+);
+
+describe('sorting lessons — complexity analysis placeholder', () => {
+  const sortingLessons = [
+    'selecao',
+    'insercao',
+    'bolha',
+    'shellsort',
+    'quicksort',
+    'mergesort',
+    'heapsort',
+    'counting',
+    'radix',
+  ] as const;
+
+  it.each(sortingLessons)('%s reserves the analysis card', (slug) => {
+    expect(lessons[slug].complexityAnalysis).toBeDefined();
+  });
+});
+
 describe('loop lessons', () => {
   const sumTo = (n: number) => (n * (n + 1)) / 2;
 
@@ -52,5 +100,24 @@ describe('loop lessons', () => {
     const last = steps[steps.length - 1];
     const total = last.cells?.find((cell) => cell.labels?.includes('S'))?.val;
     expect(total).toBe(sumTo(n));
+  });
+});
+
+describe('summation lesson', () => {
+  it('accumulates the total and ends on the last term', () => {
+    const steps = lessons.soma.steps([3, 5, 2]);
+    const last = steps[steps.length - 1];
+
+    expect(last.plot?.points.map((point) => point.value)).toEqual([3, 5, 2]);
+    expect(last.plot?.total).toBe(10);
+    expect(last.plot?.current).toBe(2);
+  });
+
+  it('never decreases the running total', () => {
+    const steps = lessons.soma.steps([3, 5, 2]);
+    const totals = steps.map((step) => step.plot?.total ?? 0);
+
+    expect(totals).toEqual([...totals].sort((a, b) => a - b));
+    expect(totals[0]).toBe(0);
   });
 });

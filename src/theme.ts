@@ -8,6 +8,8 @@ export {
   mono,
   shadow,
   transition,
+  tint,
+  vizVar,
 } from './theme/tokens';
 
 /**

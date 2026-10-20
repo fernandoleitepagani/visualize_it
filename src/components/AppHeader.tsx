@@ -4,6 +4,7 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { allEntryLocations, getEntryPath, subjects } from '@/content/subjects';
 import { font } from '@/theme';
 import { GlobalSearch } from './GlobalSearch';
+import { ThemeToggle } from './ThemeToggle';
 
 const DESKTOP_QUERY = '(min-width: 62em)';
 
@@ -56,6 +57,7 @@ export function AppHeader() {
         </Group>
 
         <Group gap="sm" wrap="nowrap">
+          <ThemeToggle />
           {isDesktop ? (
             <GlobalSearch trigger="input" shortcut />
           ) : (

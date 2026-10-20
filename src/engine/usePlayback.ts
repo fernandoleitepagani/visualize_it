@@ -1,5 +1,17 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Step } from './types';
+
+/** Optional behaviour for {@link usePlayback}. */
+export interface PlaybackOptions {
+  /** Delay between frames, in milliseconds. */
+  speedMs?: number;
+  /** Restart from the first frame instead of stopping at the last one. */
+  loop?: boolean;
+  /** Frame to start on. Clamped to the frame list. */
+  initialIndex?: number;
+  /** Called whenever the visible frame changes, including resets. */
+  onStepChange?: (step: Step, index: number) => void;
+}
 
 export interface Playback {
   index: number;
@@ -26,6 +38,13 @@ interface Cursor {
   playing: boolean;
 }
 
+const DEFAULT_SPEED_MS = 900;
+
+function clampIndex(index: number, total: number): number {
+  if (!Number.isFinite(index)) return 0;
+  return Math.min(Math.max(Math.floor(index), 0), Math.max(total - 1, 0));
+}
+
 /**
  * Drives step-by-step playback of a pre-computed list of frames.
  *
@@ -34,61 +53,104 @@ interface Cursor {
  * frame list identity changes (new lesson or new input) the cursor resets
  * during render — React's recommended alternative to an effect.
  */
-export function usePlayback(steps: Step[], initialSpeedMs = 900): Playback {
+export function usePlayback(steps: Step[], options: PlaybackOptions = {}): Playback {
+  const {
+    speedMs: initialSpeedMs = DEFAULT_SPEED_MS,
+    loop = false,
+    initialIndex = 0,
+    onStepChange,
+  } = options;
+
   const total = steps.length;
-  const [cursor, setCursor] = useState<Cursor>(() => ({ steps, index: 0, playing: false }));
+  const [cursor, setCursor] = useState<Cursor>(() => ({
+    steps,
+    index: clampIndex(initialIndex, total),
+    playing: false,
+  }));
   const [speedMs, setSpeedMs] = useState(initialSpeedMs);
 
   if (cursor.steps !== steps) {
     setCursor({ steps, index: 0, playing: false });
   }
 
-  const index = Math.min(cursor.index, Math.max(total - 1, 0));
+  const index = clampIndex(cursor.index, total);
   const isPlaying = cursor.playing;
 
-  const next = useCallback(
-    () => setCursor((c) => ({ ...c, index: Math.min(c.index + 1, total - 1) })),
-    [total],
+  // Keep the callback fresh without making it an effect dependency.
+  const onStepChangeRef = useRef(onStepChange);
+  useEffect(() => {
+    onStepChangeRef.current = onStepChange;
+  }, [onStepChange]);
+
+  // Notify on every committed frame, including the first one and resets.
+  useEffect(() => {
+    const frame = steps[index];
+    if (frame) onStepChangeRef.current?.(frame, index);
+  }, [steps, index]);
+
+  const next = useCallback(() => {
+    setCursor((current) => {
+      if (current.index >= total - 1) {
+        return loop ? { ...current, index: 0 } : current;
+      }
+      return { ...current, index: current.index + 1 };
+    });
+  }, [total, loop]);
+
+  const prev = useCallback(
+    () => setCursor((current) => ({ ...current, index: Math.max(current.index - 1, 0) })),
+    [],
   );
-  const prev = useCallback(() => setCursor((c) => ({ ...c, index: Math.max(c.index - 1, 0) })), []);
+
   const goTo = useCallback(
     (nextIndex: number) =>
-      setCursor((c) => ({
-        ...c,
-        index: Math.min(Math.max(nextIndex, 0), Math.max(total - 1, 0)),
+      setCursor((current) => ({
+        ...current,
+        index: clampIndex(nextIndex, total),
         playing: false,
       })),
     [total],
   );
-  const reset = useCallback(() => setCursor((c) => ({ ...c, index: 0, playing: false })), []);
+
+  const reset = useCallback(
+    () => setCursor((current) => ({ ...current, index: 0, playing: false })),
+    [],
+  );
+
   const play = useCallback(
-    () => setCursor((c) => ({ ...c, index: c.index >= total - 1 ? 0 : c.index, playing: true })),
+    () =>
+      setCursor((current) => ({
+        ...current,
+        index: current.index >= total - 1 ? 0 : current.index,
+        playing: true,
+      })),
     [total],
   );
-  const pause = useCallback(() => setCursor((c) => ({ ...c, playing: false })), []);
+
+  const pause = useCallback(() => setCursor((current) => ({ ...current, playing: false })), []);
   const toggle = useCallback(
     () =>
-      setCursor((c) => {
-        if (c.playing) return { ...c, playing: false };
-        if (c.index >= total - 1) return { ...c, index: 0, playing: true };
-        return { ...c, playing: true };
+      setCursor((current) => {
+        if (current.playing) return { ...current, playing: false };
+        if (current.index >= total - 1) return { ...current, index: 0, playing: true };
+        return { ...current, playing: true };
       }),
     [total],
   );
 
-  // Playback loop: advance on a timer until the last frame, then stop. The
-  // state updates happen inside the callback so the effect stays a plain
-  // subscription to the timer.
+  // Playback loop: advance on a timer, wrapping around when `loop` is on.
   useEffect(() => {
     if (!isPlaying) return;
     const timer = setTimeout(() => {
-      setCursor((c) => {
-        if (c.index >= total - 1) return { ...c, playing: false };
-        return { ...c, index: Math.min(c.index + 1, total - 1) };
+      setCursor((current) => {
+        if (current.index >= total - 1) {
+          return loop ? { ...current, index: 0 } : { ...current, playing: false };
+        }
+        return { ...current, index: current.index + 1 };
       });
     }, speedMs);
     return () => clearTimeout(timer);
-  }, [isPlaying, index, speedMs, total]);
+  }, [isPlaying, index, speedMs, total, loop]);
 
   return {
     index,

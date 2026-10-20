@@ -31,11 +31,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 22 (`src/content/lessons/index.ts`) |
-| Views | 3 (`bars`, `cells`, `nodes`) |
+| Lições registradas | 23 (`src/content/lessons/index.ts`) |
+| Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
-| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `*` (404) |
-| Testes | 85 testes em 14 arquivos, passando |
+| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `*` (404) |
+| Testes | 144 testes em 18 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -43,7 +43,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (4):** `for`, `while`, `do-while`, `aritmetica`.
+- **AEDS I (5):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`).
 - **AEDS II (18):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
     `heapsort`, `counting`, `radix`.
@@ -54,20 +54,17 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Estado do worktree no momento desta atualização
 
-Há um refactor de tema em andamento, ainda não commitado:
+A interface organizada por matéria e o refactor de tema foram integrados ao `dev` e mesclados com a
+linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora inclui:
 
-- `src/theme/tokens.ts` é novo e não está rastreado;
-- `src/theme.ts` virou um shim de re-exportação;
-- 16 arquivos foram ajustados para consumir `palette`, `font`, `space`, `radius`, `transition` e
-  `shadow`;
-- `dump.txt` (334 KB) e `criar-issues.sh` estão na raiz sem rastreamento.
-
-Além disso, a refatoração da interface por matéria está no worktree: `src/content/subjects.ts`,
-páginas de matéria, busca global, controles sticky e novos testes. As melhorias visuais do
-visualizador também estão aplicadas: escala zero-ancorada em `BarsView`, hierarquia tipográfica dos
-painéis, deck de controles com ação primária destacada, toolbar de entrada compacta, grid 56/44 com
-painéis alinhados e correção do `ComplexityTable` para estabilidade indefinida. Preserve mudanças
-existentes que não fazem parte da sua tarefa.
+- `src/content/subjects.ts`, páginas de matéria, busca global, controles sticky e testes;
+- tokens centralizados em `src/theme/tokens.ts`, com o shim `src/theme.ts` mantido por
+  compatibilidade;
+- melhorias visuais do visualizador: escala zero-ancorada em `BarsView`, hierarquia tipográfica dos
+  painéis, deck de controles com ação primária destacada, toolbar de entrada compacta, grid 56/44 e
+  correção do `ComplexityTable` para estabilidade indefinida;
+- quiz no player, URL compartilhável (`arr`/`step`), entrada persistida por lição, playground,
+  alternância de tema claro/escuro e view `plot`.
 
 ---
 
@@ -138,14 +135,15 @@ Cada `Step` contém:
 ```
 LessonPage (breadcrumb + LessonPager)
   └─ LessonView (key={lesson.id})
-       ├─ useMemo: lesson.steps(input)
-       ├─ usePlayback(steps)
+       ├─ useMemo: lesson.steps(input, approach)
+       ├─ usePlayback(steps, { initialIndex })
        ├─ toolbar de entrada (valores, Aplicar, Sortear, presets)
        ├─ useMemo: assignElementIds(steps)  // só para bars
-       ├─ Canvas → BarsView | CellsView | NodesView
-       ├─ CodePanel (Java/C + linha ativa com rolagem automática)
-       ├─ PlayerControls abaixo do grid (transporte, progresso, velocidade)
+       ├─ Canvas → BarsView | CellsView | NodesView | PlotView
+       ├─ CodePanel (Java/C, iterativo/recursivo, linha ativa com rolagem automática)
+       ├─ PlayerControls abaixo do grid (transporte, progresso, velocidade, quiz, copiar link)
        ├─ VarsPanel
+       ├─ ComplexityAnalysisCard (lições de ordenação)
        └─ painéis Sobre + Complexidade
 ```
 
@@ -154,9 +152,16 @@ controles de reprodução ficam logo abaixo do grid, antes dos painéis Sobre/Co
 cabeçalho do painel de visualização mostra um badge com o passo atual, a narração fica em um bloco
 destacado logo abaixo do canvas e as variáveis ficam em um rodapé próprio. Os painéis compartilham
 header, ícone e sombra sutil via `Panel`; `src/components/icons.tsx` concentra os SVGs inline e
-`ViewLegend` padroniza a legenda das três views. `usePlayback` mantém o cursor, o estado de
-play/pause e a velocidade; `goTo` atende o slider de passo. Quando a lista de `Step` muda de
-identidade (nova lição ou nova entrada), o cursor reinicia durante o render.
+`ViewLegend` padroniza a legenda das views. `usePlayback` mantém o cursor, o estado de
+play/pause, a velocidade, `initialIndex`, `loop` e o callback `onStepChange`; `goTo` atende o slider
+de passo. Quando a lista de `Step` muda de identidade (nova lição ou nova entrada), o cursor
+reinicia durante o render.
+
+O par `arr`/`step` é espelhado na query string (`replace: true`) e a última entrada aplicada fica
+persistida por lição em `localStorage` (`src/lib/persistedInput.ts`). Lições com `codeVariants`
+oferecem o seletor iterativo/recursivo, e lições `bars` habilitam o quiz (`QuizPanel`). O cabeçalho
+tem alternância de tema claro/escuro (`ThemeToggle`) e a paleta das views usa as variáveis CSS
+`--viz-*` para acompanhar o esquema de cores.
 
 `assignElementIds` dá identidade estável aos elementos de `arr` para que a troca de barras seja
 animada como deslocamento, não como teletransporte.
@@ -173,6 +178,7 @@ para baixo a partir da mesma linha de base; zeros aparecem como um traço fino.
 | `bars` | ordenação e busca | `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim` (escala zero-ancorada, grade, base, valores, índices e legenda) |
 | `cells` | vetores, pilhas, filas, listas e laços | `cells: [{ val, labels, state }]` |
 | `nodes` | listas/pilhas/filas encadeadas | `nodes: [{ id, val, prev, next, labels, state }]` |
+| `plot` | somatório (`soma`) | `plot: { points, current, total }` |
 
 As views são apresentacionais: não calculam o algoritmo, apenas desenham o `Step` atual.
 
@@ -181,10 +187,12 @@ As views são apresentacionais: não calculam o algoritmo, apenas desenham o `St
 A fonte única de tokens é `src/theme/tokens.ts`:
 
 - `palette` (cores, incluindo `accentHalo`/`accentGlow`), `space`, `radius`, `font`, `mono`,
-  `shadow` (incluindo `panel`, `deck` e `primary`) e `transition`;
-- `theme` (Mantine `createTheme`, dark + âmbar).
+  `shadow` (incluindo `panel`, `deck` e `primary`), `transition`, `vizVar` (aliases `--viz-*`) e
+  `tint` (mistura translúcida);
+- `theme` (Mantine `createTheme`, dark + âmbar, com `primaryShade` por esquema de cor).
 
-`src/theme.ts` é um shim que re-exporta os tokens e mantém o alias deprecated `viz`.
+`src/theme.ts` é um shim que re-exporta os tokens e mantém o alias deprecated `viz`. As variáveis
+`--viz-*` são declaradas em `src/styles/index.css` para os esquemas dark e light.
 
 **Atenção:** o alias `@/theme` hoje resolve para o **arquivo** `src/theme.ts`, não para o diretório
 `src/theme/`. Não existe `src/theme/index.ts`. Apagar o shim sem criar um índice ou trocar os
@@ -192,7 +200,7 @@ imports quebra o build. Veja BUG-06.
 
 ### 4.5 Rotas e catálogo
 
-- `src/app/App.tsx` define as rotas: home, matéria, lição e teoria.
+- `src/app/App.tsx` define as rotas: home, matéria, lição, teoria e playground.
 - `src/content/subjects.ts` é a fonte única das matérias, grupos e entradas do catálogo.
 - `src/content/catalog.ts` é um re-export de compatibilidade de `subjects.ts`.
 - `src/content/lessons/index.ts` registra as lições por slug.
@@ -223,11 +231,11 @@ polimento.
 | BUG-03 | Alta | Lista dupla mostra `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` monta nós com `ant`/`prox`; `NodesView.tsx` lê `node.prev`/`node.next` | A view `doubly` não mostra os links reais; o aluno não vê a vantagem da lista dupla | Mapear `prev: nd.ant` e `next: nd.prox`; tipar o retorno como `Node` para o TS acusar propriedades fora do contrato |
 | BUG-04 | Média | Entrada aceita negativos e valores enormes | `LessonView.tsx` agora exige inteiros e quantidade 1–12, mas não limita faixa; `counting.ts` faz `new Array(max + 1)` e indexa por valor; `radix.ts` e `counting.ts` convertem negativos para 0; `for`/`while` usam só o primeiro valor e fazem clamp | Valores como `1e9` podem estourar memória; negativos produzem uma visualização diferente do que foi digitado; lições de N único ignoram o resto silenciosamente | Validar faixa (ex.: 0–999) por lição; schema de entrada (`array`, `n`, `array + alvo`); mostrar erro em vez de clampar |
 | BUG-05 | Média | Busca sempre procura o elemento do meio | `busca-sequencial.ts` e `busca-binaria.ts` definem `target = v[Math.floor(v.length / 2)]` | Não dá para demonstrar melhor/pior caso nem o caminho “não encontrado”; a busca sequencial sempre percorre metade do vetor | Permitir alvo explícito na entrada; manter um padrão quando não informado |
-| BUG-06 | Média | Refactor de tema incompleto e com armadilha de resolução | `src/theme/tokens.ts` não rastreado; `src/theme.ts` é shim; `@/theme` resolve para o arquivo; não há `src/theme/index.ts`; `viz` está deprecated e sem uso | O build quebra se o shim for removido antes de criar o índice; a migração fica ambígua | Concluir a migração: mover o shim para `src/theme/index.ts` (ou trocar imports para `@/theme/tokens`), remover `viz`, commitar tokens + componentes juntos |
+| BUG-06 | Resolvido | Refactor de tema incompleto e com armadilha de resolução | `src/theme/tokens.ts` está rastreado e é a fonte única; `src/theme.ts` permanece como shim que re-exporta tokens, `vizVar` e `tint`, com `viz` deprecated para compatibilidade | — | A migração foi concluída mantendo o shim; criar `src/theme/index.ts` e remover `viz` quando todos os imports migrarem |
 | BUG-07 | Resolvido | Tabela de complexidade mostrava “Estável: Não” quando o valor era indefinido | `ComplexityTable.tsx` agora distingue `stable === undefined` e exibe “—” | — | Coberto por `ComplexityTable.test.tsx` |
 | BUG-08 | Resolvido | Acessibilidade e semântica | Home com um único `h1`; views com `role="img"` e `aria-label`; descrição do passo com `aria-live="polite"`; atalhos ignoram foco em campos, botões e links; skip link e breadcrumbs adicionados | — | Mantido coberto por revisão manual e testes de rota |
-| BUG-09 | Baixa | Higiene do repositório | `dump.txt` (334 KB) e `criar-issues.sh` não rastreados; o script referencia caminhos antigos (`src/lessons/selection-sort/algorithm.ts`, `ArrayView`) e Tailwind/Prettier | Risco de commit acidental de dump e de automação obsoleta | Remover ou ignorar `dump.txt`; atualizar ou remover `criar-issues.sh`; manter `dist/` fora do git |
-| BUG-10 | Média | Testes, documentação e CI parcialmente defasados | Agora há 10 arquivos e 73 testes, incluindo playback, catálogo, busca local/global, escala das barras e complexidade; ainda faltam testes de limites de linha; `.github` tem templates mas nenhum workflow | Regressões de conteúdo ainda podem entrar sem aviso; onboarding depende de conhecimento oral | Adicionar os testes restantes e workflow de CI (`lint`, `typecheck`, `test`, `build`); atualizar `package.json` (`engines`) |
+| BUG-09 | Baixa | Higiene do repositório | `dump.txt` (328 KB) e `criar-issues.sh` não rastreados; o script referencia caminhos antigos (`src/lessons/selection-sort/algorithm.ts`, `ArrayView`) e Tailwind/Prettier | Risco de commit acidental de dump e de automação obsoleta | Remover ou ignorar `dump.txt`; atualizar ou remover `criar-issues.sh`; manter `dist/` fora do git |
+| BUG-10 | Resolvido | Testes, documentação e CI defasados | 18 arquivos e 144 testes, incluindo playback, quiz, parsed input, catálogo, busca local/global, escala das barras e complexidade; workflow de CI em `.github/workflows/ci.yml` cobre lint, typecheck, test e build | — | Manter os testes e o workflow atualizados a cada mudança |
 | BUG-11 | Resolvido | Atalho de espaço no fim da animação | `usePlayback.toggle()` reinicia no passo 0 quando `atEnd`, e o botão passa a exibir “Recomeçar” | — | Coberto por `usePlayback.test.ts` |
 | BUG-12 | Baixa | Highlighter não cobre comentários de bloco nem strings | `CodePanel.tsx` reconhece `//`, números e palavras-chave; `aritmetica.ts` usa `/* ... */` | Comentários de bloco e strings ficam sem cor, reduzindo a legibilidade | Melhorar o tokenizer ou documentar a limitação |
 | BUG-13 | Resolvido | Dependência não utilizada | `@mantine/hooks` passou a ser usado por `useDisclosure` (busca/drawer) e `useMediaQuery` (layout responsivo) | — | Mantido; a dependência agora tem uso real |
@@ -252,17 +260,17 @@ polimento.
 2. **Conteúdo duplicado.** As versões Java e C são mantidas manualmente; elas já divergem em
    `for.ts` e têm contagens de linha diferentes em 12 lições.
 3. **Tema em transição.** Shim + diretório + alias deprecated convivem; é fácil importar do lugar
-   errado.
+   errado, mas os tokens já estão centralizados e as views usam `--viz-*`.
 4. **Validação de entrada centralizada e frouxa.** Cada lição assume um formato diferente (vetor,
    N único, vetor + alvo), mas a UI oferece o mesmo campo para todas.
-5. **Cobertura de testes estreita.** Os testes atuais garantem que as lições produzem passos e que
-   as ordenações terminam ordenadas, mas não validam o destaque de linha, a entrada ou o playback.
+5. **Contrato de linha frágil em lições sem variantes.** Há testes de playback, entrada e catálogo,
+   mas ainda falta validar o destaque de linha nas duas linguagens.
 6. **Acessibilidade incompleta.** As visualizações são predominantemente visuais e mudam sem
    anúncio para tecnologias assistivas.
-7. **Sem CI.** Lint, testes e typecheck dependem de execução local.
+7. **CI cobre o básico.** O workflow roda lint, typecheck, test e build; ainda não há checagem de
+   links, bundle ou deploy preview.
 8. **Artefatos locais.** `dump.txt`, `dist/` e scripts antigos podem ser confundidos com fonte.
-9. **Dependência não usada.** `@mantine/hooks`.
-10. **Sem `engines`.** A versão mínima de Node está só no README.
+9. **Sem `engines`.** A versão mínima de Node está só no README.
 
 ---
 
@@ -271,29 +279,27 @@ polimento.
 ### Curto prazo (próximas entregas)
 
 - Corrigir BUG-01, BUG-02 e BUG-03.
-- Concluir o refactor de tema e remover o shim/alias `viz`.
+- Remover o shim/alias `viz` depois de migrar os imports restantes.
 - Validar entrada por lição (inteiros, faixa, quantidade, N único, alvo).
-- Adicionar testes de limites de linha, catálogo ↔ registro, playback e validação.
-- Criar workflow de CI com `lint`, `typecheck`, `test` e `build`.
+- Adicionar testes de limites de linha e de igualdade entre Java e C.
 - Limpar `dump.txt` e `criar-issues.sh`.
 
 ### Médio prazo
 
 - Alvo configurável nas lições de busca.
-- Estado da entrada na URL, permitindo compartilhar uma execução.
 - Timeline/lista de passos clicável, além de anterior/próximo.
 - Histórico de variáveis e destaque de mudanças entre passos.
 - Metadados por rota (título do documento, descrição, Open Graph).
-- Acessibilidade das três views, com rótulos e anúncio do passo.
+- Acessibilidade das views, com rótulos e anúncio do passo.
 - Testes de propriedade para ordenações com entradas aleatórias (seed fixa).
-- Remover `@mantine/hooks` se continuar sem uso e adicionar `engines` ao `package.json`.
+- Adicionar `engines` ao `package.json`.
 
 ### Longo prazo
 
 - Visualização de pilha de chamadas para recursão (quicksort, mergesort, heapsort).
 - Novas views para árvores e grafos.
 - Modo de comparação entre algoritmos ou entre Java e C.
-- Internacionalização (pt-BR/en) e tema claro.
+- Internacionalização (pt-BR/en) e refinamento do tema claro.
 - Migração do conteúdo para um formato com âncoras de linha declarativas, eliminando números
   mágicos.
 
@@ -323,7 +329,10 @@ npm run build
 7. Teste os atalhos `←`, `→`, espaço, `Home` e `End`.
 8. Abra `/teoria/complexidade` e `/teoria/inducao`.
 9. Use a busca do header e confira o agrupamento por matéria.
-10. Abra uma URL inexistente e confira o 404.
+10. Abra `/playground` e execute o sandbox.
+11. Alterne o tema claro/escuro e confira as três views (inclusive a lição `soma`, view `plot`).
+12. Ative o quiz em uma lição de `bars` e responda uma pergunta.
+13. Abra uma URL inexistente e confira o 404.
 
 ---
 
@@ -343,6 +352,7 @@ npm run build
 | 2026-10-20 | Escala zero-ancorada, grade, base, rótulos e legenda em `BarsView`; hierarquia tipográfica e controles compactos | Tornar a animação legível e comparável, inclusive com zeros/negativos e em telas estreitas |
 | 2026-10-20 | Deck de controles com ação primária, toolbar de entrada, grid 56/44, painéis Sobre/Complexidade, ícones SVG e legenda compartilhada | Dar hierarquia aos controles e posicionar a animação como elemento central, mantendo o tema dark + âmbar |
 | 2026-10-20 | Limpeza visual geral e animações didáticas (curvas spring, sincronização de rótulos em BarsView, elevação e ponteiros em Cells/NodesView, detecção de mutação em VarsPanel, toolbar em linha única e LessonPager integrado) | Reduzir ruído visual de bordas/cabeçalhos e fornecer feedback físico imediato das mudanças de estado algorítmico |
+| 2026-10-20 | Merge da linha de interface por matéria com quiz, playground, view `plot`, tema claro/escuro e Storybook | Unificar as duas frentes mantendo `subjects.ts` como catálogo, o grid 56/44 e os tokens compartilhados |
 
 ---
 

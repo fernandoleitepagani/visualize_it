@@ -1,26 +1,30 @@
 import { Fragment } from 'react';
 import type { CSSProperties } from 'react';
 import { Box, Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { LinkedKind, Node } from '@/engine/types';
-import { palette, radius, font, transition, shadow, space } from '@/theme';
+import { radius, font, transition, shadow, space, tint, vizVar } from '@/theme';
 import { ViewLegend } from './ViewLegend';
 
 function nodeStyle(state: string): CSSProperties {
-  const base: CSSProperties = { borderColor: palette.line2 };
+  const base: CSSProperties = { borderColor: vizVar.line2 };
   if (state === 'active')
-    return { borderColor: palette.accent, background: palette.accentSoft, boxShadow: shadow.focus };
-  if (state === 'compare') return { borderColor: palette.success, background: palette.successSoft };
-  if (state === 'write') return { borderColor: palette.accent, background: palette.accentSoft };
+    return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15), boxShadow: shadow.focus };
+  if (state === 'compare') return { borderColor: vizVar.green, background: tint(vizVar.green, 12) };
+  if (state === 'write')
+    return { borderColor: vizVar.accent, background: tint(vizVar.accent, 12) };
   return base;
 }
 
-const nodeTransition: CSSProperties = {
-  transition: `transform ${transition.base}, border-color ${transition.base}, background-color ${transition.base}, box-shadow ${transition.base}`,
-};
+const nodeTransition = (reducedMotion: boolean): CSSProperties => ({
+  transition: reducedMotion
+    ? 'none'
+    : `transform ${transition.base}, border-color ${transition.base}, background-color ${transition.base}, box-shadow ${transition.base}`,
+});
 
 const LEGEND = [
-  { key: 'active', label: 'ativo', color: palette.accent },
-  { key: 'compare', label: 'comparação', color: palette.success },
+  { key: 'active', label: 'ativo', color: vizVar.accent },
+  { key: 'compare', label: 'comparação', color: vizVar.green },
 ] as const;
 
 /** Nodes view — linked structures (singly/doubly linked lists, queues, stacks). */
@@ -31,6 +35,7 @@ export function NodesView({
   nodes: Node[] | undefined;
   linked?: LinkedKind;
 }) {
+  const reducedMotion = useReducedMotion();
   const list = nodes ?? [];
   const states = new Set(list.map((node) => node.state || ''));
   const hasActive = states.has('active') || states.has('write');
@@ -74,13 +79,13 @@ export function NodesView({
                 </Flex>
                 <Flex
                   align="stretch"
-                  bg="dark.5"
                   style={{
                     border: '1.5px solid',
                     borderRadius: radius.sm,
                     overflow: 'hidden',
+                    background: vizVar.surface,
                     transform: isActive ? 'translateY(-3px)' : undefined,
-                    ...nodeTransition,
+                    ...nodeTransition(reducedMotion),
                     ...nodeStyle(state),
                   }}
                 >
@@ -89,11 +94,13 @@ export function NodesView({
                       align="center"
                       px="xs"
                       py={space.sm}
-                      bg="dark.8"
                       ff="monospace"
                       fz={font.tiny}
                       c="dimmed"
-                      style={{ borderRight: `1px solid ${palette.line}` }}
+                      style={{
+                        borderRight: `1px solid ${vizVar.line}`,
+                        background: vizVar.surface2,
+                      }}
                     >
                       {prev ? `←${prev}` : '∅'}
                     </Flex>
@@ -105,11 +112,13 @@ export function NodesView({
                     align="center"
                     px="xs"
                     py={space.sm}
-                    bg="dark.8"
                     ff="monospace"
                     fz={font.tiny}
                     c="dimmed"
-                    style={{ borderLeft: `1px solid ${palette.line}` }}
+                    style={{
+                      borderLeft: `1px solid ${vizVar.line}`,
+                      background: vizVar.surface2,
+                    }}
                   >
                     {next ? `→${next}` : '∅'}
                   </Flex>
@@ -121,7 +130,7 @@ export function NodesView({
                   fz="sm"
                   c={isActive ? 'amber' : 'dimmed'}
                   fw={isActive ? 700 : 400}
-                  style={{ transition: `color ${transition.base}` }}
+                  style={{ transition: reducedMotion ? 'none' : `color ${transition.base}` }}
                 >
                   →
                 </Text>

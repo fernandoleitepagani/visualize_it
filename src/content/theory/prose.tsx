@@ -8,7 +8,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { palette, font, radius } from '@/theme';
+import { font, radius } from '@/theme';
 
 /** Mantine-backed building blocks shared by the theory/prose articles. */
 interface Props {
@@ -54,7 +54,7 @@ export function Pre({ children }: Props) {
         overflowX: 'auto',
         whiteSpace: 'pre',
         lineHeight: 1.6,
-        border: `1px solid ${palette.line}`,
+        border: '1px solid var(--mantine-color-default-border)',
         borderRadius: radius.sm,
       }}
     >

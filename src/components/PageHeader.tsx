@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Anchor, Box, Group, Text, Title } from '@mantine/core';
-import { font, palette, space } from '@/theme';
+import { font, space } from '@/theme';
 import type { BreadcrumbItem } from './Breadcrumbs';
 import { Breadcrumbs } from './Breadcrumbs';
+import { ThemeToggle } from './ThemeToggle';
 
 interface Props {
   title: string;
@@ -15,7 +16,7 @@ interface Props {
 /** Shared page header: breadcrumb, title, optional subtitle and actions. */
 export function PageHeader({ title, subtitle, breadcrumb, actions }: Props) {
   return (
-    <Box mb="lg" pb="md" style={{ borderBottom: `1px solid ${palette.line}` }}>
+    <Box mb="lg" pb="md" style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}>
       {breadcrumb?.length ? (
         <Breadcrumbs items={breadcrumb} />
       ) : (
@@ -35,7 +36,10 @@ export function PageHeader({ title, subtitle, breadcrumb, actions }: Props) {
             </Text>
           ) : null}
         </Box>
-        {actions}
+        <Group gap="sm" wrap="nowrap">
+          {actions}
+          <ThemeToggle />
+        </Group>
       </Group>
     </Box>
   );

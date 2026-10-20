@@ -1,31 +1,33 @@
 import type { CSSProperties } from 'react';
 import { Box, Flex, Text } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import type { Cell } from '@/engine/types';
-import { palette, radius, font, transition, shadow, space } from '@/theme';
+import { radius, font, transition, shadow, space, tint, vizVar } from '@/theme';
 import { ViewLegend } from './ViewLegend';
 
 function boxStyle(state: string): CSSProperties {
   switch (state) {
     case 'active':
     case 'write':
-      return { borderColor: palette.accent, background: palette.accentSoft, boxShadow: shadow.focus };
+      return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15), boxShadow: shadow.focus };
     case 'compare':
-      return { borderColor: palette.success, background: palette.successSoft };
+      return { borderColor: vizVar.green, background: tint(vizVar.green, 12) };
     case 'empty':
-      return { borderColor: palette.line2, borderStyle: 'dashed', background: 'transparent' };
+      return { borderColor: vizVar.line2, borderStyle: 'dashed', background: 'transparent' };
     default:
-      return { borderColor: palette.line2, background: palette.surface2 };
+      return { borderColor: vizVar.line2, background: vizVar.surface2 };
   }
 }
 
 const LEGEND = [
-  { key: 'active', label: 'ativo', color: palette.accent },
-  { key: 'compare', label: 'comparação', color: palette.success },
-  { key: 'empty', label: 'vazio', color: palette.line2 },
+  { key: 'active', label: 'ativo', color: vizVar.accent },
+  { key: 'compare', label: 'comparação', color: vizVar.green },
+  { key: 'empty', label: 'vazio', color: vizVar.line2 },
 ] as const;
 
 /** Cells view — array-backed structures (stacks, queues, lists, loop vars). */
 export function CellsView({ cells }: { cells: Cell[] | undefined }) {
+  const reducedMotion = useReducedMotion();
   const list = cells ?? [];
   const states = new Set(
     list.map((cell) => {
@@ -91,7 +93,9 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
                   border: '1.5px solid',
                   borderRadius: radius.sm,
                   transform: isActive ? 'translateY(-3px)' : undefined,
-                  transition: `transform ${transition.base}, background-color ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
+                  transition: reducedMotion
+                    ? 'none'
+                    : `transform ${transition.base}, background-color ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
                   ...boxStyle(state),
                 }}
               >

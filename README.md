@@ -4,6 +4,8 @@ Visualizador interativo de algoritmos, estruturas de dados e análise de complex
 visualização mostra o passo a passo do algoritmo com animação, código em Java ou C lado a lado com
 a linha executada, variáveis do passo e a tabela de complexidade assintótica.
 
+[![CI](https://github.com/fernandoleitepagani/visualize_it/actions/workflows/ci.yml/badge.svg)](https://github.com/fernandoleitepagani/visualize_it/actions/workflows/ci.yml)
+
 Deploy no [Vercel](https://vercel.com).
 
 ---
@@ -97,9 +99,26 @@ npm run dev      # http://localhost:5173
 | `npm run build` | Type-check (`tsc -b`) + build em `dist/` |
 | `npm run preview` | Serve o build de produção localmente |
 | `npm run lint` | ESLint |
+| `npm run lint:fix` | ESLint com correções automáticas |
 | `npm run typecheck` | `tsc -b` sem gerar build |
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
+
+### Tema e atalhos
+
+Na primeira visita o tema segue `prefers-color-scheme`; a escolha fica salva em `localStorage`.
+Use o botão ☀/☾ no cabeçalho para alternar entre claro e escuro.
+
+Na página de uma lição:
+
+| Tecla | Ação |
+|---|---|
+| `←` / `→` | passo anterior / próximo |
+| `Espaço` | executar / pausar |
+| `Home` | voltar ao primeiro passo |
+
+As teclas são ignoradas enquanto o foco está no campo de valores. As transições são desativadas
+quando o sistema pede `prefers-reduced-motion`.
 
 ---
 
@@ -110,7 +129,116 @@ npm run dev      # http://localhost:5173
 2. Registre o `slug` em `src/content/lessons/index.ts`.
 3. Adicione a entrada ao grupo correspondente em `src/content/subjects.ts`.
 
+### Exemplo completo — soma dos elementos
+
+`src/content/lessons/soma.ts`:
+
+```ts
+import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
+
+export const lesson: Lesson = {
+  id: 'soma',
+  title: 'Soma dos elementos',
+  view: 'bars',
+  initial: [4, 7, 2, 9],
+  complexity: { time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' }, space: 'Θ(1)' },
+  code: {
+    java: lines(`
+      int soma(int[] v) {
+          int total = 0;
+          for (int i = 0; i < v.length; i++) {
+              total += v[i];
+          }
+          return total;
+      }`),
+    c: lines(`
+      int soma(int v[], int n) {
+          int total = 0;
+          for (int i = 0; i < n; i++) {
+              total += v[i];
+          }
+          return total;
+      }`),
+  },
+  steps: (input) => {
+    const steps: Step[] = [{ line: 1, desc: 'total = 0', arr: input }];
+    let total = 0;
+    input.forEach((value, i) => {
+      total += value;
+      steps.push({
+        line: 3,
+        desc: `total += ${value} → ${total}`,
+        arr: input,
+        cmp: [i],
+        vars: { total },
+      });
+    });
+    return steps;
+  },
+};
+```
+
+Registre em `src/content/lessons/index.ts`:
+
+```ts
+import { lesson as soma } from './soma';
+
+export const lessons = {
+  // …
+  soma,
+} satisfies Record<string, Lesson>;
+```
+
 Nenhum componente precisa mudar.
+
+---
+
+## Compartilhando um estado
+
+Cada lição aceita dois parâmetros na URL:
+
+```
+/algoritmos/selecao?arr=5,2,9,1,7&step=4
+```
+
+| Parâmetro | Significado |
+|---|---|
+| `arr` | valores do vetor, separados por vírgula (1–12 inteiros) |
+| `step` | passo exibido, começando em **1** |
+
+O player mantém a URL atualizada sem criar entradas no histórico, e o botão **Copiar link** copia o
+estado atual. Parâmetros inválidos são ignorados e caem no estado padrão da lição.
+
+O último vetor aplicado também é lembrado **por lição** em `localStorage`. Ao abrir um link, a URL
+tem prioridade sobre o valor salvo.
+
+---
+
+## Quiz e playground
+
+**Quiz** — nas lições de vetor (`bars`), ligue **quiz** no player. A cada passo você escolhe qual
+vetor o próximo passo produz; o placar (`acertos / tentativas`) fica no painel. As opções erradas
+vêm de trocas plausíveis no vetor atual.
+
+**Playground** — em `/playground` você escreve `generateSteps(arr)` em JavaScript e vê o resultado
+com o mesmo player. O código roda em um **Web Worker isolado** (sem acesso ao DOM) com timeout de
+1,5 s, e o botão **Compartilhar** guarda o código na URL (`?code=`).
+
+Formato mínimo de um passo:
+
+```js
+function generateSteps(arr) {
+  return arr.map((value, i) => ({
+    line: 0,
+    desc: `passo ${i + 1}: ${value}`,
+    arr,
+    cmp: [i],
+  }));
+}
+```
+
+Campos aceitos: `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`, `cells` e `nodes`.
 
 ---
 

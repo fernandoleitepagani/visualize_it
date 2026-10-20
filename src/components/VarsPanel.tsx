@@ -1,6 +1,6 @@
 import { Box, Group, Text } from '@mantine/core';
 import type { VarValue } from '@/engine/types';
-import { palette, radius, space, font, transition } from '@/theme';
+import { palette, radius, space, font, transition, vizVar } from '@/theme';
 
 interface Props {
   vars?: Record<string, VarValue>;
@@ -13,7 +13,7 @@ export function VarsPanel({ vars, prevVars }: Props) {
   if (entries.length === 0) return null;
 
   return (
-    <Box mt="md" pt="sm" style={{ borderTop: `1px solid ${palette.line}` }}>
+    <Box mt="md" pt="sm" style={{ borderTop: `1px solid ${vizVar.line}` }}>
       <Text
         fz={font.micro}
         fw={700}
@@ -35,17 +35,17 @@ export function VarsPanel({ vars, prevVars }: Props) {
               px="sm"
               py={space.xxs}
               style={{
-                background: isChanged ? palette.accentSoft : palette.surface3,
-                border: `1px solid ${isChanged ? palette.accentLine : palette.line2}`,
+                background: isChanged ? palette.accentSoft : vizVar.surface2,
+                border: `1px solid ${isChanged ? palette.accentLine : vizVar.line2}`,
                 borderRadius: radius.sm,
                 transition: `background-color ${transition.base}, border-color ${transition.base}`,
               }}
             >
-              <Text span fz={font.small} fw={500} style={{ color: palette.muted }}>
+              <Text span fz={font.small} fw={500} style={{ color: vizVar.muted }}>
                 {name}
               </Text>
               {value === null || value === undefined ? (
-                <Text span fz={font.small} style={{ color: palette.dim }}>
+                <Text span fz={font.small} style={{ color: vizVar.dim }}>
                   —
                 </Text>
               ) : (

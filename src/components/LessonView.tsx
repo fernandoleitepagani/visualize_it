@@ -1,64 +1,71 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Badge,
-  Box,
-  Button,
-  Group,
-  Paper,
-  Tabs,
-  Text,
-  TextInput,
-} from '@mantine/core';
+import { Badge, Box, Button, Group, Paper, Tabs, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import type { Lesson, Step } from '@/engine/types';
+import { useSearchParams } from 'react-router-dom';
+import type { CodeApproach, Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
-import { palette, font, radius } from '@/theme';
+import { parseInput } from '@/lib/parseInput';
+import { readStoredInput, storeInput } from '@/lib/persistedInput';
+import { palette, font, radius, vizVar } from '@/theme';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
 import type { CodeLang } from './CodePanel';
+import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
 import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
+import { PlotView } from './PlotView';
+import { QuizPanel } from './QuizPanel';
 import { VarsPanel } from './VarsPanel';
 import { BarsIcon, CheckIcon, GaugeIcon, InfoIcon, ShuffleIcon } from './icons';
-
-function parseInput(raw: string): number[] | null {
-  const parts = raw
-    .trim()
-    .split(/[,\s]+/)
-    .filter(Boolean)
-    .map(Number);
-  if (
-    parts.length < 1 ||
-    parts.length > 12 ||
-    parts.some((n) => !Number.isFinite(n) || !Number.isInteger(n))
-  ) {
-    return null;
-  }
-  return parts;
-}
 
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
   if (lesson.view === 'cells') return <CellsView cells={step?.cells} />;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
+  if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
   return <BarsView state={step} ids={ids} />;
 }
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
-  const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
-  const [input, setInput] = useState<number[]>(initialInput);
-  const [inputValue, setInputValue] = useState(() => initialInput.join(', '));
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read the URL once: it wins over stored/local state on first load.
+  const [initial] = useState(() => {
+    const fromUrl = parseInput(searchParams.get('arr') ?? '');
+    const step = Number(searchParams.get('step'));
+    return {
+      input: fromUrl ?? readStoredInput(lesson.id) ?? lesson.initial ?? DEFAULT_INPUT,
+      index: Number.isFinite(step) && step >= 1 ? Math.floor(step) - 1 : 0,
+    };
+  });
+
+  const [input, setInput] = useState<number[]>(initial.input);
+  const [inputValue, setInputValue] = useState(() => initial.input.join(', '));
   const [error, setError] = useState('');
   const [lang, setLang] = useState<CodeLang>('java');
+  const [approach, setApproach] = useState<CodeApproach>('iterativo');
+  const [quiz, setQuiz] = useState(false);
+  const [score, setScore] = useState({ correct: 0, total: 0 });
   const isDesktop = useMediaQuery('(min-width: 62em)');
 
-  const steps = useMemo(() => lesson.steps(input), [lesson, input]);
-  const playback = usePlayback(steps);
+  const hasApproaches = Boolean(
+    lesson.codeVariants?.iterativo && lesson.codeVariants?.recursivo,
+  );
+  const listing = lesson.codeVariants?.[approach] ?? lesson.code;
+
+  const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
+  // Single-number lessons (for/while/do-while) do not benefit from ordering presets.
+  const singleValue = initialInput.length === 1;
+  const canPreset = !singleValue;
+
+  const steps = useMemo(() => lesson.steps(input, approach), [lesson, input, approach]);
+  const quizSupported = (lesson.view ?? 'bars') === 'bars';
+  const playback = usePlayback(steps, { initialIndex: initial.index });
   const step = playback.step ?? steps[0];
   const prevStep = playback.index > 0 ? steps[playback.index - 1] : undefined;
   const { next, prev, toggle, reset, pause, goTo, total } = playback;
@@ -69,19 +76,33 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     [lesson.view, steps],
   );
 
-  const singleValue = initialInput.length === 1;
-  // Single-number lessons (for/while/do-while) do not benefit from ordering presets.
-  const canPreset = !singleValue;
+  // Keep the URL shareable without adding history entries.
+  useEffect(() => {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        next.set('arr', input.join(','));
+        next.set('step', String(playback.index + 1));
+        return next;
+      },
+      { replace: true },
+    );
+  }, [input, playback.index, setSearchParams]);
 
-  const setValues = useCallback((values: number[]) => {
-    setError('');
-    setInput(values);
-    setInputValue(values.join(', '));
-  }, []);
+  const setValues = useCallback(
+    (values: number[]) => {
+      setError('');
+      setInput(values);
+      setInputValue(values.join(', '));
+      setScore({ correct: 0, total: 0 });
+      storeInput(lesson.id, values);
+    },
+    [lesson.id],
+  );
 
   const apply = useCallback(() => {
     const parsed = parseInput(inputValue);
-    if (!parsed) {
+    if (!parsed || parsed.some((value) => !Number.isInteger(value))) {
       setError('Use entre 1 e 12 números inteiros separados por vírgula.');
       return;
     }
@@ -117,6 +138,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     },
     [initialInput, input, setValues],
   );
+
+  const changeApproach = useCallback((nextApproach: CodeApproach) => {
+    setApproach(nextApproach);
+    setScore({ correct: 0, total: 0 });
+  }, []);
 
   // Keyboard shortcuts: ← → move, space plays, Home restarts, End goes to the last step.
   useEffect(() => {
@@ -163,7 +189,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           radius="sm"
           ff="monospace"
           fz={font.tiny}
-          style={{ color: palette.ink2, textTransform: 'none' }}
+          style={{ color: vizVar.ink, textTransform: 'none' }}
         >
           passo {playback.index + 1} / {playback.total}
         </Badge>
@@ -186,9 +212,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           mt="md"
           p="sm"
           style={{
-            background: palette.surface2,
-            border: `1px solid ${palette.line}`,
-            borderLeft: `3px solid ${palette.accent}`,
+            background: vizVar.surface2,
+            border: `1px solid ${vizVar.line}`,
+            borderLeft: `3px solid ${vizVar.accent}`,
             borderRadius: radius.sm,
             minHeight: 52,
             display: 'flex',
@@ -202,7 +228,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             fz={font.lead}
             fw={500}
             lh={1.5}
-            style={{ color: palette.ink }}
+            style={{ color: vizVar.ink }}
           >
             {step?.desc}
           </Text>
@@ -215,10 +241,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   const codePanel = (
     <CodePanel
-      code={lesson.code[lang]}
+      code={listing[lang]}
       activeLine={step?.line ?? 0}
       lang={lang}
       onLangChange={setLang}
+      approach={hasApproaches ? approach : undefined}
+      onApproachChange={hasApproaches ? changeApproach : undefined}
     />
   );
 
@@ -239,9 +267,37 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     </Box>
   );
 
+  const quizPanel =
+    quizSupported && quiz ? (
+      <QuizPanel
+        steps={steps}
+        index={playback.index}
+        score={score}
+        onAnswer={(correct) =>
+          setScore((current) => ({
+            correct: current.correct + (correct ? 1 : 0),
+            total: current.total + 1,
+          }))
+        }
+      />
+    ) : null;
+
+  const analysisPanel = lesson.complexityAnalysis ? (
+    <Box mt="xl">
+      <ComplexityAnalysisCard analysis={lesson.complexityAnalysis} />
+    </Box>
+  ) : null;
+
   return (
     <>
-      <Paper withBorder radius="md" px="md" py="xs" mt="sm" style={{ background: palette.surface }}>
+      <Paper
+        withBorder
+        radius="md"
+        px="md"
+        py="xs"
+        mt="sm"
+        style={{ background: 'var(--mantine-color-body)' }}
+      >
         <Box
           component="form"
           className="lesson-toolbar-row"
@@ -265,12 +321,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             size="sm"
             style={{ flex: '1 1 200px', maxWidth: 300 }}
           />
-          <Button
-            type="submit"
-            variant="light"
-            size="sm"
-            leftSection={<CheckIcon size={14} />}
-          >
+          <Button type="submit" variant="light" size="sm" leftSection={<CheckIcon size={14} />}>
             Aplicar
           </Button>
           <Button
@@ -333,12 +384,19 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             {codePanel}
           </Box>
           <Box mt="lg">
-            <PlayerControls playback={playback} />
+            <PlayerControls
+              playback={playback}
+              quiz={quizSupported ? quiz : undefined}
+              onQuizChange={quizSupported ? setQuiz : undefined}
+            />
           </Box>
+          {quizPanel}
+          {analysisPanel}
           <Box mt="xl">{aboutPanel}</Box>
         </>
       ) : (
         <>
+          {analysisPanel}
           <Tabs defaultValue="viz" variant="default" mt="md">
             <Tabs.List grow>
               <Tabs.Tab value="viz">Visualização</Tabs.Tab>
@@ -356,8 +414,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             </Tabs.Panel>
           </Tabs>
           <Box mt="md">
-            <PlayerControls playback={playback} />
+            <PlayerControls
+              playback={playback}
+              quiz={quizSupported ? quiz : undefined}
+              onQuizChange={quizSupported ? setQuiz : undefined}
+            />
           </Box>
+          {quizPanel}
         </>
       )}
     </>

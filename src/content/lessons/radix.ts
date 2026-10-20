@@ -13,6 +13,7 @@ export const lesson: Lesson = {
     note: 'd = número de dígitos, b = base (10 aqui). Excelente para inteiros com poucos dígitos.',
   },
   initial: [170, 45, 75, 90, 802, 24, 2, 66],
+  complexityAnalysis: {},
   code: {
     java: lines(`
 void radixSort(int[] v) {

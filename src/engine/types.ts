@@ -6,8 +6,15 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot';
 export type LinkedKind = 'singly' | 'doubly';
+export type CodeApproach = 'iterativo' | 'recursivo';
+
+/** One source listing per supported language. */
+export interface CodeListing {
+  java: string[];
+  c: string[];
+}
 
 /** A cell in the `cells` view (array-backed structures: stacks, queues, lists). */
 export interface Cell {
@@ -28,6 +35,21 @@ export interface Node {
 
 export type VarValue = string | number | null;
 
+/** One term of the plotted series (plot view). */
+export interface PlotPoint {
+  label: string;
+  value: number;
+}
+
+/** Payload for the `plot` view: terms plus the accumulated total. */
+export interface PlotState {
+  points: PlotPoint[];
+  /** Index of the term added in this step; -1 before the first addition. */
+  current: number;
+  /** Accumulated total up to and including `current`. */
+  total: number;
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -47,6 +69,8 @@ export interface Step {
   cells?: Cell[];
   /** nodes view */
   nodes?: Node[];
+  /** plot view */
+  plot?: PlotState;
 }
 
 export interface Complexity {
@@ -54,6 +78,12 @@ export interface Complexity {
   space?: string;
   stable?: boolean;
   note?: string;
+}
+
+/** Reserved space for the comparison/movement cost analysis. */
+export interface ComplexityAnalysis {
+  comparisons?: string;
+  movements?: string;
 }
 
 export interface Lesson {
@@ -70,8 +100,20 @@ export interface Lesson {
   /** Seed values for the input bar. Falls back to the shared default. */
   initial?: number[];
   complexity: Complexity;
-  code: { java: string[]; c: string[] };
-  steps: (input: number[]) => Step[];
+  /** Shown as an extra card above "Sobre" (sorting lessons). */
+  complexityAnalysis?: ComplexityAnalysis;
+  code: CodeListing;
+  /**
+   * Alternative listings for lessons that offer more than one implementation
+   * (for example iterative and recursive). When present, the player shows an
+   * extra switch next to the language picker.
+   */
+  codeVariants?: Partial<Record<CodeApproach, CodeListing>>;
+  /**
+   * `approach` lets a lesson pick line numbers for the listing being shown.
+   * Lessons without variants can ignore it.
+   */
+  steps: (input: number[], approach?: CodeApproach) => Step[];
 }
 
 /** Input used when a lesson does not declare its own `initial`. */

@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Box, SegmentedControl } from '@mantine/core';
-import { palette, font, space } from '@/theme';
+import { Box, Group, SegmentedControl } from '@mantine/core';
+import type { CodeApproach } from '@/engine/types';
+import { font, space, tint, vizVar } from '@/theme';
 import { Panel } from './Panel';
 import { CodeIcon } from './icons';
 
@@ -23,19 +24,19 @@ function highlight(line: string): ReactNode[] {
     if (match.index > last) nodes.push(line.slice(last, match.index));
     if (match[1])
       nodes.push(
-        <span key={key++} style={{ color: palette.dim, fontStyle: 'italic' }}>
+        <span key={key++} style={{ color: vizVar.dim, fontStyle: 'italic' }}>
           {match[1]}
         </span>,
       );
     else if (match[2])
       nodes.push(
-        <span key={key++} style={{ color: palette.accent }}>
+        <span key={key++} style={{ color: vizVar.accent }}>
           {match[2]}
         </span>,
       );
     else
       nodes.push(
-        <span key={key++} style={{ color: palette.info }}>
+        <span key={key++} style={{ color: vizVar.purple }}>
           {match[3]}
         </span>,
       );
@@ -50,11 +51,22 @@ interface Props {
   activeLine: number;
   lang: CodeLang;
   onLangChange: (lang: CodeLang) => void;
+  /** Optional implementation picker (iterative / recursive). */
+  approach?: CodeApproach;
+  onApproachChange?: (approach: CodeApproach) => void;
 }
 
-export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
+export function CodePanel({
+  code,
+  activeLine,
+  lang,
+  onLangChange,
+  approach,
+  onApproachChange,
+}: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef<HTMLDivElement | null>(null);
+  const showApproach = approach !== undefined && onApproachChange !== undefined;
 
   // Keep the highlighted line visible inside the code box without scrolling the page.
   useEffect(() => {
@@ -83,15 +95,30 @@ export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
       label="código"
       icon={<CodeIcon size={14} />}
       aside={
-        <SegmentedControl
-          size="xs"
-          value={lang}
-          onChange={(value) => onLangChange(value as CodeLang)}
-          data={[
-            { label: 'java', value: 'java' },
-            { label: 'c', value: 'c' },
-          ]}
-        />
+        <Group gap="xs" wrap="nowrap">
+          {showApproach ? (
+            <SegmentedControl
+              size="xs"
+              value={approach}
+              onChange={(value) => onApproachChange(value as CodeApproach)}
+              aria-label="implementação"
+              data={[
+                { label: 'iterativo', value: 'iterativo' },
+                { label: 'recursivo', value: 'recursivo' },
+              ]}
+            />
+          ) : null}
+          <SegmentedControl
+            size="xs"
+            value={lang}
+            onChange={(value) => onLangChange(value as CodeLang)}
+            aria-label="linguagem"
+            data={[
+              { label: 'java', value: 'java' },
+              { label: 'c', value: 'c' },
+            ]}
+          />
+        </Group>
       }
     >
       <Box
@@ -106,7 +133,7 @@ export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
           overflow: 'auto',
           position: 'relative',
           lineHeight: 1.65,
-          background: palette.surface2,
+          background: vizVar.surface,
         }}
       >
         {code.map((line, i) => {
@@ -121,9 +148,12 @@ export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
                 whiteSpace: 'pre',
                 minHeight: 24,
                 paddingRight: space.lg,
-                borderLeft: `3px solid ${active ? palette.accent : 'transparent'}`,
+                borderLeft: `3px solid ${active ? vizVar.accent : 'transparent'}`,
                 background: active
-                  ? `linear-gradient(90deg, ${palette.accentSoft} 0%, rgba(251, 191, 36, 0.03) 90%, transparent 100%)`
+                  ? `linear-gradient(90deg, ${tint(vizVar.accent, 14)} 0%, ${tint(
+                      vizVar.accent,
+                      4,
+                    )} 90%, transparent 100%)`
                   : undefined,
                 transition: `background 160ms ease-out, border-color 160ms ease-out`,
               }}
@@ -136,13 +166,13 @@ export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
                   fontSize: font.tiny,
                   lineHeight: '24px',
                   userSelect: 'none',
-                  color: active ? palette.accent : palette.dim,
+                  color: active ? vizVar.accent : vizVar.dim,
                   fontWeight: active ? 700 : 400,
                 }}
               >
                 {i + 1}
               </span>
-              <span style={{ lineHeight: '24px', color: palette.ink }}>{highlight(line)}</span>
+              <span style={{ lineHeight: '24px', color: vizVar.ink }}>{highlight(line)}</span>
             </div>
           );
         })}

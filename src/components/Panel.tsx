@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Box, Group, Paper, Text } from '@mantine/core';
-import { palette, font, radius, shadow } from '@/theme';
+import { palette, font, radius, shadow, tint, vizVar } from '@/theme';
 
 interface Props {
   /** Left-aligned header text. */
@@ -22,7 +22,7 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
       radius="md"
       style={{
         overflow: 'hidden',
-        background: palette.surface,
+        background: 'var(--mantine-color-body)',
         boxShadow: shadow.panel,
         display: 'flex',
         flexDirection: 'column',
@@ -35,8 +35,8 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
         py={8}
         wrap="nowrap"
         style={{
-          borderBottom: `1px solid ${palette.line}`,
-          background: palette.surface2,
+          borderBottom: `1px solid ${vizVar.line}`,
+          background: tint(vizVar.surface, 55),
           flexShrink: 0,
           minHeight: 40,
         }}
@@ -68,7 +68,7 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
             fw={700}
             tt="uppercase"
             style={{
-              color: palette.ink2,
+              color: vizVar.ink,
               letterSpacing: '0.1em',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
@@ -86,8 +86,8 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
           px="md"
           py="sm"
           style={{
-            borderTop: `1px solid ${palette.line}`,
-            background: palette.surface2,
+            borderTop: `1px solid ${vizVar.line}`,
+            background: tint(vizVar.surface, 55),
             flexShrink: 0,
           }}
         >

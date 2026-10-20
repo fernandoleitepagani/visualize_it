@@ -61,6 +61,30 @@ export const shadow = {
   focus: `0 0 0 3px ${palette.accentSoft}`,
 } as const;
 
+/**
+ * Theme-aware aliases for the visualization palette. The views use inline
+ * styles, so surface/ink colours must resolve through CSS variables to follow
+ * the Mantine color scheme.
+ */
+export const vizVar = {
+  surface: 'var(--viz-surface)',
+  surface2: 'var(--viz-surface-2)',
+  surface3: 'var(--viz-surface-3)',
+  line: 'var(--viz-line)',
+  line2: 'var(--viz-line-2)',
+  ink: 'var(--viz-ink)',
+  muted: 'var(--viz-muted)',
+  dim: 'var(--viz-dim)',
+  accent: 'var(--viz-accent)',
+  accentDim: 'var(--viz-accent-dim)',
+  green: 'var(--viz-green)',
+  purple: 'var(--viz-purple)',
+} as const;
+
+/** Translucent tint of a palette colour, for highlighted states. */
+export const tint = (color: string, percent: number) =>
+  `color-mix(in srgb, ${color} ${percent}%, transparent)`;
+
 export const transition = {
   fast: '120ms ease-out',
   base: '180ms ease-out',
@@ -98,7 +122,7 @@ const dark: MantineColorsTuple = [
 /** Dark + amber terminal theme. */
 export const theme = createTheme({
   primaryColor: 'amber',
-  primaryShade: 6,
+  primaryShade: { light: 8, dark: 6 },
   autoContrast: true,
   fontFamily: mono,
   fontFamilyMonospace: mono,

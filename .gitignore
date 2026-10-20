@@ -27,6 +27,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
@@ -39,3 +40,6 @@ lerna-debug.log*
 # Vercel
 .vercel
 .aider*
+
+# Storybook
+storybook-static

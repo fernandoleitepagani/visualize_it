@@ -1,6 +1,7 @@
-import { Button, Flex, Group, Kbd, Paper, SegmentedControl, Slider, Text } from '@mantine/core';
+import { useCallback, useState } from 'react';
+import { Button, Flex, Group, Kbd, Paper, SegmentedControl, Slider, Switch, Text } from '@mantine/core';
 import type { Playback } from '@/engine/usePlayback';
-import { font, palette, shadow } from '@/theme';
+import { font, palette, shadow, vizVar } from '@/theme';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -16,9 +17,29 @@ const SPEEDS = [
   { label: '4×', value: 225 },
 ];
 
-export function PlayerControls({ playback }: { playback: Playback }) {
+export function PlayerControls({
+  playback,
+  quiz,
+  onQuizChange,
+}: {
+  playback: Playback;
+  /** Enables the quiz toggle; omit it on views that cannot quiz. */
+  quiz?: boolean;
+  onQuizChange?: (value: boolean) => void;
+}) {
   const { isPlaying, atStart, atEnd, index, total, speedMs } = playback;
   const playLabel = isPlaying ? 'Pausar' : atEnd ? 'Recomeçar' : 'Executar';
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard access can be denied (insecure context or permissions).
+    }
+  }, []);
 
   return (
     <Paper
@@ -27,7 +48,7 @@ export function PlayerControls({ playback }: { playback: Playback }) {
       px="md"
       py="sm"
       className="player-deck"
-      style={{ background: palette.surface, boxShadow: shadow.deck }}
+      style={{ background: 'var(--mantine-color-body)', boxShadow: shadow.deck }}
     >
       <Flex className="player-deck-inner" align="center" gap="md" wrap="wrap">
         <Group className="player-transport" gap={6} wrap="nowrap">
@@ -97,13 +118,21 @@ export function PlayerControls({ playback }: { playback: Playback }) {
             fz={font.small}
             ff="monospace"
             fw={600}
-            style={{ color: palette.ink2, minWidth: 54, textAlign: 'right' }}
+            style={{ color: vizVar.ink, minWidth: 54, textAlign: 'right' }}
           >
             {index + 1} / {total}
           </Text>
         </Group>
 
         <Group className="player-speed" gap={10} wrap="nowrap" justify="flex-end">
+          {onQuizChange ? (
+            <Switch
+              size="xs"
+              label="quiz"
+              checked={quiz ?? false}
+              onChange={(event) => onQuizChange(event.currentTarget.checked)}
+            />
+          ) : null}
           <SegmentedControl
             size="xs"
             aria-label="Velocidade"
@@ -114,6 +143,9 @@ export function PlayerControls({ playback }: { playback: Playback }) {
               value: String(speed.value),
             }))}
           />
+          <Button variant="subtle" size="xs" onClick={copyLink} style={{ color: palette.accent }}>
+            {copied ? 'Copiado!' : 'Copiar link'}
+          </Button>
           <Group gap={4} wrap="nowrap" visibleFrom="lg" aria-hidden>
             <Kbd>←</Kbd>
             <Kbd>→</Kbd>

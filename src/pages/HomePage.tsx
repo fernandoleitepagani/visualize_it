@@ -1,4 +1,5 @@
-import { Box, SimpleGrid, Text, Title } from '@mantine/core';
+import { Anchor, Box, Group, SimpleGrid, Text, Title } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import { AlgorithmCard } from '@/components/AlgorithmCard';
 import { GlobalSearch } from '@/components/GlobalSearch';
 import { SubjectCard } from '@/components/SubjectCard';
@@ -20,7 +21,8 @@ export function HomePage() {
         pb="xl"
         mb="lg"
         style={{
-          background: 'radial-gradient(ellipse 65% 50% at 50% 0%, rgba(251, 191, 36, 0.05), transparent 70%)',
+          background:
+            'radial-gradient(ellipse 65% 50% at 50% 0%, rgba(251, 191, 36, 0.05), transparent 70%)',
         }}
       >
         <Title order={1} fz={{ base: font.h2, sm: font.h1 }} fw={600} mb="sm">
@@ -50,7 +52,7 @@ export function HomePage() {
         </SimpleGrid>
       </Box>
 
-      <Box component="section" aria-labelledby="comece-por-aqui">
+      <Box component="section" aria-labelledby="comece-por-aqui" mb={space.xxl}>
         <Title order={2} id="comece-por-aqui" fz={font.h3} fw={600} mb="md">
           Comece por aqui
         </Title>
@@ -59,6 +61,17 @@ export function HomePage() {
             <AlgorithmCard key={location.entry.slug} location={location} />
           ))}
         </SimpleGrid>
+      </Box>
+
+      <Box mt={space.xxl} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
+        <Group justify="space-between" gap="sm">
+          <Text fz={font.small} c="dimmed">
+            Última fase — busca, complexidade e provas por indução.
+          </Text>
+          <Anchor component={Link} to="/playground" fz={font.small}>
+            playground
+          </Anchor>
+        </Group>
       </Box>
     </>
   );

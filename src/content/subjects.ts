@@ -101,6 +101,18 @@ export const subjects: Subject[] = [
           },
         ],
       },
+      {
+        id: 'matematica',
+        title: 'Matemática',
+        entries: [
+          {
+            kind: 'lesson',
+            slug: 'soma',
+            blurb: 'acumula os termos e mostra a soma parcial como área.',
+            tag: 'Θ(n)',
+          },
+        ],
+      },
     ],
   },
   {
@@ -129,7 +141,7 @@ export const subjects: Subject[] = [
           {
             kind: 'lesson',
             slug: 'bolha',
-            blurb: 'Compara vizinhos; o maior borbulha até o fim.',
+            blurb: 'Compara vizinhos; o menor sobe para o início a cada rodada.',
             tag: 'Θ(n) – Θ(n²)',
           },
           {
