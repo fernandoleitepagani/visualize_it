@@ -8,6 +8,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { font, radius } from '@/theme';
 
 /** Mantine-backed building blocks shared by the theory/prose articles. */
 interface Props {
@@ -24,7 +25,7 @@ export function H2({ children }: Props) {
 
 export function H3({ children }: Props) {
   return (
-    <Title order={3} fz={15} fw={600} mt="lg" mb="xs">
+    <Title order={3} fz={font.body} fw={600} mt="lg" mb="xs">
       {children}
     </Title>
   );
@@ -45,7 +46,7 @@ export function Pre({ children }: Props) {
       mb="md"
       maw="76ch"
       ff="monospace"
-      fz={12.5}
+      fz={font.small}
       bg="dark.5"
       px="md"
       py="sm"
@@ -53,8 +54,8 @@ export function Pre({ children }: Props) {
         overflowX: 'auto',
         whiteSpace: 'pre',
         lineHeight: 1.6,
-        border: '1px solid var(--mantine-color-dark-4)',
-        borderRadius: 6,
+        border: '1px solid var(--mantine-color-default-border)',
+        borderRadius: radius.sm,
       }}
     >
       {children}

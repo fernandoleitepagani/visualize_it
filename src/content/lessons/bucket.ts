@@ -251,6 +251,7 @@ export const lesson: Lesson = {
   view: 'bars',
   panelLabel: 'vetor / baldes',
   initial: [0.78, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.12, 0.68, 0.55],
+  inputFormat: 'unit-interval',
   randomInput: () =>
     Array.from({ length: 4 + Math.floor(Math.random() * 5) }, () =>
       Math.round(Math.random() * 100) / 100,

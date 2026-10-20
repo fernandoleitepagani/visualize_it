@@ -39,3 +39,7 @@ Thumbs.db
 
 # Vercel
 .vercel
+.aider*
+
+# Storybook
+storybook-static

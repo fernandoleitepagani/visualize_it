@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 
@@ -35,6 +35,21 @@ export interface Node {
 
 export type VarValue = string | number | null;
 
+/** One term of the plotted series (plot view). */
+export interface PlotPoint {
+  label: string;
+  value: number;
+}
+
+/** Payload for the `plot` view: terms plus the accumulated total. */
+export interface PlotState {
+  points: PlotPoint[];
+  /** Index of the term added in this step; -1 before the first addition. */
+  current: number;
+  /** Accumulated total up to and including `current`. */
+  total: number;
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -54,6 +69,8 @@ export interface Step {
   cells?: Cell[];
   /** nodes view */
   nodes?: Node[];
+  /** plot view */
+  plot?: PlotState;
 }
 
 export interface Complexity {
@@ -84,6 +101,8 @@ export interface Lesson {
   initial?: number[];
   /** Optional generator for the "Sortear" button (e.g. values in [0, 1)). */
   randomInput?: () => number[];
+  /** Accepted values in the input bar. Defaults to `integers`. */
+  inputFormat?: 'integers' | 'unit-interval';
   complexity: Complexity;
   /** Shown as an extra card above "Sobre" (sorting lessons). */
   complexityAnalysis?: ComplexityAnalysis;
