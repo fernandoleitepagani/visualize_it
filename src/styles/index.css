@@ -4,14 +4,302 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Catalog cards: a subtle lift on hover (not expressible through props). */
-.catalog-card {
-  transition:
-    transform 150ms ease,
-    border-color 150ms ease;
+/* Translucent header blur */
+.app-header-blur {
+  background: rgba(10, 10, 10, 0.82) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--mantine-color-dark-4) !important;
 }
 
-.catalog-card:hover {
-  transform: translateY(-1px);
+/* Catalog cards: subtle lift and micro-interactions */
+.algorithm-card,
+.subject-card {
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.algorithm-card:hover,
+.subject-card:hover {
+  transform: translateY(-2px);
   border-color: var(--mantine-color-amber-7);
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.5);
+}
+
+.algorithm-card .card-arrow {
+  display: inline-block;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), color 150ms ease;
+}
+
+.algorithm-card:hover .card-arrow {
+  transform: translateX(4px);
+  color: var(--mantine-color-amber-5);
+}
+
+/* Micro-interaction on view previews inside algorithm cards */
+.algorithm-card .viz-preview-bar {
+  transition: transform 220ms ease, background-color 220ms ease;
+  transform-origin: bottom center;
+}
+
+.algorithm-card:hover .viz-preview-bar:nth-child(even) {
+  transform: scaleY(1.15);
+  background-color: var(--mantine-color-amber-6);
+}
+
+.algorithm-card:hover .viz-preview-bar:nth-child(odd) {
+  transform: scaleY(0.9);
+}
+
+.algorithm-card .viz-preview-cell {
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+
+.algorithm-card:hover .viz-preview-cell {
+  border-color: var(--mantine-color-amber-7);
+}
+
+.algorithm-card .viz-preview-node {
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+
+.algorithm-card:hover .viz-preview-node {
+  border-color: var(--mantine-color-amber-7);
+}
+
+.algorithm-card:focus-visible,
+.subject-card:focus-visible {
+  outline: 2px solid var(--mantine-color-amber-6);
+  outline-offset: 2px;
+}
+
+/* Keyframes for didactic animations */
+@keyframes vizStepFade {
+  0% {
+    opacity: 0.3;
+    transform: translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.viz-step-desc {
+  animation: vizStepFade 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes vizVarPulse {
+  0% {
+    transform: scale(1.05);
+    border-color: rgba(251, 191, 36, 0.8);
+    background-color: rgba(251, 191, 36, 0.22);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.viz-var-changed {
+  animation: vizVarPulse 340ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes vizPointerSlide {
+  0% {
+    opacity: 0.2;
+    transform: translateY(-3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.viz-pointer-badge {
+  animation: vizPointerSlide 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Search result rows use the same hover language as the cards. */
+.search-result:hover {
+  background: var(--mantine-color-dark-6);
+}
+
+/* Transport, progress and speed share one row on desktop. */
+.player-deck-inner {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.player-transport {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.player-progress {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.player-slider {
+  flex: 1;
+  min-width: 80px;
+}
+
+.player-speed {
+  justify-self: end;
+}
+
+.player-action {
+  min-width: 40px;
+}
+
+.player-action-play {
+  min-width: 132px;
+  font-weight: 700;
+}
+
+/* The lesson uses a wider stage for the animation and a compact code column. */
+.lesson-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 24px;
+}
+
+.lesson-about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 24px;
+}
+
+.lesson-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lesson-presets {
+  margin-left: auto;
+}
+
+.viz-stage {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.viz-canvas {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-height: 260px;
+}
+
+.viz-canvas > * {
+  width: 100%;
+}
+
+/* On narrow screens the controls stack in reading order: transport, progress, speed. */
+@media (max-width: 61.99em) {
+  .player-deck-inner {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .player-progress {
+    order: 2;
+  }
+
+  .player-speed {
+    order: 3;
+    justify-self: stretch;
+    justify-content: space-between;
+  }
+
+  .player-transport .player-action {
+    flex: 1 1 auto;
+  }
+
+  .player-action-play {
+    flex-grow: 2;
+  }
+
+  .lesson-grid,
+  .lesson-about-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 40em) {
+  .lesson-presets {
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+}
+
+@media (max-width: 26em) {
+  .player-transport {
+    gap: 4px;
+  }
+
+  .player-action {
+    padding-inline: 6px;
+  }
+}
+
+/* Keyboard users can jump over the fixed header and navigation. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 1000;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
+  border: 1px solid var(--mantine-color-amber-6);
+}
+
+.skip-link:focus {
+  left: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .algorithm-card,
+  .subject-card,
+  .viz-bar,
+  .viz-value,
+  .card-arrow,
+  .viz-preview-bar,
+  .viz-preview-cell,
+  .viz-preview-node {
+    transition: none !important;
+  }
+
+  .viz-step-desc,
+  .viz-var-changed,
+  .viz-pointer-badge {
+    animation: none !important;
+  }
+
+  .algorithm-card:hover,
+  .subject-card:hover,
+  .card-arrow {
+    transform: none !important;
+  }
 }

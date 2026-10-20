@@ -14,6 +14,7 @@ export interface Playback {
   toggle(): void;
   next(): void;
   prev(): void;
+  goTo(index: number): void;
   reset(): void;
   setSpeedMs(ms: number): void;
 }
@@ -50,13 +51,30 @@ export function usePlayback(steps: Step[], initialSpeedMs = 900): Playback {
     [total],
   );
   const prev = useCallback(() => setCursor((c) => ({ ...c, index: Math.max(c.index - 1, 0) })), []);
+  const goTo = useCallback(
+    (nextIndex: number) =>
+      setCursor((c) => ({
+        ...c,
+        index: Math.min(Math.max(nextIndex, 0), Math.max(total - 1, 0)),
+        playing: false,
+      })),
+    [total],
+  );
   const reset = useCallback(() => setCursor((c) => ({ ...c, index: 0, playing: false })), []);
   const play = useCallback(
     () => setCursor((c) => ({ ...c, index: c.index >= total - 1 ? 0 : c.index, playing: true })),
     [total],
   );
   const pause = useCallback(() => setCursor((c) => ({ ...c, playing: false })), []);
-  const toggle = useCallback(() => setCursor((c) => ({ ...c, playing: !c.playing })), []);
+  const toggle = useCallback(
+    () =>
+      setCursor((c) => {
+        if (c.playing) return { ...c, playing: false };
+        if (c.index >= total - 1) return { ...c, index: 0, playing: true };
+        return { ...c, playing: true };
+      }),
+    [total],
+  );
 
   // Playback loop: advance on a timer until the last frame, then stop. The
   // state updates happen inside the callback so the effect stays a plain
@@ -85,6 +103,7 @@ export function usePlayback(steps: Step[], initialSpeedMs = 900): Playback {
     toggle,
     next,
     prev,
+    goTo,
     reset,
     setSpeedMs,
   };

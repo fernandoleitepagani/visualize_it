@@ -30,17 +30,18 @@ Deploy no [Vercel](https://vercel.com).
 .
 ├── src/
 │   ├── app/App.tsx              # tabela de rotas
-│   ├── components/              # BarsView, CellsView, NodesView, CodePanel, PlayerControls, …
+│   ├── components/              # views, player, catálogo, busca (AlgorithmBrowser, GlobalSearch)
 │   ├── content/
-│   │   ├── catalog.ts           # seções e cards da página inicial
+│   │   ├── subjects.ts          # fonte única das matérias, grupos e entradas
+│   │   ├── catalog.ts           # re-export de compatibilidade
 │   │   ├── lessons/             # um arquivo por algoritmo + index.ts (registro)
 │   │   └── theory/              # artigos (Complexidade, Provas por Indução)
 │   ├── engine/
 │   │   ├── types.ts             # Lesson, Step, Cell, Node…
 │   │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
-│   │   └── usePlayback.ts       # play/pause/prev/next/velocidade
+│   │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
 │   ├── lib/                     # utilitários (lines)
-│   ├── pages/                   # HomePage, LessonPage, TheoryPage, NotFound
+│   ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
 │   ├── styles/index.css         # estilos base sobre o CSS do Mantine
 │   ├── test/                    # helpers de render + setup do Vitest
 │   ├── theme.ts                 # tema Mantine (paleta dark/âmbar, tipografia)
@@ -96,6 +97,7 @@ npm run dev      # http://localhost:5173
 | `npm run build` | Type-check (`tsc -b`) + build em `dist/` |
 | `npm run preview` | Serve o build de produção localmente |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc -b` sem gerar build |
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
 
@@ -106,7 +108,7 @@ npm run dev      # http://localhost:5173
 1. Crie `src/content/lessons/<slug>.ts` exportando `export const lesson: Lesson = { … }`
    (copie um existente da mesma `view`).
 2. Registre o `slug` em `src/content/lessons/index.ts`.
-3. Adicione um card ao array correspondente em `src/content/catalog.ts`.
+3. Adicione a entrada ao grupo correspondente em `src/content/subjects.ts`.
 
 Nenhum componente precisa mudar.
 
