@@ -5,6 +5,7 @@ import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
 import { parseInput } from '@/lib/parseInput';
+import { readStoredInput, storeInput } from '@/lib/persistedInput';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
@@ -24,9 +25,10 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
 }
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
-  const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
-  const [input, setInput] = useState<number[]>(initialInput);
-  const [inputValue, setInputValue] = useState(() => initialInput.join(', '));
+  const [input, setInput] = useState<number[]>(
+    () => readStoredInput(lesson.id) ?? lesson.initial ?? DEFAULT_INPUT,
+  );
+  const [inputValue, setInputValue] = useState(() => input.join(', '));
   const [error, setError] = useState('');
   const [lang, setLang] = useState<CodeLang>('java');
   const [approach, setApproach] = useState<CodeApproach>('iterativo');
@@ -55,7 +57,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     }
     setError('');
     setInput(parsed);
-  }, [inputValue]);
+    storeInput(lesson.id, parsed);
+  }, [inputValue, lesson.id]);
 
   const randomize = useCallback(() => {
     const n = 4 + Math.floor(Math.random() * 4);
@@ -63,7 +66,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     setError('');
     setInputValue(values.join(', '));
     setInput(values);
-  }, []);
+    storeInput(lesson.id, values);
+  }, [lesson.id]);
 
   // Keyboard shortcuts: ← → move, space plays, Home restarts.
   useEffect(() => {
