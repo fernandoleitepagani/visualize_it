@@ -81,6 +81,11 @@ describe('App', () => {
     expect(screen.getAllByText(/^1 \/ \d+$/).length).toBeGreaterThan(0);
   });
 
+  it('exposes a theme toggle', () => {
+    renderWithProviders(<App />, '/');
+    expect(screen.getByRole('button', { name: /Mudar para tema/ })).toBeInTheDocument();
+  });
+
   it('renders the 404 page for unknown routes', () => {
     renderWithProviders(<App />, '/nao-existe');
     expect(screen.getByText('Página não encontrada')).toBeInTheDocument();

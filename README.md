@@ -103,6 +103,22 @@ npm run dev      # http://localhost:5173
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
 
+### Tema e atalhos
+
+Na primeira visita o tema segue `prefers-color-scheme`; a escolha fica salva em `localStorage`.
+Use o botão ☀/☾ no cabeçalho para alternar entre claro e escuro.
+
+Na página de uma lição:
+
+| Tecla | Ação |
+|---|---|
+| `←` / `→` | passo anterior / próximo |
+| `Espaço` | executar / pausar |
+| `Home` | voltar ao primeiro passo |
+
+As teclas são ignoradas enquanto o foco está no campo de valores. As transições são desativadas
+quando o sistema pede `prefers-reduced-motion`.
+
 ---
 
 ## Adicionando um algoritmo
