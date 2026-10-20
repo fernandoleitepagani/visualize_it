@@ -17,6 +17,7 @@ import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { PlotView } from './PlotView';
+import { QuizPanel } from './QuizPanel';
 import { VarsPanel } from './VarsPanel';
 
 /** Picks the renderer for the lesson's view. */
@@ -45,6 +46,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const [error, setError] = useState('');
   const [lang, setLang] = useState<CodeLang>('java');
   const [approach, setApproach] = useState<CodeApproach>('iterativo');
+  const [quiz, setQuiz] = useState(false);
+  const [score, setScore] = useState({ correct: 0, total: 0 });
 
   const hasApproaches = Boolean(
     lesson.codeVariants?.iterativo && lesson.codeVariants?.recursivo,
@@ -52,6 +55,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const listing = lesson.codeVariants?.[approach] ?? lesson.code;
 
   const steps = useMemo(() => lesson.steps(input, approach), [lesson, input, approach]);
+  const quizSupported = (lesson.view ?? 'bars') === 'bars';
   const playback = usePlayback(steps, { initialIndex: initial.index });
   const step = playback.step ?? steps[0];
   const { next, prev, toggle, reset, pause } = playback;
@@ -82,6 +86,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       return;
     }
     setError('');
+    setScore({ correct: 0, total: 0 });
     setInput(parsed);
     storeInput(lesson.id, parsed);
   }, [inputValue, lesson.id]);
@@ -90,10 +95,16 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     const n = 4 + Math.floor(Math.random() * 4);
     const values = Array.from({ length: n }, () => 1 + Math.floor(Math.random() * 60));
     setError('');
+    setScore({ correct: 0, total: 0 });
     setInputValue(values.join(', '));
     setInput(values);
     storeInput(lesson.id, values);
   }, [lesson.id]);
+
+  const changeApproach = useCallback((next: CodeApproach) => {
+    setApproach(next);
+    setScore({ correct: 0, total: 0 });
+  }, []);
 
   // Keyboard shortcuts: ← → move, space plays, Home restarts.
   useEffect(() => {
@@ -162,11 +173,29 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           lang={lang}
           onLangChange={setLang}
           approach={hasApproaches ? approach : undefined}
-          onApproachChange={hasApproaches ? setApproach : undefined}
+          onApproachChange={hasApproaches ? changeApproach : undefined}
         />
       </SimpleGrid>
 
-      <PlayerControls playback={playback} />
+      <PlayerControls
+        playback={playback}
+        quiz={quizSupported ? quiz : undefined}
+        onQuizChange={quizSupported ? setQuiz : undefined}
+      />
+
+      {quizSupported && quiz ? (
+        <QuizPanel
+          steps={steps}
+          index={playback.index}
+          score={score}
+          onAnswer={(correct) =>
+            setScore((current) => ({
+              correct: current.correct + (correct ? 1 : 0),
+              total: current.total + 1,
+            }))
+          }
+        />
+      ) : null}
 
       <Paper withBorder radius="md" px="md" py="sm" mt="sm">
         <Flex align="flex-end" gap="sm" wrap="wrap">
