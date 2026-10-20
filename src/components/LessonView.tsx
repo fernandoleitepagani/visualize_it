@@ -67,12 +67,15 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   }, [inputValue]);
 
   const randomize = useCallback(() => {
-    const n = 4 + Math.floor(Math.random() * 4);
-    const values = Array.from({ length: n }, () => 1 + Math.floor(Math.random() * 60));
+    const values =
+      lesson.randomInput?.() ??
+      Array.from({ length: 4 + Math.floor(Math.random() * 4) }, () =>
+        1 + Math.floor(Math.random() * 60),
+      );
     setError('');
     setInputValue(values.join(', '));
     setInput(values);
-  }, []);
+  }, [lesson]);
 
   // Keyboard shortcuts: ← → move, space plays, Home restarts.
   useEffect(() => {

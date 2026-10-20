@@ -31,7 +31,7 @@ describe('sorting invariants', () => {
     ['mergesort', [5, 2, 9, 1, 7]],
     ['heapsort', [5, 2, 9, 1, 7]],
     ['counting', [5, 2, 9, 1, 7]],
-    ['bucket', [5, 2, 9, 1, 7]],
+    ['bucket', [0.5, 0.2, 0.9, 0.1, 0.7]],
     ['radix', [5, 2, 9, 1, 7]],
   ];
 
@@ -42,10 +42,10 @@ describe('sorting invariants', () => {
   });
 });
 
-describe.each(['selecao', 'insercao', 'bolha'] as const)(
+describe.each(['selecao', 'insercao', 'bolha', 'counting', 'bucket'] as const)(
   '%s — variantes de implementação',
   (slug) => {
-    const input = [5, 2, 9, 1, 7];
+    const input = lessons[slug].initial ?? [5, 2, 9, 1, 7];
     const approaches = ['iterativo', 'recursivo'] as const;
 
     it.each(approaches)('%s termina com o vetor ordenado', (approach) => {

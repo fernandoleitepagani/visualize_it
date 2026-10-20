@@ -1,224 +1,386 @@
 import type { Lesson, Step } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
-/**
- * 0-based line indices shared by the Java and C listings. The two listings are
- * structurally identical, so a single `line` value points at the same
- * statement in both languages.
- */
-const L = {
-  start: 0,
-  initMax: 1,
-  maxLoop: 2,
-  bucketsCount: 3,
-  size: 4,
-  allocBuckets: 5,
-  allocSizes: 6,
-  distributeLoop: 7,
-  bucketIndex: 8,
-  bucketWrite: 9,
-  sortBucketLoop: 11,
-  sortInnerLoop: 12,
-  key: 13,
-  initJ: 14,
-  whileLoop: 15,
-  shift: 16,
-  decrementJ: 17,
-  insertKey: 19,
-  k: 22,
-  concatBucketLoop: 23,
-  concatElementLoop: 24,
-  copyToV: 25,
-  end: 26,
-} as const;
+const NBALDES = 10;
 
-const BUCKETS = 5;
+const javaIterativo = lines(`
+void insertionSort(float[] array, int n){
+  for(int i = 1; i < n; i++){
+    float tmp = array[i];
+    int j = i-1;
+    while(j >= 0 && array[j] > tmp){
+      array[j+1] = array[j];
+      j--;
+    }
+    array[j+1] = tmp;
+  }
+}
+
+void bucketSort(float[] array, int nBaldes){
+  int[] count = new int[nBaldes];
+  float[][] buckets = new float[nBaldes][array.length];
+  for(int i = 0; i < nBaldes; i++){
+    count[i] = 0;
+  }
+  for(int i = 0; i < array.length; i++){
+    int x = (int)Math.floor(array[i]*nBaldes);
+    buckets[x][count[x]] = array[i];
+    count[x]++;
+  }
+  for(int i = 0; i < nBaldes; i++){
+    insertionSort(buckets[i], count[i]);
+  }
+  int k = 0;
+  for(int i = 0; i < nBaldes; i++){
+    for(int j = 0; j < count[i]; j++){
+      array[k] = buckets[i][j];
+      k++;
+    }
+  }
+}`);
+
+const cIterativo = lines(`
+void insertionSort(float *array, int n){
+  for(int i = 1; i < n; i++){
+    float tmp = array[i];
+    int j = i-1;
+    while(j >= 0 && array[j] > tmp){
+      array[j+1] = array[j];
+      j--;
+    }
+    array[j+1] = tmp;
+  }
+}
+
+void bucketSort(float *array, int n, int nBaldes){
+  int count[nBaldes];
+  float buckets[nBaldes][n];
+  for(int i = 0; i < nBaldes; i++){
+    count[i] = 0;
+  }
+  for(int i = 0; i < n; i++){
+    int x = (int)floor(array[i]*nBaldes);
+    buckets[x][count[x]] = array[i];
+    count[x]++;
+  }
+  for(int i = 0; i < nBaldes; i++){
+    insertionSort(buckets[i], count[i]);
+  }
+  int k = 0;
+  for(int i = 0; i < nBaldes; i++){
+    for(int j = 0; j < count[i]; j++){
+      array[k] = buckets[i][j];
+      k++;
+    }
+  }
+}`);
+
+const javaRecursivo = lines(`
+void insertionSort(float[] array, int n){
+  for(int i = 1; i < n; i++){
+    float tmp = array[i];
+    int j = i-1;
+    while(j >= 0 && array[j] > tmp){
+      array[j+1] = array[j];
+      j--;
+    }
+    array[j+1] = tmp;
+  }
+}
+
+void separa(float[][] buckets, int[] count, float[] array, int i, int n, int nBaldes){
+  if(i >= n) return ;
+  else {
+    int x = (int)Math.floor(array[i]*nBaldes);
+    buckets[x][count[x]] = array[i];
+    count[x]++;
+    separa(buckets, count, array, i+1, n, nBaldes);
+  }
+}
+
+void ordena(float[][] buckets, int[] count, int i, int nBaldes){
+  if(i >= nBaldes) return ;
+  else {
+    insertionSort(buckets[i], count[i]);
+    ordena(buckets, count, i+1, nBaldes);
+  }
+}
+
+void copia(float[][] buckets, int[] count, float[] array, int i, int nBaldes, int k){
+  if(i >= nBaldes) return ;
+  else {
+    for(int j = 0; j < count[i]; j++){
+      array[k] = buckets[i][j];
+      k++;
+    }
+    copia(buckets, count, array, i+1, nBaldes, k);
+  }
+}
+
+void bucketSort(float[] array, int nBaldes){
+  int[] count = new int[nBaldes];
+  float[][] buckets = new float[nBaldes][array.length];
+  for(int i = 0; i < nBaldes; i++){
+    count[i] = 0;
+  }
+  separa(buckets, count, array, 0, array.length, nBaldes);
+  ordena(buckets, count, 0, nBaldes);
+  int k = 0;
+  copia(buckets, count, array, 0, nBaldes, k);
+}`);
+
+const cRecursivo = lines(`
+void insertionSort(float *array, int n){
+  for(int i = 1; i < n; i++){
+    float tmp = array[i];
+    int j = i-1;
+    while(j >= 0 && array[j] > tmp){
+      array[j+1] = array[j];
+      j--;
+    }
+    array[j+1] = tmp;
+  }
+}
+
+void separa(int n, float (*buckets)[n], int *count, float *array, int i, int nBaldes){
+  if(i >= n) return ;
+  else {
+    int x = (int)floor(array[i]*nBaldes);
+    buckets[x][count[x]] = array[i];
+    count[x]++;
+    separa(n, buckets, count, array, i+1, nBaldes);
+  }
+}
+
+void ordena(int n, float (*buckets)[n], int *count, int i, int nBaldes){
+  if(i >= nBaldes) return ;
+  else {
+    insertionSort(buckets[i], count[i]);
+    ordena(n, buckets, count, i+1, nBaldes);
+  }
+}
+
+void copia(int n, float (*buckets)[n], int *count, float *array, int i, int nBaldes, int k){
+  if(i >= nBaldes) return ;
+  else {
+    for(int j = 0; j < count[i]; j++){
+      array[k] = buckets[i][j];
+      k++;
+    }
+    copia(n, buckets, count, array, i+1, nBaldes, k);
+  }
+}
+
+void bucketSort(float *array, int n, int nBaldes){
+  int count[nBaldes];
+  float buckets[nBaldes][n];
+  for(int i = 0; i < nBaldes; i++){
+    count[i] = 0;
+  }
+  separa(n, buckets, count, array, 0, nBaldes);
+  ordena(n, buckets, count, 0, nBaldes);
+  int k = 0;
+  copia(n, buckets, count, array, 0, nBaldes, k);
+}`);
+
+/**
+ * 0-based line indices for each listing. The insertion sort is shared by both
+ * approaches (lines 0–10); only the bucket orchestration differs.
+ */
+const LINES = {
+  iterativo: {
+    start: 12,
+    countAlloc: 13,
+    bucketsAlloc: 14,
+    zeroLoop: 15,
+    zero: 16,
+    distributeLoop: 18,
+    bucketIndex: 19,
+    bucketWrite: 20,
+    countIncrement: 21,
+    sortLoop: 23,
+    sortCall: 24,
+    insertLoop: 1,
+    key: 2,
+    initJ: 3,
+    whileLoop: 4,
+    shift: 5,
+    decrementJ: 6,
+    insertKey: 8,
+    k: 26,
+    concatLoop: 27,
+    concatInner: 28,
+    concatWrite: 29,
+    concatK: 30,
+    end: 33,
+  },
+  recursivo: {
+    start: 41,
+    countAlloc: 42,
+    bucketsAlloc: 43,
+    zeroLoop: 44,
+    zero: 45,
+    distributeLoop: 47,
+    bucketIndex: 15,
+    bucketWrite: 16,
+    countIncrement: 17,
+    sortLoop: 48,
+    sortCall: 25,
+    insertLoop: 1,
+    key: 2,
+    initJ: 3,
+    whileLoop: 4,
+    shift: 5,
+    decrementJ: 6,
+    insertKey: 8,
+    k: 49,
+    concatLoop: 50,
+    concatInner: 33,
+    concatWrite: 34,
+    concatK: 35,
+    end: 51,
+  },
+} as const;
 
 export const lesson: Lesson = {
   id: 'bucket',
   title: 'Bucket Sort',
   subtitle: 'Ordenação por Baldes',
   description:
-    'Distribui os valores em baldes por faixa, ordena cada balde com inserção e concatena os baldes.',
+    'Distribui valores em [0, 1) por faixas, ordena cada balde com inserção e concatena os baldes.',
   view: 'bars',
   panelLabel: 'vetor / baldes',
+  initial: [0.78, 0.17, 0.39, 0.26, 0.72, 0.94, 0.21, 0.12, 0.68, 0.55],
+  randomInput: () =>
+    Array.from({ length: 4 + Math.floor(Math.random() * 5) }, () =>
+      Math.round(Math.random() * 100) / 100,
+    ),
   complexity: {
     time: { best: 'Θ(n)', avg: 'Θ(n + n²/B)', worst: 'Θ(n²)' },
     space: 'Θ(n + B)',
     stable: true,
-    note: `B = ${BUCKETS} baldes. Com distribuição uniforme e B proporcional a n, a média é Θ(n); com B fixo, o pior caso concentra tudo em um balde e vira Θ(n²).`,
+    note: `B = nBaldes = ${NBALDES} nesta lição. A distribuição usa floor(valor·B), então os valores devem estar em [0, 1). Com B ≈ n e distribuição uniforme, a média é Θ(n); com B fixo, o pior caso concentra tudo em um balde e vira Θ(n²).`,
   },
-  initial: [8, 3, 5, 1, 9, 2, 7, 4],
   complexityAnalysis: {
-    comparisons: `A busca do máximo faz n − 1 comparações.
-A distribuição não compara elementos.
+    comparisons: `A distribuição não compara elementos.
 
 Cada balde é ordenado por inserção. Para um balde de tamanho b:
   melhor: b − 1 comparações
   pior: b(b − 1)/2 comparações
 
 Somando os B' baldes não vazios:
-melhor: C(n) = (n − 1) + (n − B') = 2n − B' − 1 = Θ(n)
-pior: C(n) = (n − 1) + Σ b_i(b_i − 1)/2
+melhor: C(n) = n − B' = Θ(n)
+pior: C(n) = Σ b_i(b_i − 1)/2
 
 Se tudo cai em um balde:
-C(n) = (n − 1) + n(n − 1)/2 = Θ(n²)
+C(n) = n(n − 1)/2 = Θ(n²)
 
 Com B baldes equilibrados:
-C(n) ≈ n²/(2B) + n = Θ(n + n²/B)`,
-    movements: `Distribuição: n escritas nos baldes.
-Concatenação: n escritas de volta em v.
-Inicialização de sizes: B escritas. k = 0: 1 escrita.
+C(n) ≈ n²/(2B) = Θ(n²/B)
 
+As versões iterativa e recursiva fazem as mesmas comparações; a recursão
+adiciona Θ(n) chamadas, mas não muda a ordem de grandeza.`,
+    movements: `Inicialização de count: B escritas.
+Distribuição: n escritas nos baldes + n incrementos de count = 2n.
 Inserção, por balde de tamanho b:
   b − 1 escritas da chave + deslocamentos.
   Melhor caso: 0 deslocamentos.
   Pior caso: b(b − 1)/2 deslocamentos.
+Concatenação: n escritas de volta em array.
 
 Total:
-M(n) = 2n + (n − B') + B + 1 + Σ b_i(b_i − 1)/2
-     = 3n + B + 1 − B' + Σ b_i(b_i − 1)/2
+M(n) = B + 2n + (n − B') + n + Σ b_i(b_i − 1)/2
+     = 4n + B − B' + Σ b_i(b_i − 1)/2
 
 onde B' é o número de baldes não vazios.
 
-Melhor (baldes já ordenados): 3n + B + 1 − B' = Θ(n)
+Melhor (baldes já ordenados): 4n + B − B' = Θ(n)
 Pior (tudo em um balde, B' = 1):
-M(n) = 3n + B + n(n − 1)/2 = Θ(n²)
+M(n) = 4n + B − 1 + n(n − 1)/2 = Θ(n²)
 
 Com B baldes equilibrados:
-M(n) = 3n + 1 + n²/(2B) = Θ(n + n²/B)`,
+M(n) = 4n + n²/(2B) = Θ(n + n²/B)`,
   },
-  code: {
-    java: lines(`
-void bucketSort(int[] v) {
-  int max = v[0];
-  for (int i = 1; i < v.length; i++) if (v[i] > max) max = v[i];
-  int B = 5;
-  int size = max / B + 1;
-  int[][] buckets = new int[B][v.length];
-  int[] sizes = new int[B];
-  for (int i = 0; i < v.length; i++) {
-    int b = v[i] / size;
-    buckets[b][sizes[b]++] = v[i];
-  }
-  for (int b = 0; b < B; b++) {
-    for (int i = 1; i < sizes[b]; i++) {
-      int key = buckets[b][i];
-      int j = i - 1;
-      while (j >= 0 && buckets[b][j] > key) {
-        buckets[b][j + 1] = buckets[b][j];
-        j--;
-      }
-      buckets[b][j + 1] = key;
-    }
-  }
-  int k = 0;
-  for (int b = 0; b < B; b++)
-    for (int i = 0; i < sizes[b]; i++)
-      v[k++] = buckets[b][i];
-}`),
-    c: lines(`
-void bucketSort(int v[], int n) {
-  int max = v[0];
-  for (int i = 1; i < n; i++) if (v[i] > max) max = v[i];
-  enum { B = 5 };
-  int size = max / B + 1;
-  int buckets[B][n];
-  int sizes[B] = {0};
-  for (int i = 0; i < n; i++) {
-    int b = v[i] / size;
-    buckets[b][sizes[b]++] = v[i];
-  }
-  for (int b = 0; b < B; b++) {
-    for (int i = 1; i < sizes[b]; i++) {
-      int key = buckets[b][i];
-      int j = i - 1;
-      while (j >= 0 && buckets[b][j] > key) {
-        buckets[b][j + 1] = buckets[b][j];
-        j--;
-      }
-      buckets[b][j + 1] = key;
-    }
-  }
-  int k = 0;
-  for (int b = 0; b < B; b++)
-    for (int i = 0; i < sizes[b]; i++)
-      v[k++] = buckets[b][i];
-}`),
+  code: { java: javaIterativo, c: cIterativo },
+  codeVariants: {
+    iterativo: { java: javaIterativo, c: cIterativo },
+    recursivo: { java: javaRecursivo, c: cRecursivo },
   },
-  steps(arr) {
-    const v = arr.map((x) => Math.max(0, Math.floor(x)));
+  steps(arr, approach = 'iterativo') {
+    const v = arr.slice();
     const n = v.length;
+    const L = LINES[approach];
     if (n === 0) return [{ line: L.start, desc: 'Vetor vazio.', arr: [] }];
 
     const steps: Step[] = [];
-    const max = Math.max(...v);
-    const size = Math.floor(max / BUCKETS) + 1;
-    const buckets: number[][] = Array.from({ length: BUCKETS }, () => []);
+    const count = new Array<number>(NBALDES).fill(0);
+    const buckets: number[][] = Array.from({ length: NBALDES }, () => []);
     const result = new Array<number>(n).fill(0);
+    const bucketOf = (value: number) =>
+      Math.min(NBALDES - 1, Math.max(0, Math.floor(value * NBALDES)));
     const push = (line: number, desc: string, extra: Partial<Step> = {}) =>
       steps.push({ line, desc, arr: v.slice(), ...extra });
 
-    push(L.start, `Início: ${n} elementos.`);
+    push(L.start, `Início: ${n} elementos em ${NBALDES} baldes.`);
 
-    let currentMax = v[0];
-    push(L.initMax, `max = v[0] = ${currentMax}.`, {
-      cmp: [0],
-      vars: { max: currentMax },
-    });
-    for (let i = 1; i < n; i++) {
-      if (v[i] > currentMax) currentMax = v[i];
-      push(L.maxLoop, `Compara v[${i}] = ${v[i]} com max = ${currentMax}.`, {
+    push(L.countAlloc, `count[0..${NBALDES - 1}] criado.`, { arr: count.slice() });
+    push(L.bucketsAlloc, `${NBALDES} baldes de até ${n} posições.`);
+
+    push(L.zeroLoop, `Zera count[0..${NBALDES - 1}].`, { arr: count.slice() });
+    for (let i = 0; i < NBALDES; i++) {
+      count[i] = 0;
+      push(L.zero, `count[${i}] = 0.`, {
+        arr: count.slice(),
         cmp: [i],
-        vars: { i, max: currentMax },
+        vars: { i },
       });
     }
 
-    push(L.bucketsCount, `B = ${BUCKETS} baldes.`, { vars: { B: BUCKETS } });
-    push(L.size, `size = max / B + 1 = ${size}.`, { vars: { size } });
-    push(L.allocBuckets, `${BUCKETS} baldes de até ${n} posições.`);
-    push(L.allocSizes, `sizes[0..${BUCKETS - 1}] = 0.`);
-
+    push(L.distributeLoop, 'Distribui os valores nos baldes.');
     for (let i = 0; i < n; i++) {
       const valor = v[i];
-      const b = Math.floor(valor / size);
+      const b = bucketOf(valor);
 
-      push(L.distributeLoop, `i = ${i}: distribui v[${i}] = ${valor}.`, {
+      push(L.bucketIndex, `balde = floor(${valor} · ${NBALDES}) = ${b}.`, {
         cmp: [i],
-        vars: { i, valor },
-      });
-      push(L.bucketIndex, `balde = ${valor} / ${size} = ${b}.`, {
-        cmp: [i],
-        vars: { valor, balde: b },
+        vars: { i, valor, balde: b },
       });
 
-      buckets[b].push(valor);
-      push(L.bucketWrite, `baldes[${b}][${buckets[b].length - 1}] = ${valor}.`, {
+      const pos = count[b];
+      buckets[b][pos] = valor;
+      push(L.bucketWrite, `baldes[${b}][${pos}] = ${valor}.`, {
         cmp: [i],
-        vars: { valor, balde: b, tamanho: buckets[b].length },
+        vars: { valor, balde: b, pos },
+      });
+
+      count[b]++;
+      push(L.countIncrement, `count[${b}]++ → ${count[b]}.`, {
+        cmp: [i],
+        vars: { balde: b, tamanho: count[b] },
       });
     }
 
-    for (let b = 0; b < BUCKETS; b++) {
+    push(L.sortLoop, 'Ordena cada balde com inserção.');
+    for (let b = 0; b < NBALDES; b++) {
       const bucket = buckets[b];
       if (bucket.length === 0) continue;
 
-      push(L.sortBucketLoop, `Ordena o balde ${b} (${bucket.length} elementos).`, {
+      push(L.sortCall, `Ordena o balde ${b} (${bucket.length} elementos).`, {
         arr: bucket.slice(),
         vars: { balde: b, tamanho: bucket.length },
       });
 
       for (let i = 1; i < bucket.length; i++) {
         const key = bucket[i];
-        push(L.sortInnerLoop, `i = ${i}: insere ${key}.`, {
+        push(L.insertLoop, `i = ${i}: insere ${key}.`, {
           arr: bucket.slice(),
           cmp: [i],
-          vars: { balde: b, i },
+          vars: { i },
         });
-        push(L.key, `key = ${key}.`, {
+        push(L.key, `tmp = ${key}.`, {
           arr: bucket.slice(),
           cmp: [i],
-          vars: { chave: key },
+          vars: { tmp: key },
         });
 
         let j = i - 1;
@@ -238,7 +400,7 @@ void bucketSort(int v[], int n) {
             {
               arr: bucket.slice(),
               cmp: within ? [j] : [],
-              vars: { j, chave: key },
+              vars: { j, tmp: key },
             },
           );
 
@@ -256,38 +418,37 @@ void bucketSort(int v[], int n) {
         }
 
         bucket[j + 1] = key;
-        push(L.insertKey, `baldes[${b}][${j + 1}] = ${key}.`, {
+        push(L.insertKey, `array[${j + 1}] = ${key}.`, {
           arr: bucket.slice(),
           swap: [j + 1],
-          vars: { chave: key },
+          vars: { tmp: key },
         });
       }
     }
 
-    let k = 0;
     push(L.k, 'k = 0.', { arr: result.slice() });
-    for (let b = 0; b < BUCKETS; b++) {
+    push(L.concatLoop, 'Concatena os baldes de volta em array.', { arr: result.slice() });
+
+    let k = 0;
+    for (let b = 0; b < NBALDES; b++) {
       const bucket = buckets[b];
       if (bucket.length === 0) continue;
 
-      push(L.concatBucketLoop, `Concatena o balde ${b}.`, {
-        arr: result.slice(),
-        vars: { balde: b },
-      });
-
-      for (let i = 0; i < bucket.length; i++) {
-        push(L.concatElementLoop, `i = ${i} do balde ${b}.`, {
+      for (let j = 0; j < bucket.length; j++) {
+        push(L.concatInner, `balde ${b}, j = ${j}.`, {
           arr: result.slice(),
-          vars: { balde: b, i },
+          vars: { balde: b, j },
         });
 
-        result[k] = bucket[i];
-        push(L.copyToV, `v[${k}] = ${bucket[i]}.`, {
+        result[k] = bucket[j];
+        push(L.concatWrite, `array[${k}] = ${bucket[j]}.`, {
           arr: result.slice(),
           swap: [k],
-          vars: { balde: b, valor: bucket[i] },
+          vars: { balde: b, valor: bucket[j] },
         });
+
         k++;
+        push(L.concatK, `k++ → ${k}.`, { arr: result.slice(), vars: { k } });
       }
     }
 
