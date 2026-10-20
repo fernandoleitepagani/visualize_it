@@ -12,6 +12,7 @@ export const lesson: Lesson = {
     stable: true,
     note: 'Garante Θ(n·log n) em qualquer entrada, mas precisa de um vetor auxiliar Θ(n).',
   },
+  complexityAnalysis: {},
   code: {
     java: lines(`
 void mergeSort(int[] v, int lo, int hi) {

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Box, SegmentedControl } from '@mantine/core';
+import { Box, Group, SegmentedControl } from '@mantine/core';
+import type { CodeApproach } from '@/engine/types';
 import { viz } from '@/theme';
 import { Panel } from './Panel';
 
@@ -48,22 +49,42 @@ interface Props {
   activeLine: number;
   lang: CodeLang;
   onLangChange: (lang: CodeLang) => void;
+  /** Optional implementation picker (iterative / recursive). */
+  approach?: CodeApproach;
+  onApproachChange?: (approach: CodeApproach) => void;
 }
 
-export function CodePanel({ code, activeLine, lang, onLangChange }: Props) {
+export function CodePanel({ code, activeLine, lang, onLangChange, approach, onApproachChange }: Props) {
+  const showApproach = approach !== undefined && onApproachChange !== undefined;
+
   return (
     <Panel
       label="código"
       aside={
-        <SegmentedControl
-          size="xs"
-          value={lang}
-          onChange={(value) => onLangChange(value as CodeLang)}
-          data={[
-            { label: 'java', value: 'java' },
-            { label: 'c', value: 'c' },
-          ]}
-        />
+        <Group gap="xs" wrap="nowrap">
+          {showApproach ? (
+            <SegmentedControl
+              size="xs"
+              value={approach}
+              onChange={(value) => onApproachChange(value as CodeApproach)}
+              aria-label="implementação"
+              data={[
+                { label: 'iterativo', value: 'iterativo' },
+                { label: 'recursivo', value: 'recursivo' },
+              ]}
+            />
+          ) : null}
+          <SegmentedControl
+            size="xs"
+            value={lang}
+            onChange={(value) => onLangChange(value as CodeLang)}
+            aria-label="linguagem"
+            data={[
+              { label: 'java', value: 'java' },
+              { label: 'c', value: 'c' },
+            ]}
+          />
+        </Group>
       }
     >
       <Box

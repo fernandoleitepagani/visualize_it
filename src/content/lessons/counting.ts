@@ -13,6 +13,7 @@ export const lesson: Lesson = {
     note: 'k = maior valor + 1. Tempo linear, mas exige chaves inteiras em faixa pequena.',
   },
   initial: [4, 2, 2, 8, 3, 3, 1],
+  complexityAnalysis: {},
   code: {
     java: lines(`
 void countingSort(int[] v) {

@@ -12,6 +12,7 @@ export const lesson: Lesson = {
     stable: false,
     note: 'Garante Θ(n·log n) e não usa memória extra. Constrói o heap em Θ(n).',
   },
+  complexityAnalysis: {},
   code: {
     java: lines(`
 void heapSort(int[] v) {

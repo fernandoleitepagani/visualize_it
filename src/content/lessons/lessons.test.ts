@@ -41,6 +41,54 @@ describe('sorting invariants', () => {
   });
 });
 
+describe.each(['selecao', 'insercao', 'bolha'] as const)(
+  '%s — variantes de implementação',
+  (slug) => {
+    const input = [5, 2, 9, 1, 7];
+    const approaches = ['iterativo', 'recursivo'] as const;
+
+    it.each(approaches)('%s termina com o vetor ordenado', (approach) => {
+      const steps = lessons[slug].steps([...input], approach);
+      const lastWithArray = [...steps].reverse().find((step) => step.arr);
+      expect(lastWithArray?.arr).toEqual(sortedCopy(input));
+    });
+
+    it.each(approaches)('%s destaca apenas linhas existentes no código', (approach) => {
+      const listing = lessons[slug].codeVariants?.[approach] ?? lessons[slug].code;
+      const steps = lessons[slug].steps([...input], approach);
+
+      for (const step of steps) {
+        expect(step.line).toBeGreaterThanOrEqual(0);
+        expect(step.line).toBeLessThan(listing.java.length);
+        expect(step.line).toBeLessThan(listing.c.length);
+      }
+    });
+
+    it('tem as duas análises de complexidade preenchidas', () => {
+      expect(lessons[slug].complexityAnalysis?.comparisons).toBeTruthy();
+      expect(lessons[slug].complexityAnalysis?.movements).toBeTruthy();
+    });
+  },
+);
+
+describe('sorting lessons — complexity analysis placeholder', () => {
+  const sortingLessons = [
+    'selecao',
+    'insercao',
+    'bolha',
+    'shellsort',
+    'quicksort',
+    'mergesort',
+    'heapsort',
+    'counting',
+    'radix',
+  ] as const;
+
+  it.each(sortingLessons)('%s reserves the analysis card', (slug) => {
+    expect(lessons[slug].complexityAnalysis).toBeDefined();
+  });
+});
+
 describe('loop lessons', () => {
   const sumTo = (n: number) => (n * (n + 1)) / 2;
 

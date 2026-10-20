@@ -94,7 +94,7 @@ export const catalog: CatalogSection[] = [
           {
             kind: 'lesson',
             slug: 'bolha',
-            blurb: 'Compara vizinhos; o maior borbulha até o fim.',
+            blurb: 'Compara vizinhos; o menor sobe para o início a cada rodada.',
             tag: 'Θ(n) – Θ(n²)',
           },
           {

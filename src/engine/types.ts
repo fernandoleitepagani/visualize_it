@@ -8,6 +8,13 @@
 
 export type ViewKind = 'bars' | 'cells' | 'nodes';
 export type LinkedKind = 'singly' | 'doubly';
+export type CodeApproach = 'iterativo' | 'recursivo';
+
+/** One source listing per supported language. */
+export interface CodeListing {
+  java: string[];
+  c: string[];
+}
 
 /** A cell in the `cells` view (array-backed structures: stacks, queues, lists). */
 export interface Cell {
@@ -56,6 +63,12 @@ export interface Complexity {
   note?: string;
 }
 
+/** Reserved space for the comparison/movement cost analysis. */
+export interface ComplexityAnalysis {
+  comparisons?: string;
+  movements?: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -70,8 +83,20 @@ export interface Lesson {
   /** Seed values for the input bar. Falls back to the shared default. */
   initial?: number[];
   complexity: Complexity;
-  code: { java: string[]; c: string[] };
-  steps: (input: number[]) => Step[];
+  /** Shown as an extra card above "Sobre" (sorting lessons). */
+  complexityAnalysis?: ComplexityAnalysis;
+  code: CodeListing;
+  /**
+   * Alternative listings for lessons that offer more than one implementation
+   * (for example iterative and recursive). When present, the player shows an
+   * extra switch next to the language picker.
+   */
+  codeVariants?: Partial<Record<CodeApproach, CodeListing>>;
+  /**
+   * `approach` lets a lesson pick line numbers for the listing being shown.
+   * Lessons without variants can ignore it.
+   */
+  steps: (input: number[], approach?: CodeApproach) => Step[];
 }
 
 /** Input used when a lesson does not declare its own `initial`. */

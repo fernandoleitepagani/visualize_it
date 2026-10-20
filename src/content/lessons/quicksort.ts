@@ -12,6 +12,7 @@ export const lesson: Lesson = {
     stable: false,
     note: 'Pior caso Θ(n²) quando o pivô é sempre o maior/menor — por exemplo, vetor ordenado com pivô no fim.',
   },
+  complexityAnalysis: {},
   code: {
     java: lines(`
 void quickSort(int[] v, int lo, int hi) {

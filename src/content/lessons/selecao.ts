@@ -1,6 +1,107 @@
 import type { Lesson, Step } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
+const javaIterativo = lines(`
+void selectionSort(int[] array) {
+  for (int i = 0; i < array.length - 1; i++) {
+    int menor = i;
+    for (int j = i + 1; j < array.length; j++) {
+      if (array[j] < array[menor]) menor = j;
+    }
+    int tmp = array[i]; 
+    array[i] = array[menor]; 
+    array[menor] = tmp;
+  }
+}`);
+
+const cIterativo = lines(`
+void selectionSort(int *array, int n) {
+  for (int i = 0; i < n - 1; i++) {
+    int menor = i;
+    for (int j = i + 1; j < n; j++) {
+      if (array[j] < array[menor]) menor = j;
+    }
+    int tmp = array[i]; 
+    array[i] = array[menor]; 
+    array[menor] = tmp;
+  }
+}`);
+
+const javaRecursivo = lines(`
+void selectionSort(int[] array, int i){
+	if(i >= (array.length - 1)){
+		return ;
+	}
+	
+	int menor = i;
+	for(int j = i+1; j < array.length; j++){
+		if(array[j] < array[menor]){
+			menor = j;
+		}
+	}
+	int tmp = array[i];
+	array[i] = array[menor];
+	array[menor] = tmp;
+	
+	selectionSort(array, i+1);
+}`);
+
+const cRecursivo = lines(`
+void selectionSort(int *array, int i, int n){
+	if(i >= (n-1)){
+		return ;
+	}
+	
+	int menor = i;
+	for(int j = i+1; j < n; j++){
+		if(array[j] < array[menor]){
+			menor = j;
+		}
+	}
+	int tmp = array[i];
+	array[i] = array[menor];
+	array[menor] = tmp;
+	
+	selectionSort(array, i+1, n);
+}`);
+
+/**
+ * 0-based line indices for each listing. Keeping them together makes it easy
+ * to check that the highlighted line still points at the right statement.
+ */
+const LINES = {
+  iterativo: {
+    start: 0,
+    baseCheck: 1,
+    baseReturn: 2,
+    round: 1,
+    initMenor: 2,
+    compare: 4,
+    updateMenor: 4,
+    tmp: 6,
+    assignI: 7,
+    assignMenor: 8,
+    iterationEnd: 9,
+    recurse: 9,
+    end: 10,
+  },
+  recursivo: {
+    start: 0,
+    baseCheck: 1,
+    baseReturn: 2,
+    round: 5,
+    initMenor: 5,
+    compare: 7,
+    updateMenor: 8,
+    tmp: 11,
+    assignI: 12,
+    assignMenor: 13,
+    iterationEnd: 10,
+    recurse: 15,
+    end: 16,
+  },
+} as const;
+
 export const lesson: Lesson = {
   id: 'selecao',
   title: 'Selection Sort',
@@ -13,40 +114,47 @@ export const lesson: Lesson = {
     stable: false,
     note: 'Sempre faz ~n²/2 comparações, mas no máximo n−1 trocas.',
   },
-  code: {
-    java: lines(`
-void selectionSort(int[] v) {
-  for (int i = 0; i < v.length - 1; i++) {
-    int menor = i;
-    for (int j = i + 1; j < v.length; j++) {
-      if (v[j] < v[menor]) menor = j;
-    }
-    int tmp = v[i]; 
-    v[i] = v[menor]; 
-    v[menor] = tmp;
-  }
-}`),
-    c: lines(`
-void selectionSort(int v[], int n) {
-  for (int i = 0; i < n - 1; i++) {
-    int menor = i;
-    for (int j = i + 1; j < n; j++) {
-      if (v[j] < v[menor]) menor = j;
-    }
-    int tmp = v[i]; 
-    v[i] = v[menor]; 
-    v[menor] = tmp;
-  }
-}`),
-    java_recursivo: lines(`
+  complexityAnalysis: {
+    comparisons: `Para todos os casos, o laço interno compara o menor atual com cada elemento restante.
 
-  `),
+Na rodada i, são feitas n − i − 1 comparações:
+i = 0  →  n − 1
+i = 1  →  n − 2
+...
+i = n − 2  →  1
+
+C(n) = (n − 1) + (n − 2) + ... + 1
+     = n(n − 1) / 2
+
+Complexidade: Θ(n²)`,
+    movements: `Para todos os casos, a troca é executada uma vez por rodada do laço externo. O laço externo repete n − 1 vezes e cada troca faz 3 movimentações:
+
+M(n) = 3 · (n − 1) = 3n − 3
+
+As 3 movimentações vêm de:
+tmp = array[i]
+array[i] = array[menor]
+array[menor] = tmp
+
+Complexidade: Θ(n)
+
+Observação: se o código só trocar quando menor ≠ i, o total varia entre 0 e 3(n − 1).`,
   },
-  steps(arr) {
+  code: {
+    java: javaIterativo,
+    c: cIterativo,
+  },
+  codeVariants: {
+    iterativo: { java: javaIterativo, c: cIterativo },
+    recursivo: { java: javaRecursivo, c: cRecursivo },
+  },
+  steps(arr, approach = 'iterativo') {
     const v = arr.slice();
     const n = v.length;
     const out: Step[] = [];
     const sorted: number[] = [];
+    const recursive = approach === 'recursivo';
+    const L = LINES[approach];
 
     let i = -1,
       j = -1,
@@ -68,11 +176,18 @@ void selectionSort(int v[], int n) {
         ...extra,
       });
 
-    push(0, `Início: ${n} elemento${n === 1 ? '' : 's'}.`);
+    push(L.start, `Início: ${n} elemento${n === 1 ? '' : 's'}.`);
 
     if (n <= 1) {
       if (n === 1) sorted.push(0);
-      push(10, n === 0 ? 'Vetor vazio — nada a ordenar.' : 'Vetor já ordenado (1 elemento).');
+      if (recursive) {
+        i = 0;
+        push(L.baseCheck, 'Chamada selectionSort(i = 0): caso base (i ≥ n − 1).', {
+          pivot: [0],
+        });
+        push(L.baseReturn, 'return — não há o que ordenar.');
+      }
+      push(L.end, n === 0 ? 'Vetor vazio — nada a ordenar.' : 'Vetor já ordenado (1 elemento).');
       return out;
     }
 
@@ -80,10 +195,18 @@ void selectionSort(int v[], int n) {
       j = -1;
       tmp = null;
 
-      push(1, `Rodada ${i + 1}: i = ${i}. Buscando o menor em [${i}..${n - 1}].`, { pivot: [i] });
+      if (recursive) {
+        push(L.baseCheck, `Chamada selectionSort(i = ${i}): i < ${n - 1}, continua.`, {
+          pivot: [i],
+        });
+      } else {
+        push(L.round, `Rodada ${i + 1}: i = ${i}. Buscando o menor em [${i}..${n - 1}].`, {
+          pivot: [i],
+        });
+      }
 
       menor = i;
-      push(2, `menor = i = ${menor} → v[${menor}] = ${v[menor]}.`, {
+      push(L.initMenor, `menor = i = ${menor} → v[${menor}] = ${v[menor]}.`, {
         pivot: [i],
         cmp: [menor],
       });
@@ -93,14 +216,14 @@ void selectionSort(int v[], int n) {
         const oldMenor = menor;
         const vm = v[oldMenor];
 
-        push(4, `j = ${j}: v[${j}] = ${vj} vs v[${oldMenor}] = ${vm}.`, {
+        push(L.compare, `j = ${j}: v[${j}] = ${vj} vs v[${oldMenor}] = ${vm}.`, {
           pivot: [i],
           cmp: [j, oldMenor],
         });
 
         if (vj < vm) {
           menor = j;
-          push(4, `Sim — ${vj} < ${vm}. Novo menor: índice ${menor} (v[${menor}] = ${vj}).`, {
+          push(L.updateMenor, `Sim — ${vj} < ${vm}. Novo menor: índice ${menor} (v[${menor}] = ${vj}).`, {
             pivot: [i],
             cmp: [menor],
           });
@@ -109,34 +232,67 @@ void selectionSort(int v[], int n) {
 
       j = -1;
 
+      if (recursive) {
+        push(
+          L.iterationEnd,
+          `Menor do trecho: v[${menor}] = ${v[menor]} (índice ${menor}).`,
+          { pivot: [i], cmp: [menor] },
+        );
+      }
+
       if (menor !== i) {
         tmp = v[i];
-        push(6, `tmp = v[${i}] = ${tmp}.`, { pivot: [i], swap: [i, menor] });
+        push(L.tmp, `tmp = v[${i}] = ${tmp}.`, { pivot: [i], swap: [i, menor] });
 
-        v[i] = v[menor];
-        push(7, `v[${i}] = v[${menor}] = ${v[i]}.`, {
+        const smallest = v[menor];
+        push(L.assignI, `v[${i}] recebe o menor: v[${menor}] = ${smallest}.`, {
           pivot: [i],
           swap: [i, menor],
         });
 
+        // Apply the whole swap before publishing the next frame. Publishing the
+        // intermediate duplicate value (`v[i] = v[menor]`) made assignElementIds
+        // lose the bars' identity, so they jumped instead of gliding.
+        v[i] = smallest;
         v[menor] = tmp;
-        push(8, `v[${menor}] = tmp = ${tmp}. Trocado: v[${i}] ↔ v[${menor}].`, {
+        push(L.assignMenor, `v[${menor}] = tmp = ${tmp}. Trocado: v[${i}] ↔ v[${menor}].`, {
           swap: [i, menor],
         });
 
         tmp = null;
-      } else {
-        push(9, `v[${i}] = ${v[i]} já é o menor do trecho — sem troca.`, {
-          pivot: [i],
-        });
       }
 
       sorted.push(i);
-      push(9, `Posição ${i} definida: v[${i}] = ${v[i]}.`);
+
+      if (recursive) {
+        push(
+          L.recurse,
+          menor === i
+            ? `v[${i}] já era o menor — sem troca. selectionSort(array, ${i + 1}).`
+            : `selectionSort(array, ${i + 1}) — próxima chamada.`,
+          { pivot: i + 1 < n ? [i + 1] : undefined },
+        );
+      } else {
+        push(
+          L.iterationEnd,
+          menor === i
+            ? `v[${i}] = ${v[i]} já é o menor do trecho — sem troca. Posição ${i} definida.`
+            : `Posição ${i} definida: v[${i}] = ${v[i]}.`,
+          { pivot: [i] },
+        );
+      }
+    }
+
+    if (recursive) {
+      i = n - 1;
+      push(L.baseCheck, `Chamada selectionSort(i = ${i}): caso base (i ≥ n − 1).`, {
+        pivot: [i],
+      });
+      push(L.baseReturn, 'return — fim da recursão.');
     }
 
     sorted.push(n - 1);
-    push(10, `Vetor ordenado: [${v.join(', ')}].`);
+    push(L.end, `Vetor ordenado: [${v.join(', ')}].`);
 
     return out;
   },
