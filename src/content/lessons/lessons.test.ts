@@ -31,6 +31,7 @@ describe('sorting invariants', () => {
     ['mergesort', [5, 2, 9, 1, 7]],
     ['heapsort', [5, 2, 9, 1, 7]],
     ['counting', [5, 2, 9, 1, 7]],
+    ['bucket', [5, 2, 9, 1, 7]],
     ['radix', [5, 2, 9, 1, 7]],
   ];
 
@@ -81,6 +82,7 @@ describe('sorting lessons — complexity analysis placeholder', () => {
     'mergesort',
     'heapsort',
     'counting',
+    'bucket',
     'radix',
   ] as const;
 

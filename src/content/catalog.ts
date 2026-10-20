@@ -129,6 +129,12 @@ export const catalog: CatalogSection[] = [
           },
           {
             kind: 'lesson',
+            slug: 'bucket',
+            blurb: 'Distribui em baldes por faixa e ordena cada balde com inserção.',
+            tag: 'Θ(n) – Θ(n²)',
+          },
+          {
+            kind: 'lesson',
             slug: 'radix',
             blurb: 'Ordena dígito por dígito, do menos ao mais significativo.',
             tag: 'Θ(d·(n + b))',
