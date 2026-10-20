@@ -14,7 +14,7 @@ export function VarsPanel({ vars }: { vars?: Record<string, VarValue> }) {
       pt="sm"
       ff="monospace"
       fz="xs"
-      style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}
+      style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}
     >
       {entries.map(([name, value]) => (
         <Group
@@ -22,8 +22,8 @@ export function VarsPanel({ vars }: { vars?: Record<string, VarValue> }) {
           gap={6}
           px="xs"
           py={2}
-          bg="dark.5"
-          style={{ border: '1px solid var(--mantine-color-dark-4)', borderRadius: 6 }}
+          bg="var(--viz-surface)"
+          style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 6 }}
         >
           <Text span fs="italic" c="dimmed">
             {name}

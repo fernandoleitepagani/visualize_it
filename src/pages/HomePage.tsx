@@ -98,7 +98,7 @@ export function HomePage() {
         </Box>
       ))}
 
-      <Box mt={56} pt="md" style={{ borderTop: '1px solid var(--mantine-color-dark-4)' }}>
+      <Box mt={56} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
         <Text fz={12.5} c="dimmed">
           Última fase — busca, complexidade e provas por indução.
         </Text>

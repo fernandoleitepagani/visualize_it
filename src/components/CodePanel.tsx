@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Box, Group, SegmentedControl } from '@mantine/core';
 import type { CodeApproach } from '@/engine/types';
-import { viz } from '@/theme';
+import { tint, vizVar } from '@/theme';
 import { Panel } from './Panel';
 
 export type CodeLang = 'java' | 'c';
@@ -22,19 +22,19 @@ function highlight(line: string): ReactNode[] {
     if (match.index > last) nodes.push(line.slice(last, match.index));
     if (match[1])
       nodes.push(
-        <span key={key++} style={{ color: viz.dim, fontStyle: 'italic' }}>
+        <span key={key++} style={{ color: vizVar.dim, fontStyle: 'italic' }}>
           {match[1]}
         </span>,
       );
     else if (match[2])
       nodes.push(
-        <span key={key++} style={{ color: viz.accent }}>
+        <span key={key++} style={{ color: vizVar.accent }}>
           {match[2]}
         </span>,
       );
     else
       nodes.push(
-        <span key={key++} style={{ color: viz.purple }}>
+        <span key={key++} style={{ color: vizVar.purple }}>
           {match[3]}
         </span>,
       );
@@ -92,7 +92,7 @@ export function CodePanel({ code, activeLine, lang, onLangChange, approach, onAp
         py="sm"
         ff="monospace"
         fz={12.5}
-        bg="dark.5"
+        bg="var(--viz-surface)"
         style={{ overflow: 'auto', lineHeight: 1.6 }}
       >
         {code.map((line, i) => {
@@ -104,8 +104,8 @@ export function CodePanel({ code, activeLine, lang, onLangChange, approach, onAp
                 display: 'flex',
                 whiteSpace: 'pre',
                 paddingRight: 16,
-                borderLeft: `2px solid ${active ? viz.accent : 'transparent'}`,
-                background: active ? 'rgba(251, 191, 36, 0.1)' : undefined,
+                borderLeft: `2px solid ${active ? vizVar.accent : 'transparent'}`,
+                background: active ? tint(vizVar.accent, 10) : undefined,
               }}
             >
               <span
@@ -115,7 +115,7 @@ export function CodePanel({ code, activeLine, lang, onLangChange, approach, onAp
                   paddingRight: 14,
                   fontSize: 11,
                   userSelect: 'none',
-                  color: active ? viz.accent : viz.dim,
+                  color: active ? vizVar.accent : vizVar.dim,
                 }}
               >
                 {i + 1}

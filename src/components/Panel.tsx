@@ -19,7 +19,7 @@ export function Panel({ label, aside, children }: Props) {
         px="md"
         py="sm"
         wrap="nowrap"
-        style={{ borderBottom: '1px solid var(--mantine-color-dark-4)' }}
+        style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
       >
         <Text fz="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>
           {label}

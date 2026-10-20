@@ -4,6 +4,41 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * Visualization palette. The visualizers use inline styles, so their colours
+ * have to be CSS variables to flip with the Mantine color scheme.
+ */
+:root,
+[data-mantine-color-scheme='dark'] {
+  --viz-surface: #181818;
+  --viz-surface-2: #1f1f1f;
+  --viz-surface-3: #262626;
+  --viz-line: #262626;
+  --viz-line-2: #333333;
+  --viz-ink: #e8e8e8;
+  --viz-muted: #8a8a8a;
+  --viz-dim: #565656;
+  --viz-accent: #fbbf24;
+  --viz-accent-dim: #b07d0a;
+  --viz-green: #4ade80;
+  --viz-purple: #c084fc;
+}
+
+[data-mantine-color-scheme='light'] {
+  --viz-surface: #f1f3f5;
+  --viz-surface-2: #e9ecef;
+  --viz-surface-3: #dee2e6;
+  --viz-line: #dee2e6;
+  --viz-line-2: #ced4da;
+  --viz-ink: #212529;
+  --viz-muted: #495057;
+  --viz-dim: #868e96;
+  --viz-accent: #b07d0a;
+  --viz-accent-dim: #8a5f00;
+  --viz-green: #2f9e44;
+  --viz-purple: #7048e8;
+}
+
 /* Catalog cards: a subtle lift on hover (not expressible through props). */
 .catalog-card {
   transition:
@@ -14,4 +49,10 @@ body {
 .catalog-card:hover {
   transform: translateY(-1px);
   border-color: var(--mantine-color-amber-7);
+}
+
+/* Keep a visible focus ring for custom (non-Mantine) controls. */
+:focus-visible {
+  outline: 2px solid var(--mantine-color-amber-6);
+  outline-offset: 2px;
 }

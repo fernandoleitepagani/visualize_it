@@ -2,14 +2,14 @@ import { Fragment } from 'react';
 import type { CSSProperties } from 'react';
 import { Flex, Text } from '@mantine/core';
 import type { LinkedKind, Node } from '@/engine/types';
-import { viz } from '@/theme';
+import { tint, vizVar } from '@/theme';
 
 function nodeStyle(state: string): CSSProperties {
-  const base: CSSProperties = { borderColor: viz.line2 };
+  const base: CSSProperties = { borderColor: vizVar.line2 };
   if (state === 'active')
-    return { borderColor: viz.accent, boxShadow: '0 0 0 3px rgba(251, 191, 36, 0.2)' };
-  if (state === 'compare') return { borderColor: viz.green };
-  if (state === 'write') return { borderColor: viz.accent };
+    return { borderColor: vizVar.accent, boxShadow: `0 0 0 3px ${tint(vizVar.accent, 20)}` };
+  if (state === 'compare') return { borderColor: vizVar.green };
+  if (state === 'write') return { borderColor: vizVar.accent };
   return base;
 }
 
@@ -46,7 +46,7 @@ export function NodesView({
               </Flex>
               <Flex
                 align="stretch"
-                bg="dark.5"
+                bg="var(--viz-surface)"
                 style={{
                   border: '1.5px solid',
                   borderRadius: 6,
@@ -60,11 +60,11 @@ export function NodesView({
                     align="center"
                     px="xs"
                     py={8}
-                    bg="dark.8"
+                    bg="var(--viz-surface-2)"
                     ff="monospace"
                     fz={11}
                     c="dimmed"
-                    style={{ borderRight: '1px solid var(--mantine-color-dark-4)' }}
+                    style={{ borderRight: '1px solid var(--mantine-color-default-border)' }}
                   >
                     {prev ? `←${prev}` : '∅'}
                   </Flex>
@@ -76,11 +76,11 @@ export function NodesView({
                   align="center"
                   px="xs"
                   py={8}
-                  bg="dark.8"
+                  bg="var(--viz-surface-2)"
                   ff="monospace"
                   fz={11}
                   c="dimmed"
-                  style={{ borderLeft: '1px solid var(--mantine-color-dark-4)' }}
+                  style={{ borderLeft: '1px solid var(--mantine-color-default-border)' }}
                 >
                   {next ? `→${next}` : '∅'}
                 </Flex>
