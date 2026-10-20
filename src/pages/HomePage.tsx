@@ -1,4 +1,4 @@
-import { Box, Group, Paper, Text, Title } from '@mantine/core';
+import { Anchor, Box, Group, Paper, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { catalog } from '@/content/catalog';
 import { getLesson } from '@/content/lessons';
@@ -99,9 +99,14 @@ export function HomePage() {
       ))}
 
       <Box mt={56} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
-        <Text fz={12.5} c="dimmed">
-          Última fase — busca, complexidade e provas por indução.
-        </Text>
+        <Group justify="space-between" gap="sm">
+          <Text fz={12.5} c="dimmed">
+            Última fase — busca, complexidade e provas por indução.
+          </Text>
+          <Anchor component={Link} to="/playground" fz={12.5}>
+            playground
+          </Anchor>
+        </Group>
       </Box>
     </>
   );
