@@ -116,6 +116,27 @@ Nenhum componente precisa mudar.
 
 ---
 
+## Compartilhando um estado
+
+Cada lição aceita dois parâmetros na URL:
+
+```
+/algoritmos/selecao?arr=5,2,9,1,7&step=4
+```
+
+| Parâmetro | Significado |
+|---|---|
+| `arr` | valores do vetor, separados por vírgula (1–12 inteiros) |
+| `step` | passo exibido, começando em **1** |
+
+O player mantém a URL atualizada sem criar entradas no histórico, e o botão **Copiar link** copia o
+estado atual. Parâmetros inválidos são ignorados e caem no estado padrão da lição.
+
+O último vetor aplicado também é lembrado **por lição** em `localStorage`. Ao abrir um link, a URL
+tem prioridade sobre o valor salvo.
+
+---
+
 ## Hospedagem (Vercel)
 
 O site é publicado no Vercel a cada push na `main`. É um SPA (React Router), então o `vercel.json`
