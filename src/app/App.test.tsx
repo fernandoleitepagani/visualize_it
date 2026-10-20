@@ -67,6 +67,20 @@ describe('App', () => {
     expect(screen.queryByText('análise de complexidade')).not.toBeInTheDocument();
   });
 
+  it('restores the array and step from the query string', () => {
+    renderWithProviders(<App />, '/algoritmos/selecao?arr=5,2,9&step=2');
+
+    expect(screen.getByDisplayValue('5, 2, 9')).toBeInTheDocument();
+    expect(screen.getAllByText(/^2 \/ \d+$/).length).toBeGreaterThan(0);
+  });
+
+  it('falls back to defaults for invalid query params', () => {
+    renderWithProviders(<App />, '/algoritmos/selecao?arr=nope&step=abc');
+
+    expect(screen.getByDisplayValue('7, 3, 9, 1, 5, 8, 2')).toBeInTheDocument();
+    expect(screen.getAllByText(/^1 \/ \d+$/).length).toBeGreaterThan(0);
+  });
+
   it('renders the 404 page for unknown routes', () => {
     renderWithProviders(<App />, '/nao-existe');
     expect(screen.getByText('Página não encontrada')).toBeInTheDocument();

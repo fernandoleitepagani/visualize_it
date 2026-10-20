@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, Flex, Paper, SimpleGrid, Text, TextInput, Title } from '@mantine/core';
+import { useSearchParams } from 'react-router-dom';
 import type { CodeApproach, Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
+import { parseInput } from '@/lib/parseInput';
+import { readStoredInput, storeInput } from '@/lib/persistedInput';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
@@ -15,16 +18,6 @@ import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { VarsPanel } from './VarsPanel';
 
-function parseInput(raw: string): number[] | null {
-  const parts = raw
-    .trim()
-    .split(/[,\s]+/)
-    .filter(Boolean)
-    .map(Number);
-  if (parts.length < 1 || parts.length > 12 || parts.some((n) => !Number.isFinite(n))) return null;
-  return parts;
-}
-
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
   if (lesson.view === 'cells') return <CellsView cells={step?.cells} />;
@@ -33,9 +26,20 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
 }
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
-  const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
-  const [input, setInput] = useState<number[]>(initialInput);
-  const [inputValue, setInputValue] = useState(() => initialInput.join(', '));
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read the URL once: it wins over stored/local state on first load.
+  const [initial] = useState(() => {
+    const fromUrl = parseInput(searchParams.get('arr') ?? '');
+    const step = Number(searchParams.get('step'));
+    return {
+      input: fromUrl ?? readStoredInput(lesson.id) ?? lesson.initial ?? DEFAULT_INPUT,
+      index: Number.isFinite(step) && step >= 1 ? Math.floor(step) - 1 : 0,
+    };
+  });
+
+  const [input, setInput] = useState<number[]>(initial.input);
+  const [inputValue, setInputValue] = useState(() => initial.input.join(', '));
   const [error, setError] = useState('');
   const [lang, setLang] = useState<CodeLang>('java');
   const [approach, setApproach] = useState<CodeApproach>('iterativo');
@@ -46,7 +50,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const listing = lesson.codeVariants?.[approach] ?? lesson.code;
 
   const steps = useMemo(() => lesson.steps(input, approach), [lesson, input, approach]);
-  const playback = usePlayback(steps);
+  const playback = usePlayback(steps, { initialIndex: initial.index });
   const step = playback.step ?? steps[0];
   const { next, prev, toggle, reset, pause } = playback;
 
@@ -56,6 +60,19 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     [lesson.view, steps],
   );
 
+  // Keep the URL shareable without adding history entries.
+  useEffect(() => {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        next.set('arr', input.join(','));
+        next.set('step', String(playback.index + 1));
+        return next;
+      },
+      { replace: true },
+    );
+  }, [input, playback.index, setSearchParams]);
+
   const apply = useCallback(() => {
     const parsed = parseInput(inputValue);
     if (!parsed) {
@@ -64,7 +81,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     }
     setError('');
     setInput(parsed);
-  }, [inputValue]);
+    storeInput(lesson.id, parsed);
+  }, [inputValue, lesson.id]);
 
   const randomize = useCallback(() => {
     const n = 4 + Math.floor(Math.random() * 4);
@@ -72,7 +90,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     setError('');
     setInputValue(values.join(', '));
     setInput(values);
-  }, []);
+    storeInput(lesson.id, values);
+  }, [lesson.id]);
 
   // Keyboard shortcuts: ← → move, space plays, Home restarts.
   useEffect(() => {
