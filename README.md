@@ -4,6 +4,8 @@ Visualizador interativo de algoritmos, estruturas de dados e análise de complex
 visualização mostra o passo a passo do algoritmo com animação, código em Java ou C lado a lado com
 a linha executada, variáveis do passo e a tabela de complexidade assintótica.
 
+[![CI](https://github.com/fernandoleitepagani/visualize_it/actions/workflows/ci.yml/badge.svg)](https://github.com/fernandoleitepagani/visualize_it/actions/workflows/ci.yml)
+
 Deploy no [Vercel](https://vercel.com).
 
 ---
@@ -96,6 +98,8 @@ npm run dev      # http://localhost:5173
 | `npm run build` | Type-check (`tsc -b`) + build em `dist/` |
 | `npm run preview` | Serve o build de produção localmente |
 | `npm run lint` | ESLint |
+| `npm run lint:fix` | ESLint com correções automáticas |
+| `npm run typecheck` | Type-check (`tsc -b`) |
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
 
