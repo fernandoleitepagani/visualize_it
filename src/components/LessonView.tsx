@@ -16,12 +16,14 @@ import { ComplexityTable } from './ComplexityTable';
 import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
+import { PlotView } from './PlotView';
 import { VarsPanel } from './VarsPanel';
 
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
   if (lesson.view === 'cells') return <CellsView cells={step?.cells} />;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
+  if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
   return <BarsView state={step} ids={ids} />;
 }
 

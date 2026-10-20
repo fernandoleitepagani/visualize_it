@@ -71,6 +71,17 @@ export const catalog: CatalogSection[] = [
           },
         ],
       },
+      {
+        title: 'Matemática',
+        entries: [
+          {
+            kind: 'lesson',
+            slug: 'soma',
+            blurb: 'acumula os termos e mostra a soma parcial como área.',
+            tag: 'Θ(n)',
+          },
+        ],
+      },
     ],
   },
   {

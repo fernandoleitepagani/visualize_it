@@ -20,6 +20,7 @@ import { lesson as quicksort } from './quicksort';
 import { lesson as radix } from './radix';
 import { lesson as selecao } from './selecao';
 import { lesson as shellsort } from './shellsort';
+import { lesson as soma } from './soma';
 import { lesson as whileLoop } from './while';
 
 /** Every lesson, keyed by slug. The key is the URL segment. */
@@ -46,6 +47,7 @@ export const lessons = {
   'pilha-encadeada': pilhaEncadeada,
   'fila-circular': filaCircular,
   'fila-encadeada': filaEncadeada,
+  soma,
 } satisfies Record<string, Lesson>;
 
 export type LessonSlug = keyof typeof lessons;
