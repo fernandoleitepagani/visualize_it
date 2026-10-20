@@ -86,6 +86,33 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: /Mudar para tema/ })).toBeInTheDocument();
   });
 
+  it('toggles quiz mode on a bars lesson', () => {
+    renderWithProviders(<App />, '/algoritmos/selecao');
+    fireEvent.click(screen.getByLabelText('quiz'));
+
+    expect(screen.getByText('Qual é o vetor do próximo passo?')).toBeInTheDocument();
+  });
+
+  it('shows feedback after answering a quiz question', () => {
+    renderWithProviders(<App />, '/algoritmos/selecao');
+    fireEvent.click(screen.getByLabelText('quiz'));
+
+    const options = screen.getAllByRole('button', { name: /^\[/ });
+    fireEvent.click(options[0]);
+
+    expect(screen.getByText(/Correto!|Incorreto — resposta:/)).toBeInTheDocument();
+  });
+
+  it('does not offer quiz mode on a nodes lesson', () => {
+    renderWithProviders(<App />, '/algoritmos/lista-encadeada');
+    expect(screen.queryByLabelText('quiz')).not.toBeInTheDocument();
+  });
+
+  it('renders the playground', () => {
+    renderWithProviders(<App />, '/playground');
+    expect(screen.getByRole('heading', { name: 'Playground' })).toBeInTheDocument();
+  });
+
   it('renders the 404 page for unknown routes', () => {
     renderWithProviders(<App />, '/nao-existe');
     expect(screen.getByText('Página não encontrada')).toBeInTheDocument();

@@ -112,9 +112,7 @@ export function PlaygroundPage() {
             <Textarea
               value={code}
               onChange={(event) => setCode(event.currentTarget.value)}
-              minRows={14}
-              maxRows={26}
-              autosize
+              minRows={16}
               ff="monospace"
               fz={12.5}
               aria-label="código do playground"
