@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { Button, Group, Paper, Slider, Text } from '@mantine/core';
 import type { Playback } from '@/engine/usePlayback';
 
@@ -11,6 +12,17 @@ const toMs = (slider: number) => Math.round(BASE_MS / slider);
 
 export function PlayerControls({ playback }: { playback: Playback }) {
   const { isPlaying, atStart, atEnd, index, total, speedMs } = playback;
+  const [copied, setCopied] = useState(false);
+
+  const copyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard access can be denied (insecure context or permissions).
+    }
+  }, []);
 
   return (
     <Paper withBorder radius="md" px="md" py="sm" mt="md">
@@ -46,6 +58,10 @@ export function PlayerControls({ playback }: { playback: Playback }) {
         <Text fz="xs" c="dimmed" ff="monospace">
           {index + 1} / {total}
         </Text>
+
+        <Button variant="subtle" size="sm" onClick={copyLink}>
+          {copied ? 'Copiado!' : 'Copiar link'}
+        </Button>
       </Group>
     </Paper>
   );
