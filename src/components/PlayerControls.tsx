@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Button, Flex, Group, Kbd, Paper, SegmentedControl, Slider, Switch, Text } from '@mantine/core';
+import { Button, Flex, Group, Paper, SegmentedControl, Slider, Switch, Text } from '@mantine/core';
 import type { Playback } from '@/engine/usePlayback';
 import { font, palette, shadow, vizVar } from '@/theme';
 import {
@@ -57,6 +57,7 @@ export function PlayerControls({
             size="md"
             onClick={playback.reset}
             aria-label="Voltar ao início"
+            aria-keyshortcuts="Home"
             leftSection={<ResetIcon size={15} />}
             className="player-action"
           >
@@ -70,6 +71,7 @@ export function PlayerControls({
             onClick={playback.prev}
             disabled={atStart}
             aria-label="Passo anterior"
+            aria-keyshortcuts="ArrowLeft"
             leftSection={<ChevronLeftIcon size={15} />}
             className="player-action"
           >
@@ -80,6 +82,7 @@ export function PlayerControls({
           <Button
             size="md"
             aria-pressed={isPlaying}
+            aria-keyshortcuts="Space"
             onClick={playback.toggle}
             leftSection={isPlaying ? <PauseIcon size={15} /> : <PlayIcon size={15} />}
             className="player-action player-action-play"
@@ -93,6 +96,7 @@ export function PlayerControls({
             onClick={playback.next}
             disabled={atEnd}
             aria-label="Próximo passo"
+            aria-keyshortcuts="ArrowRight"
             rightSection={<ChevronRightIcon size={15} />}
             className="player-action"
           >
@@ -146,11 +150,6 @@ export function PlayerControls({
           <Button variant="subtle" size="xs" onClick={copyLink} style={{ color: palette.accent }}>
             {copied ? 'Copiado!' : 'Copiar link'}
           </Button>
-          <Group gap={4} wrap="nowrap" visibleFrom="lg" aria-hidden>
-            <Kbd>←</Kbd>
-            <Kbd>→</Kbd>
-            <Kbd>espaço</Kbd>
-          </Group>
         </Group>
       </Flex>
     </Paper>

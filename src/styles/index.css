@@ -177,7 +177,7 @@ body {
   display: grid;
   grid-template-columns: auto minmax(220px, 1fr) auto;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .player-transport {
@@ -253,8 +253,12 @@ body {
   width: 100%;
 }
 
-/* On narrow screens the controls stack in reading order: transport, progress, speed. */
-@media (max-width: 61.99em) {
+/*
+ * The deck needs ~1130px for a single row at the current container cap (1200px).
+ * Stack transport, progress and settings before that width so the right edge can
+ * never spill outside the panel.
+ */
+@media (max-width: 75.99em) {
   .player-deck-inner {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -277,7 +281,9 @@ body {
   .player-action-play {
     flex-grow: 2;
   }
+}
 
+@media (max-width: 61.99em) {
   .lesson-grid,
   .lesson-about-grid {
     grid-template-columns: 1fr;

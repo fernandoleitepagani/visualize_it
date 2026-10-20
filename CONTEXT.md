@@ -353,6 +353,7 @@ npm run build
 | 2026-10-20 | Deck de controles com ação primária, toolbar de entrada, grid 56/44, painéis Sobre/Complexidade, ícones SVG e legenda compartilhada | Dar hierarquia aos controles e posicionar a animação como elemento central, mantendo o tema dark + âmbar |
 | 2026-10-20 | Limpeza visual geral e animações didáticas (curvas spring, sincronização de rótulos em BarsView, elevação e ponteiros em Cells/NodesView, detecção de mutação em VarsPanel, toolbar em linha única e LessonPager integrado) | Reduzir ruído visual de bordas/cabeçalhos e fornecer feedback físico imediato das mudanças de estado algorítmico |
 | 2026-10-20 | Merge da linha de interface por matéria com quiz, playground, view `plot`, tema claro/escuro e Storybook | Unificar as duas frentes mantendo `subjects.ts` como catálogo, o grid 56/44 e os tokens compartilhados |
+| 2026-10-20 | Deck de controles empilha abaixo de 1216px e os atalhos não ocupam mais a linha do player | Impedir que velocidade/copiar link vazem para fora do painel em telas médias e no container máximo |
 
 ---
 
