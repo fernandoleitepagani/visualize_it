@@ -4,6 +4,7 @@ import type { CodeApproach, Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
+import { parseInput } from '@/lib/parseInput';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
@@ -14,16 +15,6 @@ import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { VarsPanel } from './VarsPanel';
-
-function parseInput(raw: string): number[] | null {
-  const parts = raw
-    .trim()
-    .split(/[,\s]+/)
-    .filter(Boolean)
-    .map(Number);
-  if (parts.length < 1 || parts.length > 12 || parts.some((n) => !Number.isFinite(n))) return null;
-  return parts;
-}
 
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
