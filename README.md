@@ -112,6 +112,67 @@ npm run dev      # http://localhost:5173
 2. Registre o `slug` em `src/content/lessons/index.ts`.
 3. Adicione um card ao array correspondente em `src/content/catalog.ts`.
 
+### Exemplo completo — soma dos elementos
+
+`src/content/lessons/soma.ts`:
+
+```ts
+import type { Lesson, Step } from '@/engine/types';
+import { lines } from '@/lib/lines';
+
+export const lesson: Lesson = {
+  id: 'soma',
+  title: 'Soma dos elementos',
+  view: 'bars',
+  initial: [4, 7, 2, 9],
+  complexity: { time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' }, space: 'Θ(1)' },
+  code: {
+    java: lines(`
+      int soma(int[] v) {
+          int total = 0;
+          for (int i = 0; i < v.length; i++) {
+              total += v[i];
+          }
+          return total;
+      }`),
+    c: lines(`
+      int soma(int v[], int n) {
+          int total = 0;
+          for (int i = 0; i < n; i++) {
+              total += v[i];
+          }
+          return total;
+      }`),
+  },
+  steps: (input) => {
+    const steps: Step[] = [{ line: 1, desc: 'total = 0', arr: input }];
+    let total = 0;
+    input.forEach((value, i) => {
+      total += value;
+      steps.push({
+        line: 3,
+        desc: `total += ${value} → ${total}`,
+        arr: input,
+        cmp: [i],
+        vars: { total },
+      });
+    });
+    return steps;
+  },
+};
+```
+
+Registre em `src/content/lessons/index.ts`:
+
+```ts
+import { lesson as soma } from './soma';
+
+export const lessons = {
+  // …
+  soma,
+} satisfies Record<string, Lesson>;
+```
+
 Nenhum componente precisa mudar.
 
 ---
