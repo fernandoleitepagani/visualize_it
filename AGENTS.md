@@ -136,7 +136,9 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
    Não introduza cores, fontes, espaçamentos ou raios soltos em componentes. Se precisar de um
    valor novo, adicione em `src/theme/tokens.ts` e use o token. Cores que mudam com o esquema
    devem vir de `vizVar`/`--viz-*`; o `cssVariablesResolver` é a única fonte dos dois temas e preci-
-   sa ser passado em `main.tsx`, `src/test/render.tsx` e `.storybook/preview.tsx`.
+   sa ser passado em `main.tsx`, `src/test/render.tsx` e `.storybook/preview.tsx`. Cada matéria
+   define `--subject-accent` na página; a home usa o âmbar global como acento. Use
+   `var(--subject-accent, var(--viz-accent))` em elementos que devem acompanhar a matéria.
 
 6. **As três views compartilham o mesmo motor.**
    `BarsView` lê `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`; `CellsView` lê `cells`; `NodesView`

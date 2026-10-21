@@ -198,7 +198,10 @@ A fonte única de tokens é `src/theme/tokens.ts`:
   `tint` (mistura translúcida);
 - `theme` (Mantine `createTheme`, dark + âmbar, com `primaryShade` por esquema de cor,
   `respectReducedMotion` e defaults de `Button`/`Paper`/`TextInput`/`Modal`);
-- `cssVariablesResolver`, que emite as variáveis dos dois esquemas a partir dos tokens.
+- `cssVariablesResolver`, que emite as variáveis dos dois esquemas a partir dos tokens;
+- `subjectAccent` (`blue`, `teal`, `violet`) e as variáveis `--viz-subject-*`: cada matéria tem
+  sua própria cor, aplicada no cabeçalho, filtros, cards, painéis e controles da página. A home
+  continua usando o âmbar global.
 
 `src/theme.ts` é um shim que re-exporta os tokens e mantém o alias deprecated `viz`. As variáveis
 `--viz-*` dos esquemas dark e light são emitidas por `cssVariablesResolver` (em `tokens.ts`) e
@@ -367,6 +370,7 @@ npm run build
 | 2026-10-20 | Deck de controles empilha abaixo de 1216px e os atalhos não ocupam mais a linha do player | Impedir que velocidade/copiar link vazem para fora do painel em telas médias e no container máximo |
 | 2026-10-21 | Refatoração visual “Living Graph Paper”: tipografia do sistema (sans para leitura, mono para código), `cssVariablesResolver` como fonte única, grade de papel, herói com figura matemática, catálogo editorial, cockpit com timeline, views com curvas/área, editor do playground e 404 | Modernizar a interface mantendo a identidade de código/matemática e paridade entre tema claro e escuro |
 | 2026-10-21 | `TimelineBar` integrado ao player, `Panel` com corpo flex, highlighter extraído para `lib/highlight` e ponteiros da lista dupla corrigidos | Aproveitar o componente já testado, eliminar espaços vazios nos painéis e fechar BUG-03/BUG-12 |
+| 2026-10-21 | Cores por matéria (`blue` para AEDS I, `teal` para AEDS II, `violet` para Análise) via `--subject-accent`; a home mantém o âmbar | Dar identidade a cada matéria e manter o âmbar como assinatura da home |
 | 2026-10-21 | Tema escuro em preto puro (`#000`), superfícies neutras e remoção de glows/gradientes decorativos | Reduzir ruído visual, melhorar contraste e afastar a interface de um visual genérico |
 | 2026-10-21 | Nav com indicador inferior e hover centralizado; links do drawer em largura total; timeline monocromática | Corrigir desalinhamento de ícones/texto e diminuir a poluição visual do player |
 | 2026-10-21 | `testTimeout` de 20s no Vitest | Renderizações do Mantine em jsdom passam dos 5s padrão em máquinas mais lentas |

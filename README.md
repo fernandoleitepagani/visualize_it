@@ -17,7 +17,7 @@ Deploy no [Vercel](https://vercel.com).
 | Framework | React 19 |
 | Linguagem | TypeScript 6 (strict) |
 | Build | Vite 8 |
-| UI | Mantine 9 (tema dark + âmbar) |
+| UI | Mantine 9 (tema dark + âmbar; acento próprio por matéria) |
 | Fonte | Pilha do sistema (sans/mono) |
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
