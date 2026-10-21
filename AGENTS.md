@@ -84,6 +84,7 @@ src/
 ├── components/              # views, player, catálogo, busca (AlgorithmBrowser, GlobalSearch), shell
 ├── content/
 │   ├── subjects.ts          # fonte única: matérias, grupos, entradas e busca
+│   ├── insights.ts          # dicas e curiosidades por lição
 │   ├── catalog.ts           # re-export de compatibilidade de subjects.ts
 │   ├── lessons/             # uma lição por arquivo + index.ts (registro)
 │   └── theory/              # artigos de teoria (Complexidade, Indução)
@@ -93,7 +94,7 @@ src/
 │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
 ├── lib/lines.ts             # utilitário para transformar template em array de linhas
 ├── lib/highlight.tsx        # tokenizer de código (comentários, strings, números, keywords)
-├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
+├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, ComparePage, NotFound
 ├── styles/index.css         # shell, grade, motion e refinamentos sobre o Mantine
 ├── test/                    # setup do Vitest + helpers de render
 ├── theme.ts                 # shim de re-exportação (migração em andamento)
@@ -147,7 +148,7 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
    define `--subject-accent` na página; a home usa o âmbar global como acento. Use
    `var(--subject-accent, var(--viz-accent))` em elementos que devem acompanhar a matéria.
 
-6. **As três views compartilham o mesmo motor.**
+6. **As views compartilham o mesmo motor.**
    `BarsView` lê `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`; `CellsView` lê `cells`; `NodesView`
    lê `nodes` e `linked`. Não crie um quarto caminho de renderização sem uma decisão explícita.
 
@@ -159,6 +160,11 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
 8. **Acessibilidade faz parte da definição de pronto.**
    A visualização não pode depender só de cor; controles precisam de rótulos; a descrição do passo
    deve ser anunciada. Veja BUG-08 no `CONTEXT.md`.
+
+9. **Linguagens vêm de `Lesson.languages`.** O padrão é `['java','c']`; AEDS I usa `['c']` ou `['cpp']`.
+   `CodePanel` esconde o seletor quando há uma só língua. Nunca selecione uma língua que a lição
+   não declara, e mantenha `step.line` dentro da listagem de cada língua. Módulos conceituais usam
+   `inputless: true`.
 
 ---
 
@@ -207,6 +213,7 @@ O que merece teste:
 - validação da entrada (inteiros, faixa, quantidade);
 - views (`BarsView`, `CellsView`, `NodesView`) com estados vazios e estados ativos;
 - timeline do player, estado vazio (`0 / 0`) e tokenizer de código;
+- métricas de comparação, insights, atalhos e link de reportar problema;
 - rotas e 404.
 
 Evite testes que dependem de tempo real ou de animações CSS. Prefira testar dados e comportamento

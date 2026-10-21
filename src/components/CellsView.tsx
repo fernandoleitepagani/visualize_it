@@ -87,7 +87,10 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
               <Flex
                 gap={space.xs}
                 wrap="nowrap"
-                h={18}
+                h={20}
+                w="100%"
+                align="center"
+                justify="center"
                 fz={font.micro}
                 style={{ color: vizVar.accent }}
               >
@@ -96,13 +99,16 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
                     key={j}
                     span
                     className="viz-pointer-badge"
-                    px={5}
-                    py={0}
+                    px={6}
                     style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       borderRadius: radius.pill,
                       border: `1px solid ${vizVar.accentLine}`,
                       background: vizVar.accentSoft,
-                      lineHeight: 1.5,
+                      lineHeight: 1,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {label}

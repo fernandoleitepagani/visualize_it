@@ -10,6 +10,7 @@ export const lesson: Lesson = {
     'Aqui somamos 1..n para ilustrar. O primeiro valor informado é usado como n.',
   view: 'cells',
   panelLabel: 'variáveis',
+  languages: ['c'],
   initial: [5],
   complexity: {
     time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' },
@@ -17,12 +18,6 @@ export const lesson: Lesson = {
     note: 'Executa pelo menos uma vez; o teste acontece depois do corpo. Mesmo custo linear do while.',
   },
   code: {
-    java: lines(`
-int i = 1, S = 0;
-do {
-  S += i;
-  i++;
-} while (i <= n);`),
     c: lines(`
 int i = 1, S = 0;
 do {

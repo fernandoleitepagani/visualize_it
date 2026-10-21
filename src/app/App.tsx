@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Box } from '@mantine/core';
 import { Layout } from '@/components/Layout';
+import { ComparePage } from '@/pages/ComparePage';
 import { HomePage } from '@/pages/HomePage';
 import { LessonPage } from '@/pages/LessonPage';
 import { NotFound } from '@/pages/NotFound';
@@ -22,6 +23,7 @@ function RouteFrame() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/materias/:subjectId" element={<SubjectPage />} />
+        <Route path="/comparar" element={<ComparePage />} />
         <Route path="/algoritmos/:slug" element={<LessonPage />} />
         <Route path="/teoria/:slug" element={<TheoryPage />} />
         <Route path="/playground" element={<PlaygroundPage />} />

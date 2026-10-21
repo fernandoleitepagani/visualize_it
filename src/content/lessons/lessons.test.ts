@@ -55,13 +55,18 @@ describe.each(['selecao', 'insercao', 'bolha', 'counting', 'bucket'] as const)(
     });
 
     it.each(approaches)('%s destaca apenas linhas existentes no código', (approach) => {
-      const listing = lessons[slug].codeVariants?.[approach] ?? lessons[slug].code;
-      const steps = lessons[slug].steps([...input], approach);
+      const lesson = lessons[slug];
+      const listing = lesson.codeVariants?.[approach] ?? lesson.code;
+      const steps = lesson.steps([...input], approach);
+      const languages = lesson.languages ?? (['java', 'c'] as const);
 
-      for (const step of steps) {
-        expect(step.line).toBeGreaterThanOrEqual(0);
-        expect(step.line).toBeLessThan(listing.java.length);
-        expect(step.line).toBeLessThan(listing.c.length);
+      for (const language of languages) {
+        const code = listing[language];
+        expect(code).toBeDefined();
+        for (const step of steps) {
+          expect(step.line).toBeGreaterThanOrEqual(0);
+          expect(step.line).toBeLessThan(code!.length);
+        }
       }
     });
 

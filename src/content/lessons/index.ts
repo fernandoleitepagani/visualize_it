@@ -1,5 +1,24 @@
 import type { Lesson } from '@/engine/types';
 import { lesson as aritmetica } from './aritmetica';
+import {
+  lessonAbstracao,
+  lessonAcessores,
+  lessonClasses,
+  lessonConstrutores,
+  lessonEncapsulamento,
+  lessonExcecoes,
+  lessonHeranca,
+  lessonOop,
+  lessonPolimorfismo,
+} from './aeds1-oop';
+import {
+  lessonArquivos,
+  lessonClassesVetores,
+  lessonMemoria,
+  lessonStrings,
+  lessonStructs,
+  lessonVetoresMatrizes,
+} from './aeds1-memory';
 import { lesson as bolha } from './bolha';
 import { lesson as bucket } from './bucket';
 import { lesson as buscaBinaria } from './busca-binaria';
@@ -30,6 +49,21 @@ export const lessons = {
   while: whileLoop,
   'do-while': doWhile,
   aritmetica,
+  oop: lessonOop,
+  abstracao: lessonAbstracao,
+  classes: lessonClasses,
+  construtores: lessonConstrutores,
+  encapsulamento: lessonEncapsulamento,
+  heranca: lessonHeranca,
+  polimorfismo: lessonPolimorfismo,
+  'metodos-acessores': lessonAcessores,
+  excecoes: lessonExcecoes,
+  structs: lessonStructs,
+  'alocacao-memoria': lessonMemoria,
+  strings: lessonStrings,
+  arquivos: lessonArquivos,
+  'vetores-matrizes': lessonVetoresMatrizes,
+  'classes-vetores-matrizes': lessonClassesVetores,
   selecao,
   insercao,
   bolha,

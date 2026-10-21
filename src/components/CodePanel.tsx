@@ -1,34 +1,45 @@
-import { useEffect, useRef } from 'react';
-import { Box, Group, SegmentedControl } from '@mantine/core';
-import type { CodeApproach } from '@/engine/types';
+import { useEffect, useRef, useState } from 'react';
+import { ActionIcon, Box, Group, SegmentedControl, Text, Tooltip } from '@mantine/core';
+import type { CodeApproach, CodeLang } from '@/engine/types';
 import { highlightCode } from '@/lib/highlight';
 import { font, space, vizVar } from '@/theme';
 import { Panel } from './Panel';
-import { CodeIcon } from './icons';
-
-export type CodeLang = 'java' | 'c';
+import { CheckIcon, CodeIcon, CopyIcon, DownloadIcon } from './icons';
 
 interface Props {
   code: string[];
   activeLine: number;
   lang: CodeLang;
   onLangChange: (lang: CodeLang) => void;
+  /** Languages available for this lesson. Defaults to Java and C. */
+  languages?: CodeLang[];
+  /** Base name for copy/download, e.g. `selecao-iterativo`. */
+  fileBaseName?: string;
   /** Optional implementation picker (iterative / recursive). */
   approach?: CodeApproach;
   onApproachChange?: (approach: CodeApproach) => void;
 }
+
+const LABELS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'c++' };
+const ARIA: Record<CodeLang, string> = { java: 'Java', c: 'C', cpp: 'C++' };
+const EXTENSIONS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'cpp' };
 
 export function CodePanel({
   code,
   activeLine,
   lang,
   onLangChange,
+  languages = ['java', 'c'],
+  fileBaseName = 'codigo',
   approach,
   onApproachChange,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef<HTMLDivElement | null>(null);
+  const [copied, setCopied] = useState(false);
   const showApproach = approach !== undefined && onApproachChange !== undefined;
+  const showLanguage = languages.length > 1;
+  const extension = EXTENSIONS[lang];
 
   // Keep the highlighted line visible inside the code box without scrolling the page.
   useEffect(() => {
@@ -52,6 +63,28 @@ export function CodePanel({
     }
   }, [activeLine, lang]);
 
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code.join('\n'));
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard access can be denied; the code remains selectable.
+    }
+  };
+
+  const downloadCode = () => {
+    const blob = new Blob([code.join('\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${fileBaseName}.${extension}`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
   const highlighted = highlightCode(code);
 
   return (
@@ -72,37 +105,61 @@ export function CodePanel({
               ]}
             />
           ) : null}
-          <SegmentedControl
-            size="xs"
-            value={lang}
-            onChange={(value) => onLangChange(value as CodeLang)}
-            aria-label="linguagem"
-            data={[
-              { label: 'java', value: 'java' },
-              { label: 'c', value: 'c' },
-            ]}
-          />
+          {showLanguage ? (
+            <SegmentedControl
+              size="xs"
+              value={lang}
+              onChange={(value) => onLangChange(value as CodeLang)}
+              aria-label="linguagem"
+              data={languages.map((language) => ({
+                label: LABELS[language],
+                value: language,
+              }))}
+            />
+          ) : (
+            <Text ff="monospace" fz={font.micro} c="dimmed" lh={1} aria-label="linguagem">
+              {ARIA[lang]}
+            </Text>
+          )}
         </Group>
       }
       footer={
         <Group justify="space-between" wrap="nowrap" gap="sm">
-          <Box
-            fz={font.micro}
-            c="dimmed"
-            style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
-          >
-            {lang} · {showApproach ? approach : 'implementação única'}
-          </Box>
-          <Box fz={font.micro} c="dimmed">
+          <Group gap={4} wrap="nowrap">
+            <Tooltip label={copied ? 'Código copiado' : 'Copiar código'} withArrow>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                aria-label={copied ? 'Código copiado' : 'Copiar código'}
+                onClick={copyCode}
+              >
+                {copied ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Baixar código" withArrow>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                aria-label="Baixar código"
+                onClick={downloadCode}
+              >
+                <DownloadIcon size={13} />
+              </ActionIcon>
+            </Tooltip>
+            <Text fz={font.micro} c="dimmed" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {LABELS[lang]} · {showApproach ? approach : 'implementação única'}
+            </Text>
+          </Group>
+          <Text fz={font.micro} c="dimmed" ff="monospace">
             linha {Math.min(activeLine + 1, code.length)} de {code.length}
-          </Box>
+          </Text>
         </Group>
       }
     >
       <Box
         ref={scrollRef}
         role="region"
-        aria-label={`Código ${lang === 'java' ? 'Java' : 'C'}`}
+        aria-label={`Código ${ARIA[lang]}`}
         className="code-scroll"
         py="sm"
         fz={12.5}
