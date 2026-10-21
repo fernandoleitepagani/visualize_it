@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -13,7 +14,7 @@ import {
 import type { CatalogGroup, EntryLocation } from '@/content/subjects';
 import { getEntryView, matchesEntry } from '@/content/subjects';
 import type { ViewKind } from '@/engine/types';
-import { font, radius, vizVar } from '@/theme';
+import { font, radius, subjectAccent, vizVar } from '@/theme';
 import { AlgorithmCard } from './AlgorithmCard';
 import { SectionHeading } from './SectionHeading';
 import { SearchIcon } from './icons';
@@ -34,6 +35,17 @@ interface Props {
 export function AlgorithmBrowser({ entries, groups }: Props) {
   const [params, setParams] = useSearchParams();
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+
+  const accent = entries[0] ? subjectAccent[entries[0].subject.accent] : vizVar.accent;
+  const chipStyle = (active: boolean): CSSProperties | undefined =>
+    active
+      ? {
+          borderColor: accent,
+          background: `color-mix(in srgb, ${accent} 12%, transparent)`,
+          color: accent,
+          fontWeight: 600,
+        }
+      : undefined;
 
   const urlQuery = params.get('q') ?? '';
   const groupId = params.get('grupo') ?? 'todos';
@@ -197,7 +209,8 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
           <Button
             size="compact-sm"
             radius="pill"
-            variant={groupId === 'todos' ? 'light' : 'default'}
+            variant="default"
+            style={chipStyle(groupId === 'todos')}
             aria-pressed={groupId === 'todos'}
             onClick={() => setParam('grupo', 'todos')}
           >
@@ -208,7 +221,8 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
               key={group.id}
               size="compact-sm"
               radius="pill"
-              variant={groupId === group.id ? 'light' : 'default'}
+              variant="default"
+              style={chipStyle(groupId === group.id)}
               aria-pressed={groupId === group.id}
               onClick={() => setParam('grupo', group.id)}
             >
@@ -231,7 +245,8 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
             <Button
               size="compact-sm"
               radius="pill"
-              variant={viewFilter === 'todas' ? 'light' : 'default'}
+              variant="default"
+              style={chipStyle(viewFilter === 'todas')}
               aria-pressed={viewFilter === 'todas'}
               onClick={() => setParam('view', 'todas')}
             >
@@ -242,7 +257,8 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
                 key={view}
                 size="compact-sm"
                 radius="pill"
-                variant={viewFilter === view ? 'light' : 'default'}
+                variant="default"
+                style={chipStyle(viewFilter === view)}
                 aria-pressed={viewFilter === view}
                 onClick={() => setParam('view', view)}
               >
