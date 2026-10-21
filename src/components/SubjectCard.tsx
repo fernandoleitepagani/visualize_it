@@ -19,7 +19,7 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
   );
   const accent = accents[subject.accent];
   const style = {
-    '--card-glow': `color-mix(in srgb, ${accent} 16%, transparent)`,
+    '--card-glow': `color-mix(in srgb, ${accent} 14%, transparent)`,
     borderColor: vizVar.line,
     background: vizVar.panel,
   } as CSSProperties;
@@ -34,21 +34,6 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
       className="subject-card"
       style={style}
     >
-      {index !== undefined ? (
-        <Text
-          aria-hidden
-          pos="absolute"
-          top={6}
-          right={14}
-          fz={54}
-          fw={600}
-          ff="monospace"
-          style={{ color: `color-mix(in srgb, ${accent} 10%, transparent)`, lineHeight: 1 }}
-        >
-          {String(index).padStart(2, '0')}
-        </Text>
-      ) : null}
-
       <Box
         aria-hidden
         pos="absolute"
@@ -56,9 +41,8 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
         left={0}
         right={0}
         h={2}
-        style={{ background: `linear-gradient(90deg, ${accent}, transparent 86%)` }}
+        style={{ background: `linear-gradient(90deg, ${accent}, transparent 78%)`, opacity: 0.75 }}
       />
-
       <Group justify="space-between" mb="md" wrap="nowrap">
         <Text
           fz={font.micro}
@@ -66,6 +50,7 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
           tt="uppercase"
           style={{ color: accent, letterSpacing: '0.14em' }}
         >
+          {index !== undefined ? `${String(index).padStart(2, '0')} · ` : ''}
           {theoryOnly ? 'análise' : 'matéria'}
         </Text>
         <Text fz={font.tiny} c="dimmed" ff="monospace">

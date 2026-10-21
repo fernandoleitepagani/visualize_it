@@ -89,22 +89,10 @@ export function HomePage() {
         mt={space.xxl}
         style={{
           borderColor: vizVar.line,
-          background:
-            'linear-gradient(120deg, color-mix(in srgb, var(--viz-surface-2) 62%, transparent), transparent 70%)',
-          position: 'relative',
-          overflow: 'hidden',
+          background: vizVar.panel,
         }}
       >
-        <Box
-          aria-hidden
-          pos="absolute"
-          right={-30}
-          bottom={-46}
-          style={{ color: 'var(--viz-accent)', opacity: 0.08 }}
-        >
-          <SigmaIcon size={190} />
-        </Box>
-        <Group justify="space-between" align="center" gap="lg" wrap="wrap" style={{ position: 'relative' }}>
+        <Group justify="space-between" align="center" gap="lg" wrap="wrap">
           <Group gap="md" align="flex-start" wrap="nowrap">
             <Box
               aria-hidden

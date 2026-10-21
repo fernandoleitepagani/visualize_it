@@ -27,7 +27,9 @@ export function AlgorithmCard({
   const subtitle = getEntrySubtitle(entry);
   const view = getEntryView(entry);
   const accent = accents[location.subject.accent];
-  const glowStyle = { '--card-glow': `color-mix(in srgb, ${accent} 14%, transparent)` } as CSSProperties;
+  const glowStyle = {
+    '--card-glow': `color-mix(in srgb, ${accent} 12%, transparent)`,
+  } as CSSProperties;
 
   if (compact) {
     return (

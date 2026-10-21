@@ -63,7 +63,7 @@ function barStyle(flags: Flags): CSSProperties {
     };
   return {
     borderColor: vizVar.line2,
-    background: `linear-gradient(180deg, ${vizVar.surface3}, ${vizVar.surface2})`,
+    background: `linear-gradient(180deg, ${vizVar.surface4}, ${vizVar.surface3})`,
   };
 }
 

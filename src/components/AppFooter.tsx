@@ -38,7 +38,7 @@ export function AppFooter() {
 
       <Group justify="space-between" mt={space.lg} pt={space.md} gap="sm" wrap="wrap">
         <Text fz={font.micro} c="dimmed" ff="monospace" style={{ letterSpacing: '0.08em' }}>
-          Θ · O · Ω
+          PUC Minas · AEDS I/II
         </Text>
         <Text fz={font.micro} c="dimmed" ff="monospace">
           feito para aprender passo a passo

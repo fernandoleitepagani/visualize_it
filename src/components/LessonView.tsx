@@ -205,9 +205,6 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         px="md"
         pt="md"
         pb="sm"
-        style={{
-          background: `radial-gradient(ellipse at 50% 100%, ${vizVar.accentSoft}, transparent 64%)`,
-        }}
       >
         <Box className="viz-canvas">
           <Canvas lesson={lesson} step={step} ids={ids[playback.index] ?? []} />
@@ -220,7 +217,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           py={10}
           style={{
             borderLeft: `2px solid ${vizVar.accent}`,
-            background: `linear-gradient(90deg, ${vizVar.accentSoft}, transparent 72%)`,
+            background: `linear-gradient(90deg, color-mix(in srgb, var(--viz-accent) 6%, var(--viz-surface-2)), var(--viz-surface-2) 72%)`,
             borderRadius: `0 ${radius.sm}px ${radius.sm}px 0`,
             minHeight: 58,
             display: 'flex',

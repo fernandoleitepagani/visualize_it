@@ -7,7 +7,7 @@
 > Este documento descreve o estado atual do projeto, a arquitetura, os bugs conhecidos, as dívidas
 > técnicas e o roadmap. Ele deve ser atualizado junto com o código quando o estado mudar.
 
-**Última atualização:** 2026-10-20
+**Última atualização:** 2026-10-21
 
 ---
 
@@ -192,7 +192,8 @@ A fonte única de tokens é `src/theme/tokens.ts`:
 - `theme` (Mantine `createTheme`, dark + âmbar, com `primaryShade` por esquema de cor).
 
 `src/theme.ts` é um shim que re-exporta os tokens e mantém o alias deprecated `viz`. As variáveis
-`--viz-*` são declaradas em `src/styles/index.css` para os esquemas dark e light.
+`--viz-*` dos esquemas dark e light são emitidas por `cssVariablesResolver` (em `tokens.ts`) e
+consumidas por `src/styles/index.css`; o stylesheet não mantém uma segunda cópia da paleta.
 
 **Atenção:** o alias `@/theme` hoje resolve para o **arquivo** `src/theme.ts`, não para o diretório
 `src/theme/`. Não existe `src/theme/index.ts`. Apagar o shim sem criar um índice ou trocar os
@@ -354,6 +355,9 @@ npm run build
 | 2026-10-20 | Limpeza visual geral e animações didáticas (curvas spring, sincronização de rótulos em BarsView, elevação e ponteiros em Cells/NodesView, detecção de mutação em VarsPanel, toolbar em linha única e LessonPager integrado) | Reduzir ruído visual de bordas/cabeçalhos e fornecer feedback físico imediato das mudanças de estado algorítmico |
 | 2026-10-20 | Merge da linha de interface por matéria com quiz, playground, view `plot`, tema claro/escuro e Storybook | Unificar as duas frentes mantendo `subjects.ts` como catálogo, o grid 56/44 e os tokens compartilhados |
 | 2026-10-20 | Deck de controles empilha abaixo de 1216px e os atalhos não ocupam mais a linha do player | Impedir que velocidade/copiar link vazem para fora do painel em telas médias e no container máximo |
+| 2026-10-21 | Tema escuro em preto puro (`#000`), superfícies neutras e remoção de glows/gradientes decorativos | Reduzir ruído visual, melhorar contraste e afastar a interface de um visual genérico |
+| 2026-10-21 | Nav com indicador inferior e hover centralizado; links do drawer em largura total; timeline monocromática | Corrigir desalinhamento de ícones/texto e diminuir a poluição visual do player |
+| 2026-10-21 | `testTimeout` de 20s no Vitest | Renderizações do Mantine em jsdom passam dos 5s padrão em máquinas mais lentas |
 
 ---
 

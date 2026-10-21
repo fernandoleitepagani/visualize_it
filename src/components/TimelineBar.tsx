@@ -22,19 +22,6 @@ function classifyStep(step: Step): StepKind {
   return 'normal';
 }
 
-function getKindColor(kind: StepKind): string {
-  switch (kind) {
-    case 'swap':
-      return vizVar.green;
-    case 'pivot':
-      return vizVar.purple;
-    case 'cmp':
-      return vizVar.accent;
-    default:
-      return vizVar.line3;
-  }
-}
-
 function getKindLabel(kind: StepKind): string {
   switch (kind) {
     case 'swap':
@@ -84,8 +71,8 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
             py={1}
             style={{
               borderRadius: 5,
-              background: 'color-mix(in srgb, var(--viz-surface-3) 74%, transparent)',
-              color: getKindColor(inspectedKind),
+              background: 'var(--viz-surface-3)',
+              color: inspectedKind === 'normal' ? vizVar.muted : vizVar.ink2,
               border: `1px solid ${vizVar.line2}`,
               flexShrink: 0,
             }}
@@ -102,24 +89,9 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
           </Text>
         </Group>
 
-        <Group gap={10} wrap="nowrap" visibleFrom="md">
-          {[
-            { label: 'comp/ação', color: vizVar.accent },
-            { label: 'troca', color: vizVar.green },
-            { label: 'pivô', color: vizVar.purple },
-          ].map((item) => (
-            <Group key={item.label} gap={4} wrap="nowrap">
-              <Box
-                w={6}
-                h={6}
-                style={{ borderRadius: '50%', background: item.color, flexShrink: 0 }}
-              />
-              <Text fz={font.micro} c="dimmed" ff="monospace">
-                {item.label}
-              </Text>
-            </Group>
-          ))}
-        </Group>
+        <Text fz={font.micro} c="dimmed" ff="monospace" visibleFrom="md">
+          {total} passos
+        </Text>
       </Flex>
 
       <Box
@@ -140,7 +112,6 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
       >
         {steps.map((step, i) => {
           const kind = classifyStep(step);
-          const color = getKindColor(kind);
           const isCurrent = i === currentIndex;
           const isPast = i < currentIndex;
           const isHovered = i === hoveredIndex;
@@ -165,11 +136,9 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
                 padding: 0,
                 borderRadius: 2,
                 cursor: 'pointer',
-                background: isCurrent ? vizVar.ink : color,
-                opacity: isCurrent ? 1 : isHovered ? 0.95 : isPast ? 0.82 : 0.34,
-                boxShadow: isCurrent ? `0 0 10px ${vizVar.accent}` : undefined,
-                transition:
-                  'height 140ms ease, opacity 140ms ease, background-color 140ms ease, box-shadow 140ms ease',
+                background: isCurrent ? vizVar.accent : vizVar.line3,
+                opacity: isCurrent ? 1 : isHovered ? 0.9 : isPast ? 0.62 : 0.42,
+                transition: 'height 140ms ease, opacity 140ms ease, background-color 140ms ease',
               }}
             />
           );

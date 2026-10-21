@@ -1,12 +1,12 @@
 const BAR_HEIGHTS = [58, 84, 110, 96, 146, 186, 172, 218];
 const BAR_COLORS = [
-  'var(--viz-surface-3)',
-  'var(--viz-surface-3)',
-  'var(--viz-surface-3)',
+  'var(--viz-dim)',
+  'var(--viz-dim)',
+  'var(--viz-dim)',
   'var(--viz-accent-line)',
-  'var(--viz-surface-3)',
+  'var(--viz-dim)',
   'var(--viz-accent)',
-  'var(--viz-surface-3)',
+  'var(--viz-dim)',
   'var(--viz-green)',
 ];
 

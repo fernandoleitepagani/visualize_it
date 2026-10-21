@@ -173,11 +173,4 @@ export function ShareIcon(props: IconProps) {
   );
 }
 
-export function SparkIcon(props: IconProps) {
-  return (
-    <Svg {...props}>
-      <path d="m12 3 1.7 4.6L18 9.5l-4.3 1.9L12 16l-1.7-4.6L6 9.5l4.3-1.9L12 3Z" />
-      <path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
-    </Svg>
-  );
-}
+

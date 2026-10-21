@@ -4,7 +4,6 @@ import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { allEntryLocations, getEntryPath, subjects } from '@/content/subjects';
 import { font, space } from '@/theme';
 import { GlobalSearch } from './GlobalSearch';
-import { SparkIcon } from './icons';
 import { ThemeToggle } from './ThemeToggle';
 
 const DESKTOP_QUERY = '(min-width: 62em)';
@@ -102,7 +101,6 @@ export function AppHeader() {
               fz={font.small}
               aria-current={playgroundActive ? 'page' : undefined}
             >
-              <SparkIcon size={13} />
               Playground
             </Anchor>
           ) : null}
@@ -172,7 +170,6 @@ export function AppHeader() {
             data-active={playgroundActive ? 'true' : undefined}
             h={38}
           >
-            <SparkIcon size={14} />
             Playground
           </Anchor>
         </Stack>
