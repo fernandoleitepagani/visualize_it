@@ -235,12 +235,20 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |
 | `CodePanel` | Código Java/C com linha ativa, highlighter e rodapé. |
-| `PlayerControls` | Timeline + transporte + progresso + velocidade + quiz + link. |
+| `PlayerControls` | Timeline + transporte + progresso + velocidade + quiz + atalhos + link. |
+| `ShortcutsModal` | Lista acessível de atalhos de teclado. |
+| `ReportIssueLink` | Link para issue pré-preenchida no GitHub. |
 | `TimelineBar` | Mapa clicável de passos com preview da operação. |
 | `VarsPanel` | Variáveis do passo com destaque de mudança. |
 | `icons.tsx` | SVGs inline; não use emojis/glyphs como ícones. |
 
-### 7.1 Receitas
+### 7.1 Linguagens por lição
+
+`Lesson.languages` define quais abas de código aparecem. O padrão é `['java', 'c']`; lições de
+AEDS I usam somente `['c']` e não têm listagem Java. `CodePanel` recebe `languages` e esconde o
+seletor quando há apenas uma opção. `lang` e `approach` também entram na URL compartilhável.
+
+### 7.2 Receitas
 
 **Painel**
 
@@ -321,6 +329,14 @@ apresentacionais.
 - Wrapper com `--subject-accent`; `PageHeader` e `§` das seções usam o acento.
 - Prosa em sans, 16 px/1.78, largura de 72–74ch; código em mono com o highlighter compartilhado.
 
+### Comparar algoritmos
+
+- Rota `/comparar`, acessível pelo CTA da página de AEDS II.
+- Usa a mesma entrada e conta **passos, comparações e trocas** a partir de `Step[]`; nunca mede
+  tempo de animação.
+- Bucket Sort fica de fora porque espera valores em `[0, 1)`.
+- Tabela é a fonte acessível; barras são decoração `aria-hidden`.
+
 ### Playground e 404
 
 - Sem matéria; usam o âmbar global.
@@ -335,6 +351,8 @@ apresentacionais.
 - Animações usam `transform`, `opacity` e cores; evite animar layout.
 - `prefers-reduced-motion` é tratado globalmente e nas views. Toda animação nova precisa funcionar
   sem movimento.
+- Atalhos da lição: `←`/`→`, espaço, `Home`, `End`, `R`, `N`, `+`/`-` e `?`. O modal é acessível
+  pelo botão de teclado no player e ignora eventos quando o foco está em campos/controles.
 
 ---
 
@@ -360,10 +378,11 @@ apresentacionais.
 - Controles com `aria-label`; ícones decorativos com `aria-hidden`.
 - Foco visível global (`:focus-visible`); skip link no shell.
 - Estado nunca só por cor: legenda + rótulos + texto.
+- Dicas e curiosidades ficam em `src/content/insights.ts`; não alteram o contrato de `Lesson`.
 - Contraste: verificações manuais nos dois temas; o âmbar claro é escuro de propósito.
 - `prefers-reduced-motion` desliga animações e transições.
-- Atalhos da lição: `←`, `→`, espaço, `Home`, `End`; não capture teclas quando o foco está em
-  campos/botões/links.
+- Atalhos da lição: `←/→`, espaço, `Home`, `End`, `R`, `N`, `+/-` e `?`; não capture teclas quando o
+  foco está em campos/botões/links.
 
 ---
 
@@ -382,6 +401,8 @@ npm run build
 - Storybook usa o mesmo resolver em `.storybook/preview.tsx`.
 - Novos tokens/cores: cubra em `src/theme/tokens.test.ts`.
 - Novos padrões de página: teste comportamento observável, não animação/tempo.
+- Comparação: teste `countRunMetrics` e a página `/comparar`; insights: valide as chaves contra o
+  registro de lições; código C-only: valide `step.line` contra a listagem declarada.
 - QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`), teoria, playground e 404;
   larguras 390, 768, 1024 e 1440; temas claro e escuro.
 

@@ -33,6 +33,41 @@ describe('LessonView input toolbar', () => {
   });
 });
 
+describe('LessonView code languages', () => {
+  it('shows only C for AEDS I lessons and ignores lang=java', () => {
+    const forLesson = getLesson('for');
+    if (!forLesson) throw new Error('A lição for precisa existir.');
+
+    renderWithProviders(<LessonView lesson={forLesson} />, '/algoritmos/for?lang=java');
+    fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Código Java' })).not.toBeInTheDocument();
+  });
+
+  it('restores the C listing from the query string', () => {
+    renderWithProviders(<LessonView lesson={lesson} />, '/algoritmos/selecao?lang=c');
+    fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+  });
+});
+
+describe('LessonView insights', () => {
+  it('renders the tip and curiosity in the about panel', () => {
+    renderWithProviders(<LessonView lesson={lesson} />);
+    fireEvent.click(screen.getByRole('tab', { name: 'Sobre' }));
+    expect(screen.getByText(/Depois de i rodadas/)).toBeInTheDocument();
+    expect(screen.getByText(/Θ\(n²\) comparações/)).toBeInTheDocument();
+  });
+});
+
+describe('LessonView shortcuts', () => {
+  it('opens the keyboard help with ?', async () => {
+    renderWithProviders(<LessonView lesson={lesson} />);
+    fireEvent.keyDown(document.body, { key: '?' });
+    expect(await screen.findByText('Atalhos de teclado')).toBeInTheDocument();
+  });
+});
+
 describe('LessonView unit-interval input', () => {
   const bucketLesson = getLesson('bucket');
 

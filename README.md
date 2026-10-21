@@ -36,6 +36,7 @@ Guia visual, temas, tokens e padrões de UI: **[docs/ui-guidelines.md](docs/ui-g
 │   ├── app/App.tsx              # tabela de rotas
 │   ├── components/              # views, player, catálogo, busca (AlgorithmBrowser, GlobalSearch)
 │   ├── content/
+│   │   ├── insights.ts          # dicas e curiosidades por lição
 │   │   ├── subjects.ts          # fonte única das matérias, grupos e entradas
 │   │   ├── catalog.ts           # re-export de compatibilidade
 │   │   ├── lessons/             # um arquivo por algoritmo + index.ts (registro)
@@ -45,7 +46,7 @@ Guia visual, temas, tokens e padrões de UI: **[docs/ui-guidelines.md](docs/ui-g
 │   │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
 │   ├── lib/                     # lines, highlight (tokenizer de código)
-│   ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
+│   ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, ComparePage, NotFound
 │   ├── styles/index.css         # shell, grade, motion e refinamentos sobre o Mantine
 │   ├── test/                    # helpers de render + setup do Vitest
 │   ├── theme/tokens.ts          # fonte única de tokens + resolver dos temas
@@ -241,6 +242,14 @@ vêm de trocas plausíveis no vetor atual.
 **Playground** — em `/playground` você escreve `generateSteps(arr)` em JavaScript e vê o resultado
 com o mesmo player. O código roda em um **Web Worker isolado** (sem acesso ao DOM) com timeout de
 1,5 s, e o botão **Compartilhar** guarda o código na URL (`?code=`).
+
+**Comparar** — em `/comparar` você usa a mesma entrada em vários algoritmos de ordenação e compara
+passos, eventos de comparação e trocas. A contagem vem de `Step[]`; não é tempo de animação. Bucket
+Sort fica de fora porque usa valores em `[0, 1)`.
+
+**Código e atalhos** — o painel de código permite copiar e baixar a listagem atual; `lang` e
+`approach` entram na URL compartilhável. As lições de AEDS I mostram somente C. Use `?` para abrir a
+ajuda de atalhos (`←/→`, espaço, `Home`, `End`, `R`, `N`, `+/-`).
 
 Formato mínimo de um passo:
 

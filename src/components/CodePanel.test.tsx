@@ -38,6 +38,22 @@ describe('CodePanel', () => {
     expect(active).toHaveTextContent('return soma;');
   });
 
+  it('hides the language picker when only C is available', () => {
+    renderWithProviders(
+      <CodePanel
+        code={['int soma = 0;', 'return soma;']}
+        activeLine={0}
+        lang="c"
+        languages={['c']}
+        onLangChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+  });
+
   it('switches the language through the segmented control', () => {
     const onLangChange = vi.fn();
     renderWithProviders(

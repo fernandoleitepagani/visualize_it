@@ -11,6 +11,7 @@ export const lesson: Lesson = {
     'O primeiro valor informado é usado como N (1 a 10).',
   view: 'cells',
   panelLabel: 'variáveis',
+  languages: ['c'],
   initial: [3],
 
   complexity: {
@@ -24,26 +25,6 @@ export const lesson: Lesson = {
   },
 
   code: {
-    java: lines(`
-public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        float S = 0, num;
-        int N;
-
-        System.out.print("N: ");
-        N = sc.nextInt();
-
-        for (int i = 1; i <= N-1; i++) {
-            num = 0;
-            for (int p = i + 1; p <= N; p++) {
-                num += i * p;
-            }
-            S += num / (3 * i - 1);
-        }
-        System.out.println("resultado: " + S);
-    }
-}`),
 
     c: lines(`
 int main() {
@@ -94,60 +75,60 @@ int main() {
       });
     };
 
-    // linha 5  (C) / 5 (Java):  float S = 0, num;
-    snap('Declarar S = 0 e num.', 5, { S: 'write' });
+    // linha 1: float S = 0, num;
+    snap('Declarar S = 0 e num.', 1, { S: 'write' });
 
-    // linha 8: printf / System.out.print
-    snap('Ler N.', 8);
+    // linha 4: printf
+    snap('Ler N.', 4);
 
-    // linha 9: scanf / nextInt
-    snap(`N = ${N}.`, 9, { N: 'active' });
+    // linha 5: scanf
+    snap(`N = ${N}.`, 5, { N: 'active' });
 
     for (let ii = 1; ii <= N; ii++) {
       i = ii;
 
-      // linha 11: for (int i = 1; i <= N; i++)
-      snap(`i = ${i} — início do laço externo.`, 11, { i: 'active' });
+      // linha 7: for (int i = 1; i <= N; i++)
+      snap(`i = ${i} — início do laço externo.`, 7, { i: 'active' });
 
-      // linha 12: num = 0;
+      // linha 8: num = 0;
       num = 0;
-      snap('num = 0.', 12, { num: 'write' });
+      snap('num = 0.', 8, { num: 'write' });
 
       if (ii + 1 > N - 1) {
-        // linha 13: condição do for interno já falha
-        snap(`p = ${ii + 1} > N — laço interno não executa.`, 13, {
+        // linha 9: condição do for interno já falha
+        snap(`p = ${ii + 1} > N — laço interno não executa.`, 9, {
           i: 'active',
         });
       } else {
         for (let pp = ii + 1; pp <= N - 1; pp++) {
           p = pp;
-          // linha 13: for (int p = i+1; p <= N; p++)
-          snap(`p = ${p}.`, 13, { p: 'active' });
+          // linha 9: for (int p = i+1; p <= N-1; p++)
+          snap(`p = ${p}.`, 9, { p: 'active' });
 
-          // linha 14: num += i * p;
+          // linha 10: num += i * p;
           num += ii * pp;
-          snap(`num += ${ii} · ${pp} = ${ii * pp} → num = ${num}.`, 14, {
+          snap(`num += ${ii} · ${pp} = ${ii * pp} → num = ${num}.`, 10, {
             num: 'write',
           });
         }
         p = '—';
-        // linha 15: } do for interno
-        snap(`Fim do laço interno (p chegou a ${N + 1} > N).`, 15);
+        // linha 11: } do for interno
+        snap(`Fim do laço interno (p chegou a ${N} > N-1).`, 11);
       }
 
-      // linha 16: S += num / (3*i - 1);
+      // linha 12: S += num / (3*i - 1);
       const denom = 3 * ii - 1;
       const parcela = num / denom;
       S += parcela;
       snap(
         `S += ${num} / (3·${ii} − 1) = ${num}/${denom} ≈ ${parcela.toFixed(3)} → S = ${fmt(S)}.`,
-        16,
+        12,
         { S: 'write' },
       );
     }
 
-    // linha 18: printf / println do resultado
-    snap(`Fim. Resultado: S = ${fmt(S)}.`, 18, { S: 'active' });
+    // linha 14: printf do resultado
+    snap(`Fim. Resultado: S = ${fmt(S)}.`, 14, { S: 'active' });
 
     return out;
   },

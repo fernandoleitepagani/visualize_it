@@ -12,6 +12,7 @@ const views = [
   { name: 'cells', route: '/algoritmos/pilha-sequencial', heading: 'Pilha Sequencial' },
   { name: 'nodes', route: '/algoritmos/lista-encadeada', heading: 'Lista Encadeada' },
   { name: 'theory', route: '/teoria/complexidade', heading: 'Complexidade de Algoritmos' },
+  { name: 'compare', route: '/comparar', heading: 'Comparar algoritmos' },
 ];
 
 describe('App', () => {

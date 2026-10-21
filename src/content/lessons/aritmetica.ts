@@ -11,6 +11,7 @@ export const lesson: Lesson = {
     'indica a posição atual de p e *p mostra o valor lido.',
   view: 'cells',
   panelLabel: 'vetor',
+  languages: ['c'],
   initial: [10, 20, 30, 40, 50],
 
   complexity: {
@@ -21,19 +22,6 @@ export const lesson: Lesson = {
   },
 
   code: {
-    java: lines(`
-    void walk() {
-        int[] v = {10, 20, 30, 40, 50};
-        int p = 0;                  // p aponta v[0]
-
-        System.out.println(v[p]);   // 10
-        p++;                        // p = 1
-        System.out.println(v[p]);   // 20
-        p += 2;                     // p = 3
-        System.out.println(v[p]);   // 40
-        p--;                        // p = 2
-        System.out.println(v[p]);   // 30
-    }`),
 
     c: lines(`
     void walk() {

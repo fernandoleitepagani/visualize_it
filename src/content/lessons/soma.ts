@@ -13,6 +13,7 @@ export const lesson: Lesson = {
     'acende e o valor acumulado aparece no topo — a área cresce conforme o somatório avança.',
   view: 'plot',
   panelLabel: 'termos',
+  languages: ['c'],
   initial: [3, 5, 2, 6, 4],
 
   complexity: {
@@ -23,14 +24,6 @@ export const lesson: Lesson = {
   },
 
   code: {
-    java: lines(`
-    int soma(int[] v) {
-        int total = 0;
-        for (int i = 0; i < v.length; i++) {
-            total += v[i];
-        }
-        return total;
-    }`),
 
     c: lines(`
     int soma(int v[], int n) {
