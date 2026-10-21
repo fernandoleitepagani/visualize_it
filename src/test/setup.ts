@@ -28,6 +28,18 @@ if (!window.matchMedia) {
 // jsdom does not implement scrolling; the app resets it on route changes.
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
 
+// Mantine's autosize textarea listens to the Font Loading API.
+if (!document.fonts) {
+  Object.defineProperty(document, 'fonts', {
+    writable: true,
+    value: {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      ready: Promise.resolve(),
+    },
+  });
+}
+
 if (!('ResizeObserver' in globalThis)) {
   globalThis.ResizeObserver = class {
     observe() {}
