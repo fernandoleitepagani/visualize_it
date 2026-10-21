@@ -119,3 +119,65 @@ export function GaugeIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function SunIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </Svg>
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7 7 0 1 0 10.5 10.5Z" />
+    </Svg>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4.5 4.5" />
+    </Svg>
+  );
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 12h15" />
+      <path d="m13 6 6 6-6 6" />
+    </Svg>
+  );
+}
+
+export function SigmaIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M17 5H7l6 7-6 7h10" />
+    </Svg>
+  );
+}
+
+export function ShareIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 3v12" />
+      <path d="m8 7 4-4 4 4" />
+      <path d="M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+    </Svg>
+  );
+}
+
+export function SparkIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m12 3 1.7 4.6L18 9.5l-4.3 1.9L12 16l-1.7-4.6L6 9.5l4.3-1.9L12 3Z" />
+      <path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
+    </Svg>
+  );
+}
