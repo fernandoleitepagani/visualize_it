@@ -1,6 +1,6 @@
 import { Box, Table, Text } from '@mantine/core';
 import type { Complexity } from '@/engine/types';
-import { font } from '@/theme';
+import { font, vizVar } from '@/theme';
 
 const dash = (value: string | undefined) => (value && value.length > 0 ? value : '—');
 
@@ -16,10 +16,15 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
 
   return (
     <Box>
-      <Table horizontalSpacing="md" verticalSpacing="xs" fz={font.small}>
+      <Table
+        horizontalSpacing="md"
+        verticalSpacing="xs"
+        fz={font.small}
+        style={{ borderCollapse: 'separate', borderSpacing: 0 }}
+      >
         <Table.Thead>
           <Table.Tr>
-            <Table.Th />
+            <Table.Th style={{ borderBottom: `1px solid ${vizVar.line}` }} />
             {['melhor', 'médio', 'pior'].map((heading) => (
               <Table.Th
                 key={heading}
@@ -27,7 +32,7 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
                 fw={600}
                 tt="uppercase"
                 c="dimmed"
-                style={{ letterSpacing: '0.08em' }}
+                style={{ letterSpacing: '0.1em', borderBottom: `1px solid ${vizVar.line}` }}
               >
                 {heading}
               </Table.Th>
@@ -37,16 +42,22 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
         <Table.Tbody>
           {rows.map((row) => (
             <Table.Tr key={row.label}>
-              <Table.Td fw={500} c="dimmed">
+              <Table.Td
+                fw={500}
+                c="dimmed"
+                style={{ borderBottom: `1px solid ${vizVar.line}`, whiteSpace: 'nowrap' }}
+              >
                 {row.label}
               </Table.Td>
               {row.cells.map((cell, i) => (
                 <Table.Td
                   key={i}
                   colSpan={row.cells.length === 1 ? 3 : 1}
-                  ff={row.mono ? 'monospace' : undefined}
                   fw={row.mono ? 600 : 500}
-                  c={row.mono ? 'amber' : undefined}
+                  style={{
+                    borderBottom: `1px solid ${vizVar.line}`,
+                    color: row.mono ? vizVar.accent : vizVar.ink2,
+                  }}
                 >
                   {cell}
                 </Table.Td>
@@ -56,7 +67,7 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
         </Table.Tbody>
       </Table>
       {complexity.note ? (
-        <Text fz="sm" c="dimmed" mt="sm">
+        <Text fz={font.tiny} c="dimmed" mt="sm" lh={1.6}>
           {complexity.note}
         </Text>
       ) : null}

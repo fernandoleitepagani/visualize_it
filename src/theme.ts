@@ -2,14 +2,18 @@
 export {
   theme,
   palette,
+  lightPalette,
   space,
   radius,
   font,
+  sans,
   mono,
   shadow,
   transition,
   tint,
   vizVar,
+  subjectAccent,
+  cssVariablesResolver,
 } from './theme/tokens';
 
 /**
@@ -18,3 +22,4 @@ export {
  * Será removido quando todos os componentes migrarem.
  */
 export { palette as viz } from './theme/tokens';
+export type { SubjectAccent } from './theme/tokens';

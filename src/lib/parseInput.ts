@@ -1,5 +1,5 @@
 /**
- * Parses a free-form list of 1–12 integers.
+ * Parses a free-form list of 1–12 finite numbers.
  *
  * Accepts commas, semicolons, spaces and newlines. Returns `null` when the
  * input is empty, out of bounds or contains a non-numeric token.

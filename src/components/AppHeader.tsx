@@ -2,11 +2,27 @@ import { Link, useLocation } from 'react-router-dom';
 import { Anchor, Box, Burger, Container, Drawer, Group, Stack, Text } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { allEntryLocations, getEntryPath, subjects } from '@/content/subjects';
-import { font } from '@/theme';
+import { font, space } from '@/theme';
 import { GlobalSearch } from './GlobalSearch';
 import { ThemeToggle } from './ThemeToggle';
 
 const DESKTOP_QUERY = '(min-width: 62em)';
+
+function BrandMark() {
+  return (
+    <Box className="brand-mark" aria-hidden>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M5 18v-6M12 18V6M19 18v-9"
+          stroke="var(--viz-accent)"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+        />
+        <circle cx="19" cy="5" r="1.8" fill="var(--viz-accent)" />
+      </svg>
+    </Box>
+  );
+}
 
 export function AppHeader() {
   const pathname = useLocation().pathname;
@@ -19,21 +35,38 @@ export function AppHeader() {
   const activeSubjectId = pathname.startsWith('/materias/')
     ? pathname.split('/')[2]
     : currentEntry?.subject.id;
+  const playgroundActive = pathname === '/playground';
 
   return (
-    <Container size={1200} h="100%" px="md" className="app-header-blur">
+    <Container
+      size={1280}
+      h="100%"
+      px={{ base: 'md', sm: 'lg', md: 'xl' }}
+      style={{ position: 'relative' }}
+    >
       <Group h="100%" justify="space-between" wrap="nowrap" gap="md">
         <Group gap="xl" wrap="nowrap" h="100%">
-          <Anchor component={Link} to="/" underline="never" c="inherit" fw={600} fz="sm">
-            Visualize It
-            <Text span c="amber">
-              .
-            </Text>
+          <Anchor
+            component={Link}
+            to="/"
+            underline="never"
+            c="inherit"
+            fw={600}
+            fz="sm"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 10, letterSpacing: '-0.01em' }}
+          >
+            <BrandMark />
+            <span>
+              Visualize It
+              <Text span c="amber">
+                .
+              </Text>
+            </span>
           </Anchor>
 
           {isDesktop ? (
             <Box component="nav" aria-label="Matérias">
-              <Group gap="lg" wrap="nowrap">
+              <Group gap={4} wrap="nowrap">
                 {subjects.map((subject) => {
                   const active = subject.id === activeSubjectId;
                   return (
@@ -42,9 +75,10 @@ export function AppHeader() {
                       component={Link}
                       to={`/materias/${subject.id}`}
                       underline="never"
+                      className="nav-link"
+                      data-active={active ? 'true' : undefined}
                       fz={font.small}
                       fw={active ? 600 : 500}
-                      c={active ? 'amber' : 'dimmed'}
                       aria-current={active ? 'page' : undefined}
                     >
                       {subject.title}
@@ -57,6 +91,19 @@ export function AppHeader() {
         </Group>
 
         <Group gap="sm" wrap="nowrap">
+          {isDesktop ? (
+            <Anchor
+              component={Link}
+              to="/playground"
+              underline="never"
+              className="nav-link"
+              data-active={playgroundActive ? 'true' : undefined}
+              fz={font.small}
+              aria-current={playgroundActive ? 'page' : undefined}
+            >
+              Playground
+            </Anchor>
+          ) : null}
           <ThemeToggle />
           {isDesktop ? (
             <GlobalSearch trigger="input" shortcut />
@@ -81,9 +128,22 @@ export function AppHeader() {
         position="right"
         size="xs"
         closeButtonProps={{ 'aria-label': 'Fechar menu' }}
+        overlayProps={{ backgroundOpacity: 0.55, blur: 4 }}
+        styles={{
+          content: { background: 'var(--viz-panel)' },
+          header: { background: 'var(--viz-panel)' },
+        }}
       >
-        <Stack gap="sm">
-          <Anchor component={Link} to="/" onClick={drawer.close} underline="never" c="dimmed">
+        <Stack gap={6}>
+          <Anchor
+            component={Link}
+            to="/"
+            onClick={drawer.close}
+            underline="never"
+            className="nav-link"
+            data-active={pathname === '/' ? 'true' : undefined}
+            h={38}
+          >
             Início
           </Anchor>
           {subjects.map((subject) => (
@@ -93,13 +153,29 @@ export function AppHeader() {
               to={`/materias/${subject.id}`}
               onClick={drawer.close}
               underline="never"
-              c={subject.id === activeSubjectId ? 'amber' : 'dimmed'}
+              className="nav-link"
+              data-active={subject.id === activeSubjectId ? 'true' : undefined}
               fw={subject.id === activeSubjectId ? 600 : 400}
+              h={38}
             >
               {subject.title}
             </Anchor>
           ))}
+          <Anchor
+            component={Link}
+            to="/playground"
+            onClick={drawer.close}
+            underline="never"
+            className="nav-link"
+            data-active={playgroundActive ? 'true' : undefined}
+            h={38}
+          >
+            Playground
+          </Anchor>
         </Stack>
+        <Text fz={font.tiny} c="dimmed" mt={space.xl}>
+          AEDS I/II · Java & C
+        </Text>
       </Drawer>
     </Container>
   );

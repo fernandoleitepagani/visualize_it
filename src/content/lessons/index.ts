@@ -1,6 +1,7 @@
 import type { Lesson } from '@/engine/types';
 import { lesson as aritmetica } from './aritmetica';
 import { lesson as bolha } from './bolha';
+import { lesson as bucket } from './bucket';
 import { lesson as buscaBinaria } from './busca-binaria';
 import { lesson as buscaSequencial } from './busca-sequencial';
 import { lesson as counting } from './counting';
@@ -32,6 +33,7 @@ export const lessons = {
   selecao,
   insercao,
   bolha,
+  bucket,
   shellsort,
   quicksort,
   mergesort,

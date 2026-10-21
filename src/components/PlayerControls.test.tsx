@@ -60,6 +60,32 @@ describe('PlayerControls', () => {
     expect(screen.getByRole('button', { name: 'Próximo passo' })).toBeDisabled();
   });
 
+  it('handles an empty step list without showing 1 / 0', () => {
+    renderWithProviders(
+      <PlayerControls playback={makePlayback({ index: 0, total: 0, atStart: true, atEnd: true })} />,
+    );
+
+    expect(screen.getByText('0 / 0')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Executar' })).toBeDisabled();
+  });
+
+  it('renders the step timeline and seeks through it', () => {
+    const playback = makePlayback({ total: 3, index: 0 });
+    renderWithProviders(
+      <PlayerControls
+        playback={playback}
+        steps={[
+          { line: 0, desc: 'início' },
+          { line: 1, desc: 'compara', cmp: [0, 1] },
+          { line: 2, desc: 'fim', sorted: [0, 1] },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ir para o passo 3' }));
+    expect(playback.goTo).toHaveBeenCalledWith(2);
+  });
+
   it('resets, advances and changes speed', () => {
     const playback = makePlayback();
     renderWithProviders(<PlayerControls playback={playback} />);

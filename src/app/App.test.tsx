@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { App } from './App';
@@ -8,6 +8,7 @@ const views = [
   { name: 'subject', route: '/materias/aeds-ii', heading: 'AEDS II' },
   { name: 'analysis', route: '/materias/analise', heading: 'Análise' },
   { name: 'bars', route: '/algoritmos/selecao', heading: 'Selection Sort' },
+  { name: 'bucket', route: '/algoritmos/bucket', heading: 'Bucket Sort' },
   { name: 'cells', route: '/algoritmos/pilha-sequencial', heading: 'Pilha Sequencial' },
   { name: 'nodes', route: '/algoritmos/lista-encadeada', heading: 'Lista Encadeada' },
   { name: 'theory', route: '/teoria/complexidade', heading: 'Complexidade de Algoritmos' },
@@ -16,7 +17,7 @@ const views = [
 describe('App', () => {
   it('presents the subjects on the home page', () => {
     renderWithProviders(<App />, '/');
-    expect(screen.getByText(/Visualize It/)).toBeInTheDocument();
+    expect(within(screen.getByRole('banner')).getByText(/Visualize It/)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'AEDS I' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'AEDS II' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Análise' })).toBeInTheDocument();
@@ -44,6 +45,8 @@ describe('App', () => {
   it.each([
     ['insercao', 'insertionSort(array, i+1)', 'void insertionSort(int *array, int i, int n)'],
     ['bolha', 'bubbleSort(array, i+1)', 'void bubbleSort(int *array, int i, int n)'],
+    ['counting', 'maior = findMaior(array, 0)', 'int findMaior(int *array, int i, int n)'],
+    ['bucket', 'separa(buckets, count, array, 0, array.length, nBaldes)', 'void separa(int n, float (*buckets)[n]'],
   ])('switches %s between iterative and recursive listings', (slug, marker, cSignature) => {
     const { container } = renderWithProviders(<App />, `/algoritmos/${slug}`);
 
