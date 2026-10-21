@@ -184,7 +184,7 @@ export function PlayerControls({
             radius="pill"
             onClick={copyLink}
             leftSection={<ShareIcon size={13} />}
-            style={{ color: vizVar.accent }}
+            style={{ color: 'var(--subject-accent, var(--viz-accent))' }}
           >
             {copied ? 'Copiado!' : 'Copiar link'}
           </Button>

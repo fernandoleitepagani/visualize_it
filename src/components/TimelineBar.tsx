@@ -81,7 +81,13 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
             fz={font.tiny}
             c={hoveredIndex !== null ? undefined : 'dimmed'}
             truncate="end"
-            style={{ minWidth: 0, color: hoveredIndex !== null ? vizVar.accent : undefined }}
+            style={{
+              minWidth: 0,
+              color:
+                hoveredIndex !== null
+                  ? 'var(--subject-accent, var(--viz-accent))'
+                  : undefined,
+            }}
           >
             {inspectedStep?.desc}
           </Text>
@@ -134,7 +140,7 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
                 padding: 0,
                 borderRadius: 2,
                 cursor: 'pointer',
-                background: isCurrent ? vizVar.accent : vizVar.line3,
+                background: isCurrent ? 'var(--subject-accent, var(--viz-accent))' : vizVar.line3,
                 opacity: isCurrent ? 1 : isHovered ? 0.9 : isPast ? 0.62 : 0.42,
                 transition: 'height 140ms ease, opacity 140ms ease, background-color 140ms ease',
               }}
