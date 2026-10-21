@@ -14,6 +14,13 @@ const accents = {
   info: vizVar.purple,
 } as const;
 
+const viewLabels = {
+  bars: 'barras',
+  cells: 'células',
+  nodes: 'nós',
+  plot: 'gráfico',
+} as const;
+
 export function LessonPage() {
   const { slug } = useParams();
   const lesson = getLesson(slug);
@@ -47,7 +54,7 @@ export function LessonPage() {
             {lesson.panelLabel ? <MetaPill>{lesson.panelLabel}</MetaPill> : null}
             {worst ? <MetaPill tone="accent">{worst}</MetaPill> : null}
             {lesson.complexity.space ? <MetaPill>{lesson.complexity.space}</MetaPill> : null}
-            <MetaPill>{lesson.view ?? 'bars'}</MetaPill>
+            <MetaPill>{viewLabels[lesson.view ?? 'bars']}</MetaPill>
           </>
         }
         actions={location ? <LessonPager location={location} /> : undefined}

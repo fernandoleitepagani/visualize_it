@@ -86,7 +86,9 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
         </Group>
         {aside}
       </Group>
-      <Box style={{ flex: 1, minHeight: 0 }}>{children}</Box>
+      <Box style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </Box>
       {footer ? (
         <Box
           px="md"

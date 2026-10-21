@@ -44,9 +44,9 @@ export function PlayerControls({
   onQuizChange?: (value: boolean) => void;
 }) {
   const { isPlaying, atStart, atEnd, index, total, speedMs } = playback;
-  const playLabel = isPlaying ? 'Pausar' : atEnd ? 'Recomeçar' : 'Executar';
-  const [copied, setCopied] = useState(false);
   const empty = total === 0;
+  const playLabel = empty ? 'Executar' : isPlaying ? 'Pausar' : atEnd ? 'Recomeçar' : 'Executar';
+  const [copied, setCopied] = useState(false);
 
   const copyLink = useCallback(async () => {
     try {
