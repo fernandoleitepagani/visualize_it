@@ -194,7 +194,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               boxShadow: `0 0 8px ${vizVar.accent}`,
             }}
           />
-          <Text fz={font.micro} ff="monospace" style={{ color: vizVar.ink2, whiteSpace: 'nowrap' }}>
+          <Text fz={font.micro} style={{ color: vizVar.ink2, whiteSpace: 'nowrap' }}>
             passo {playback.index + 1} / {playback.total}
           </Text>
         </Group>
@@ -227,7 +227,6 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         >
           <Text
             fz={font.micro}
-            ff="monospace"
             tt="uppercase"
             c="dimmed"
             style={{ letterSpacing: '0.12em', marginBottom: 2 }}
@@ -326,7 +325,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             aria-label={canPreset ? 'valores' : 'valor de n'}
             placeholder={canPreset ? 'ex: 45, 12, 85, 32' : 'ex: 5'}
             leftSection={
-              <Text fz={font.micro} fw={600} ff="monospace" c="dimmed">
+              <Text fz={font.micro} fw={600} c="dimmed">
                 {singleValue ? 'n =' : 'vetor'}
               </Text>
             }
@@ -335,6 +334,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             onChange={(event) => setInputValue(event.currentTarget.value)}
             error={error || undefined}
             size="sm"
+            className="lesson-input"
             style={{ flex: '1 1 220px', maxWidth: 320 }}
           />
           <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
@@ -357,7 +357,6 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                 fw={600}
                 tt="uppercase"
                 c="dimmed"
-                ff="monospace"
                 style={{ letterSpacing: '0.1em' }}
               >
                 presets

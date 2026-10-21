@@ -19,13 +19,12 @@ export function VarsPanel({ vars, prevVars }: Props) {
         fw={600}
         tt="uppercase"
         c="dimmed"
-        ff="monospace"
         mb={space.xs}
         style={{ letterSpacing: '0.14em' }}
       >
         variáveis
       </Text>
-      <Group role="group" aria-label="Variáveis do passo" gap={6} ff="monospace" wrap="wrap">
+      <Group role="group" aria-label="Variáveis do passo" gap={6} wrap="wrap">
         {entries.map(([name, value]) => {
           const isChanged = prevVars !== undefined && prevVars[name] !== value;
           return (

@@ -88,7 +88,6 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
                 gap={space.xs}
                 wrap="nowrap"
                 h={18}
-                ff="monospace"
                 fz={font.micro}
                 style={{ color: vizVar.accent }}
               >
@@ -115,7 +114,6 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
                 h={54}
                 align="center"
                 justify="center"
-                ff="monospace"
                 fz="sm"
                 fw={600}
                 c={empty ? 'dimmed' : undefined}
@@ -131,7 +129,7 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
               >
                 {empty ? '' : cell.val}
               </Flex>
-              <Text ff="monospace" fz={font.micro} style={{ color: vizVar.dim }}>
+              <Text fz={font.micro} style={{ color: vizVar.dim }}>
                 {i}
               </Text>
             </Flex>

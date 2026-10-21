@@ -137,7 +137,7 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
         </Group>
 
         <Group gap={6} mt="sm" wrap="wrap">
-          <Text fz={font.micro} c="dimmed" ff="monospace" mr={4} tt="uppercase" style={{ letterSpacing: '0.1em' }}>
+          <Text fz={font.micro} c="dimmed" mr={4} tt="uppercase" style={{ letterSpacing: '0.1em' }}>
             grupo
           </Text>
           <Button
@@ -168,7 +168,6 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
             <Text
               fz={font.micro}
               c="dimmed"
-              ff="monospace"
               mr={4}
               tt="uppercase"
               style={{ letterSpacing: '0.1em' }}
@@ -201,11 +200,11 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
       </Paper>
 
       <Group justify="space-between" mb="lg" wrap="wrap">
-        <Text fz={font.tiny} c="dimmed" aria-live="polite" ff="monospace">
+        <Text fz={font.tiny} c="dimmed" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}
         </Text>
         {query ? (
-          <Text fz={font.tiny} c="dimmed" ff="monospace">
+          <Text fz={font.tiny} c="dimmed">
             filtro: “{query}”
           </Text>
         ) : null}

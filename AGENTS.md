@@ -41,7 +41,7 @@ português (pt-BR).
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
 | Lint | ESLint 10 (flat config) |
-| Fonte | JetBrains Mono self-hosted |
+| Fonte | Padrão do navegador (sem fontes customizadas ou self-hosted) |
 | Deploy | Vercel (SPA com rewrites) |
 
 Node.js necessário: **20.19+ ou 22.12+** (requisito do Vite 8).
@@ -89,6 +89,7 @@ src/
 │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
 ├── lib/lines.ts             # utilitário para transformar template em array de linhas
+├── lib/highlight.tsx        # tokenizer de código (comentários, strings, números, keywords)
 ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
 ├── styles/index.css         # ajustes sobre o CSS do Mantine
 ├── test/                    # setup do Vitest + helpers de render
@@ -133,7 +134,9 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
 
 5. **Tokens visuais vêm de `@/theme`.**
    Não introduza cores, fontes, espaçamentos ou raios soltos em componentes. Se precisar de um
-   valor novo, adicione em `src/theme/tokens.ts` e use o token.
+   valor novo, adicione em `src/theme/tokens.ts` e use o token. Cores que mudam com o esquema
+   devem vir de `vizVar`/`--viz-*`; o `cssVariablesResolver` é a única fonte dos dois temas e preci-
+   sa ser passado em `main.tsx`, `src/test/render.tsx` e `.storybook/preview.tsx`.
 
 6. **As três views compartilham o mesmo motor.**
    `BarsView` lê `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`; `CellsView` lê `cells`; `NodesView`
@@ -192,6 +195,7 @@ O que merece teste:
 - playback (`play`, `pause`, `next`, `prev`, `reset`, fim da lista);
 - validação da entrada (inteiros, faixa, quantidade);
 - views (`BarsView`, `CellsView`, `NodesView`) com estados vazios e estados ativos;
+- timeline do player, estado vazio (`0 / 0`) e tokenizer de código;
 - rotas e 404.
 
 Evite testes que dependem de tempo real ou de animações CSS. Prefira testar dados e comportamento
@@ -210,7 +214,9 @@ Consulte a seção "Bugs conhecidos" do `CONTEXT.md` antes de mexer nestes ponto
 - **Entrada:** `parseInput` aceita decimais, negativos e valores enormes; `counting` aloca
   `max + 1` posições.
 - **Tema:** `@/theme` resolve hoje para `src/theme.ts` (arquivo), não para `src/theme/tokens.ts`.
-  Não apague o shim sem criar um `src/theme/index.ts` ou trocar todos os imports.
+  Não apague o shim sem criar um `src/theme/index.ts` ou trocar todos os imports. O
+  `cssVariablesResolver` precisa ser passado em todos os providers (app, testes e Storybook), senão
+  as cores `--viz-*` somem.
 - **`viz`:** alias deprecated e sem uso; pode ser removido junto com a migração do tema.
 - **Estabilidade:** `ComplexityTable` mostra "Não" quando `stable` é `undefined` ou não se aplica.
 

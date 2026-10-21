@@ -8,6 +8,8 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import type { HighlightState } from '@/lib/highlight';
+import { highlightLine } from '@/lib/highlight';
 import { font, radius, vizVar } from '@/theme';
 
 /** Mantine-backed building blocks shared by the theory/prose articles. */
@@ -40,12 +42,19 @@ export function P({ children }: Props) {
 }
 
 export function Pre({ children }: Props) {
+  const source = typeof children === 'string' ? children.trim() : null;
+  let state: HighlightState = { inBlockComment: false };
+  const lines = source?.split('\n').map((line) => {
+    const result = highlightLine(line, state);
+    state = result.state;
+    return result.parts;
+  });
+
   return (
     <Box
       component="pre"
       mb="lg"
       maw="72ch"
-      ff="monospace"
       fz={font.small}
       px="md"
       py="md"
@@ -60,7 +69,13 @@ export function Pre({ children }: Props) {
         boxShadow: '0 18px 36px -32px rgba(0,0,0,0.55)',
       }}
     >
-      {children}
+      {lines
+        ? lines.map((line, index) => (
+            <div key={index} style={{ minHeight: '1.7em' }}>
+              {line}
+            </div>
+          ))
+        : children}
     </Box>
   );
 }
@@ -91,7 +106,6 @@ export function Code({ children }: Props) {
         color: vizVar.accent,
         background: vizVar.surface2,
         border: `1px solid ${vizVar.line}`,
-        fontFamily: 'var(--mantine-font-family-monospace)',
         borderRadius: 5,
         padding: '1px 5px',
       }}
@@ -145,7 +159,6 @@ export function Th({ children }: Props) {
   return (
     <MantineTable.Th
       fz={font.micro}
-      ff="monospace"
       tt="uppercase"
       c="dimmed"
       style={{ letterSpacing: '0.08em', borderColor: vizVar.line }}

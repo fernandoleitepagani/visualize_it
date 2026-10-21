@@ -74,7 +74,7 @@ export function LessonRelated({ location }: { location: EntryLocation }) {
         <Title order={2} fz={font.small} fw={600}>
           Outros em {location.group.title}
         </Title>
-        <Text fz={font.micro} c="dimmed" ff="monospace">
+        <Text fz={font.micro} c="dimmed">
           {location.subject.title} · {location.group.title}
         </Text>
       </Group>

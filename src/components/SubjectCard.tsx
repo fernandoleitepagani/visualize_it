@@ -46,14 +46,13 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
       <Group justify="space-between" mb="md" wrap="nowrap">
         <Text
           fz={font.micro}
-          ff="monospace"
           tt="uppercase"
           style={{ color: accent, letterSpacing: '0.14em' }}
         >
           {index !== undefined ? `${String(index).padStart(2, '0')} · ` : ''}
           {theoryOnly ? 'análise' : 'matéria'}
         </Text>
-        <Text fz={font.tiny} c="dimmed" ff="monospace">
+        <Text fz={font.tiny} c="dimmed">
           {total} {theoryOnly ? (total === 1 ? 'artigo' : 'artigos') : total === 1 ? 'lição' : 'lições'}
         </Text>
       </Group>
@@ -71,7 +70,6 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
             key={group.id}
             fz={font.micro}
             c="dimmed"
-            ff="monospace"
             style={{
               border: `1px solid ${vizVar.line}`,
               borderRadius: radius.pill,

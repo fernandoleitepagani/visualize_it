@@ -151,7 +151,6 @@ export function PlayerControls({
           />
           <Text
             fz={font.small}
-            ff="monospace"
             fw={600}
             style={{ color: vizVar.ink, minWidth: 60, textAlign: 'right' }}
           >
@@ -166,7 +165,7 @@ export function PlayerControls({
               label="quiz"
               checked={quiz ?? false}
               onChange={(event) => onQuizChange(event.currentTarget.checked)}
-              styles={{ label: { fontFamily: 'var(--mantine-font-family-monospace)', fontSize: font.micro } }}
+              styles={{ label: { fontSize: font.micro } }}
             />
           ) : null}
           <SegmentedControl

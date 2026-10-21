@@ -201,7 +201,6 @@ export function BarsView({ state, ids = [] }: Props) {
               fz={font.tiny}
               lh={1}
               fw={700}
-              ff="monospace"
               style={{
                 left: `${(i + 0.5) * slot}%`,
                 width: `calc(${slot}% - 2px)`,
@@ -229,7 +228,6 @@ export function BarsView({ state, ids = [] }: Props) {
             top="calc(100% + 7px)"
             fz={font.micro}
             lh={1}
-            ff="monospace"
             style={{
               left: `${(i + 0.5) * slot}%`,
               width: `calc(${slot}% - 2px)`,

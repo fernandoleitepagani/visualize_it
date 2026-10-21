@@ -82,7 +82,6 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
               onClick={() => choose(option)}
               styles={{
                 label: {
-                  fontFamily: 'var(--mantine-font-family-monospace)',
                   whiteSpace: 'normal',
                   fontSize: font.small,
                 },

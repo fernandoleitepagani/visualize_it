@@ -93,6 +93,7 @@ export function NodesView({
 }) {
   const reducedMotion = useReducedMotion();
   const list = nodes ?? [];
+  const byId = new Map(list.map((node) => [node.id, node]));
   const states = new Set(list.map((node) => node.state || ''));
   const hasActive = states.has('active') || states.has('write');
   const activeLegend = LEGEND.filter((item) =>
@@ -123,6 +124,8 @@ export function NodesView({
           const state = node.state || '';
           const prev = node.prev ?? null;
           const next = node.next ?? null;
+          const prevVal = prev ? (byId.get(prev)?.val ?? prev) : null;
+          const nextVal = next ? (byId.get(next)?.val ?? next) : null;
           const isActive = state === 'active' || state === 'write' || state === 'compare';
 
           return (
@@ -132,7 +135,6 @@ export function NodesView({
                   gap={space.xs}
                   wrap="nowrap"
                   h={18}
-                  ff="monospace"
                   fz={font.micro}
                   style={{ color: vizVar.accent }}
                 >
@@ -169,7 +171,6 @@ export function NodesView({
                       align="center"
                       px="xs"
                       py={space.sm}
-                      ff="monospace"
                       fz={font.micro}
                       style={{
                         borderRight: `1px solid ${vizVar.line}`,
@@ -179,14 +180,13 @@ export function NodesView({
                         justifyContent: 'center',
                       }}
                     >
-                      {prev ? `←${prev}` : '∅'}
+                      {prev !== null ? `←${prevVal}` : '∅'}
                     </Flex>
                   ) : null}
                   <Flex
                     align="center"
                     px="md"
                     py={space.sm}
-                    ff="monospace"
                     fz="sm"
                     fw={600}
                     style={{ color: vizVar.ink, minWidth: 42, justifyContent: 'center' }}
@@ -197,7 +197,6 @@ export function NodesView({
                     align="center"
                     px="xs"
                     py={space.sm}
-                    ff="monospace"
                     fz={font.micro}
                     style={{
                       borderLeft: `1px solid ${vizVar.line}`,
@@ -207,7 +206,7 @@ export function NodesView({
                       justifyContent: 'center',
                     }}
                   >
-                    {next ? `${next}→` : '∅'}
+                    {next !== null ? `${nextVal}→` : '∅'}
                   </Flex>
                 </Flex>
               </Flex>
@@ -219,7 +218,6 @@ export function NodesView({
                   <Box
                     px="sm"
                     py={space.xs}
-                    ff="monospace"
                     fz={font.tiny}
                     style={{
                       border: `1px dashed ${vizVar.line2}`,

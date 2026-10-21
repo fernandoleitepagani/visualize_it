@@ -35,7 +35,6 @@ export function PageHeader({ title, subtitle, breadcrumb, actions, kicker, meta,
           mt="md"
           fz={font.micro}
           fw={500}
-          ff="monospace"
           tt="uppercase"
           style={{ color: accent ?? 'var(--viz-accent)', letterSpacing: '0.16em' }}
         >

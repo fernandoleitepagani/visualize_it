@@ -124,7 +124,7 @@ export function PlaygroundPage() {
           icon={<CodeIcon size={13} />}
           aside={
             <Group gap={6} wrap="nowrap">
-              <Text fz={font.micro} ff="monospace" c="dimmed">
+              <Text fz={font.micro} c="dimmed">
                 generateSteps.js
               </Text>
               <Button
@@ -145,7 +145,7 @@ export function PlaygroundPage() {
               autosize
               minRows={14}
               maxRows={26}
-              ff="monospace"
+              wrap="off"
               fz={font.small}
               aria-label="código do playground"
               styles={{
@@ -154,6 +154,8 @@ export function PlaygroundPage() {
                   color: vizVar.codeInk,
                   lineHeight: 1.7,
                   borderColor: vizVar.line,
+                  whiteSpace: 'pre',
+                  overflowX: 'auto',
                 },
               }}
             />
@@ -164,7 +166,6 @@ export function PlaygroundPage() {
                 onChange={(event) => setInputValue(event.currentTarget.value)}
                 w={200}
                 size="sm"
-                ff="monospace"
               />
               <Button onClick={run} loading={running} radius="md" leftSection={<PlayIcon size={13} />}>
                 Executar
@@ -185,7 +186,7 @@ export function PlaygroundPage() {
           label="prévia"
           icon={<SigmaIcon size={13} />}
           aside={
-            <Text fz={font.micro} ff="monospace" c="dimmed">
+            <Text fz={font.micro} c="dimmed">
               {steps.length} passos
             </Text>
           }
@@ -217,7 +218,7 @@ export function PlaygroundPage() {
                 <Text fz={font.body} c="dimmed">
                   Execute o código para ver os passos.
                 </Text>
-                <Text fz={font.tiny} c="dimmed" ff="monospace">
+                <Text fz={font.tiny} c="dimmed">
                   cada passo precisa de line, desc e arr
                 </Text>
               </Flex>
@@ -239,7 +240,6 @@ export function PlaygroundPage() {
             key={field}
             component="code"
             fz={font.micro}
-            ff="monospace"
             px={6}
             py={1}
             style={{
@@ -254,7 +254,7 @@ export function PlaygroundPage() {
         ))}
       </Group>
 
-      <Text fz={font.micro} c="dimmed" ff="monospace" mt={space.sm}>
+      <Text fz={font.micro} c="dimmed" mt={space.sm}>
         dica: use os presets e o timeline para revisar cada operação
       </Text>
     </Box>

@@ -41,8 +41,14 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
     };
   });
 
-  const line = geometry.map((bar, i) => `${i === 0 ? 'M' : 'L'} ${bar.center} ${bar.y}`).join(' ');
-  const area = `${line} L ${geometry[geometry.length - 1].center} ${BASELINE} L ${geometry[0].center} ${BASELINE} Z`;
+  // Only the terms already added form the line/area; future terms stay as
+  // faint placeholders so the chart does not imply a total that is not there.
+  const visible = current >= 0 ? geometry.slice(0, current + 1) : [];
+  const line = visible.map((bar, i) => `${i === 0 ? 'M' : 'L'} ${bar.center} ${bar.y}`).join(' ');
+  const area =
+    visible.length > 0
+      ? `${line} L ${visible[visible.length - 1].center} ${BASELINE} L ${visible[0].center} ${BASELINE} Z`
+      : '';
 
   return (
     <Box>
@@ -53,7 +59,6 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
             fw={600}
             tt="uppercase"
             c="dimmed"
-            ff="monospace"
             style={{ letterSpacing: '0.14em' }}
           >
             soma parcial
@@ -63,10 +68,10 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
           </Text>
         </Box>
         <Flex align="baseline" gap={6}>
-          <Text fz={font.h3} ff="monospace" fw={600} style={{ color: vizVar.accent }}>
+          <Text fz={font.h3} fw={600} style={{ color: vizVar.accent }}>
             Σ
           </Text>
-          <Text fz={font.h2} ff="monospace" fw={600} style={{ color: vizVar.ink, lineHeight: 1 }}>
+          <Text fz={font.h2} fw={600} style={{ color: vizVar.ink, lineHeight: 1 }}>
             {total}
           </Text>
         </Flex>
@@ -154,7 +159,6 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
                   fill={isCurrent ? 'var(--viz-accent)' : isPast ? 'var(--viz-ink-2)' : 'var(--viz-dim)'}
                   fontSize="10.5"
                   fontWeight="600"
-                  fontFamily="var(--mantine-font-family-monospace)"
                 >
                   {points[i].value}
                 </text>
@@ -164,7 +168,6 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
                   textAnchor="middle"
                   fill="var(--viz-dim)"
                   fontSize="9.5"
-                  fontFamily="var(--mantine-font-family-monospace)"
                 >
                   {points[i].label}
                 </text>
@@ -172,16 +175,18 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
             );
           })}
 
-          <path d={area} fill="url(#plot-area)" />
-          <path
-            d={line}
-            fill="none"
-            stroke="var(--viz-accent)"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            opacity="0.85"
-          />
+          {area ? <path d={area} fill="url(#plot-area)" /> : null}
+          {visible.length > 1 ? (
+            <path
+              d={line}
+              fill="none"
+              stroke="var(--viz-accent)"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.85"
+            />
+          ) : null}
           {geometry.map((bar, i) => (
             <circle
               key={`dot-${i}`}
@@ -203,7 +208,6 @@ export function PlotView({ plot }: { plot: PlotState | undefined }) {
       <Text
         fz={font.micro}
         c="dimmed"
-        ff="monospace"
         mt={radius.xs}
         style={{ textAlign: 'right' }}
       >

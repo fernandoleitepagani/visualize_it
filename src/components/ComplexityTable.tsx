@@ -32,7 +32,6 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
                 fw={600}
                 tt="uppercase"
                 c="dimmed"
-                ff="monospace"
                 style={{ letterSpacing: '0.1em', borderBottom: `1px solid ${vizVar.line}` }}
               >
                 {heading}
@@ -54,7 +53,6 @@ export function ComplexityTable({ complexity }: { complexity: Complexity }) {
                 <Table.Td
                   key={i}
                   colSpan={row.cells.length === 1 ? 3 : 1}
-                  ff={row.mono ? 'monospace' : undefined}
                   fw={row.mono ? 600 : 500}
                   style={{
                     borderBottom: `1px solid ${vizVar.line}`,

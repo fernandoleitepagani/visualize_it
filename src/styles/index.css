@@ -197,7 +197,6 @@ body::before {
   border: 1px solid var(--viz-line);
   background: color-mix(in srgb, var(--viz-surface-2) 70%, transparent);
   color: var(--viz-muted);
-  font-family: var(--mantine-font-family-monospace);
   font-size: 10.5px;
   line-height: 1.7;
   white-space: nowrap;
@@ -212,7 +211,6 @@ body::before {
 
 .section-index {
   color: var(--viz-accent);
-  font-family: var(--mantine-font-family-monospace);
   font-size: 11px;
   letter-spacing: 0.12em;
   white-space: nowrap;
@@ -350,7 +348,6 @@ body::before {
   align-items: center;
   gap: 10px;
   color: var(--viz-muted);
-  font-family: var(--mantine-font-family-monospace);
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -613,7 +610,6 @@ body::before {
 .prose h2::before {
   content: '§ ' counter(section, decimal-leading-zero);
   color: var(--viz-accent);
-  font-family: var(--mantine-font-family-monospace);
   font-size: 11px;
   letter-spacing: 0.1em;
   font-weight: 500;
@@ -696,7 +692,6 @@ body::before {
   background: var(--viz-surface-3);
   color: var(--viz-ink);
   border: 1px solid var(--viz-line-2);
-  font-family: var(--mantine-font-family-monospace);
   font-size: 11px;
 }
 
@@ -858,6 +853,15 @@ body::before {
 }
 
 @media (max-width: 40em) {
+  .lesson-input {
+    flex: 1 1 100% !important;
+    max-width: none !important;
+  }
+
+  .viz-canvas {
+    min-height: 210px;
+  }
+
   .lesson-presets {
     width: 100%;
     margin-left: 0;

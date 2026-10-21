@@ -78,7 +78,6 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              fontFamily: 'var(--mantine-font-family-monospace)',
             }}
           >
             {label}

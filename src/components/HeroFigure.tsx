@@ -38,10 +38,10 @@ export function HeroFigure() {
         style={{ position: 'absolute', inset: 0 }}
         preserveAspectRatio="xMidYMid meet"
       >
-        <text x="34" y="34" fill="var(--viz-dim)" fontSize="10" fontFamily="var(--mantine-font-family-monospace)">
+        <text x="34" y="34" fill="var(--viz-dim)" fontSize="10">
           custo
         </text>
-        <text x="332" y="34" fill="var(--viz-accent)" fontSize="11" fontFamily="var(--mantine-font-family-monospace)">
+        <text x="332" y="34" fill="var(--viz-accent)" fontSize="11">
           Θ(n log n)
         </text>
 
@@ -78,7 +78,6 @@ export function HeroFigure() {
               textAnchor="middle"
               fill="var(--viz-dim)"
               fontSize="9"
-              fontFamily="var(--mantine-font-family-monospace)"
             >
               {index}
             </text>

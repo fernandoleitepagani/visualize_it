@@ -27,7 +27,7 @@ export function ViewLegend({ items }: { items: LegendItem[] }) {
             h={7}
             style={{ background: item.color, borderRadius: radius.pill, flexShrink: 0 }}
           />
-          <Text fz={font.micro} ff="monospace" style={{ color: vizVar.muted }}>
+          <Text fz={font.micro} style={{ color: vizVar.muted }}>
             {item.label}
           </Text>
         </Group>

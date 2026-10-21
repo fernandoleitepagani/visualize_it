@@ -17,14 +17,13 @@ export function NotFound() {
           border: `1px solid ${vizVar.accentLine}`,
           background: `radial-gradient(circle, ${vizVar.accentSoft}, transparent 70%)`,
           color: vizVar.accent,
-          fontFamily: 'var(--mantine-font-family-monospace)',
           fontSize: 38,
           lineHeight: 1,
         }}
       >
         ∅
       </Box>
-      <Text ff="monospace" c="amber" fz={font.tiny} mt="sm" style={{ letterSpacing: '0.16em' }}>
+      <Text c="amber" fz={font.tiny} mt="sm" style={{ letterSpacing: '0.16em' }}>
         404
       </Text>
       <Title order={1} fz={font.h2} fw={500} style={{ letterSpacing: '-0.03em' }}>

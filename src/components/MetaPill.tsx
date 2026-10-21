@@ -25,7 +25,6 @@ export function MetaPill({ children, tone }: Props) {
               color: tones[tone],
               borderColor: `color-mix(in srgb, ${tones[tone]} 32%, transparent)`,
               background: `color-mix(in srgb, ${tones[tone]} 8%, transparent)`,
-              fontFamily: 'var(--mantine-font-family-monospace)',
               fontSize: font.micro,
             }
           : { fontSize: font.micro }

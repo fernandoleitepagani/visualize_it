@@ -58,13 +58,11 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
             fw={600}
             tt="uppercase"
             c="dimmed"
-            ff="monospace"
             style={{ letterSpacing: '0.12em', flexShrink: 0 }}
           >
             timeline
           </Text>
           <Text
-            ff="monospace"
             fz={font.micro}
             fw={600}
             px={7}
@@ -89,7 +87,7 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
           </Text>
         </Group>
 
-        <Text fz={font.micro} c="dimmed" ff="monospace" visibleFrom="md">
+        <Text fz={font.micro} c="dimmed" visibleFrom="md">
           {total} passos
         </Text>
       </Flex>

@@ -37,10 +37,10 @@ export function AppFooter() {
       </Group>
 
       <Group justify="space-between" mt={space.lg} pt={space.md} gap="sm" wrap="wrap">
-        <Text fz={font.micro} c="dimmed" ff="monospace" style={{ letterSpacing: '0.08em' }}>
+        <Text fz={font.micro} c="dimmed" style={{ letterSpacing: '0.08em' }}>
           PUC Minas · AEDS I/II
         </Text>
-        <Text fz={font.micro} c="dimmed" ff="monospace">
+        <Text fz={font.micro} c="dimmed">
           feito para aprender passo a passo
         </Text>
       </Group>

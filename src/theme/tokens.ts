@@ -96,9 +96,12 @@ export const font = {
   display: 'clamp(2.35rem, 4.6vw, 3.6rem)',
 } as const;
 
-export const sans =
-  "'Space Grotesk Variable', 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif";
-export const mono = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+/**
+ * No custom font stack: `inherit` keeps whatever font the browser uses by
+ * default, including inside Mantine components and monospace-styled labels.
+ */
+export const sans = 'inherit';
+export const mono = 'inherit';
 
 export const shadow = {
   card: '0 1px 0 0 rgba(255,255,255,0.04) inset',
@@ -187,7 +190,7 @@ const dark: MantineColorsTuple = [
   '#000000',
 ];
 
-/** Dark + amber terminal theme, with a humanist sans for reading. */
+/** Dark + amber theme using the browser's default font. */
 export const theme = createTheme({
   primaryColor: 'amber',
   primaryShade: { light: 8, dark: 6 },

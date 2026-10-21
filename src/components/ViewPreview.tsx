@@ -28,7 +28,6 @@ export function ViewPreview({
           borderRadius: radius.sm,
           background: vizVar.surface2,
           color: vizVar.accent,
-          fontFamily: 'var(--mantine-font-family-monospace)',
           fontSize: font.tiny,
         }}
       >

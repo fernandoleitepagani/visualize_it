@@ -173,7 +173,7 @@ export function AppHeader() {
             Playground
           </Anchor>
         </Stack>
-        <Text fz={font.tiny} c="dimmed" mt={space.xl} ff="monospace">
+        <Text fz={font.tiny} c="dimmed" mt={space.xl}>
           AEDS I/II · Java & C
         </Text>
       </Drawer>

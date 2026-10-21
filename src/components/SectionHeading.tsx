@@ -29,14 +29,14 @@ export function SectionHeading({ id, index, kicker, count, children }: Props) {
         {children}
       </Title>
       {kicker ? (
-        <Text fz={font.micro} c="dimmed" ff="monospace" tt="uppercase" style={{ letterSpacing: '0.1em' }}>
+        <Text fz={font.micro} c="dimmed" tt="uppercase" style={{ letterSpacing: '0.1em' }}>
           {kicker}
         </Text>
       ) : null}
       <Box className="section-rule" aria-hidden />
       {count !== undefined ? (
         <Group gap={0} wrap="nowrap" aria-hidden>
-          <Text fz={font.tiny} c="dimmed" ff="monospace">
+          <Text fz={font.tiny} c="dimmed">
             {count}
           </Text>
         </Group>

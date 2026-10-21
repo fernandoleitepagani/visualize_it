@@ -87,14 +87,13 @@ export function CodePanel({
       footer={
         <Group justify="space-between" wrap="nowrap" gap="sm">
           <Box
-            ff="monospace"
             fz={font.micro}
             c="dimmed"
             style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
           >
             {lang} · {showApproach ? approach : 'implementação única'}
           </Box>
-          <Box ff="monospace" fz={font.micro} c="dimmed">
+          <Box fz={font.micro} c="dimmed">
             linha {Math.min(activeLine + 1, code.length)} de {code.length}
           </Box>
         </Group>
@@ -106,7 +105,6 @@ export function CodePanel({
         aria-label={`Código ${lang === 'java' ? 'Java' : 'C'}`}
         className="code-scroll"
         py="sm"
-        ff="monospace"
         fz={12.5}
         style={{
           overflow: 'auto',

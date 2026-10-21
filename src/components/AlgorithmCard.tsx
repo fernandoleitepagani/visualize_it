@@ -50,7 +50,7 @@ export function AlgorithmCard({
                 {title}
               </Title>
               <Group gap={6} wrap="nowrap">
-                <Text ff="monospace" fz={font.micro} style={{ color: accent, whiteSpace: 'nowrap' }}>
+                <Text fz={font.micro} style={{ color: accent, whiteSpace: 'nowrap' }}>
                   {entry.tag}
                 </Text>
                 <ArrowRightIcon size={13} className="card-arrow" style={{ color: accent }} />
@@ -101,7 +101,7 @@ export function AlgorithmCard({
       </Text>
 
       <Group justify="space-between" align="center" mt="md">
-        <Text fz={font.tiny} ff="monospace" c="dimmed">
+        <Text fz={font.tiny} c="dimmed">
           abrir lição
         </Text>
         <Box style={{ display: 'inline-flex', color: accent }}>

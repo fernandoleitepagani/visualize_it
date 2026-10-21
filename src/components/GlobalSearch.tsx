@@ -138,7 +138,7 @@ export function GlobalSearch({
         leftSection={<SearchIcon size={16} />}
         rightSection={
           query ? (
-            <Text fz={font.micro} c="dimmed" ff="monospace">
+            <Text fz={font.micro} c="dimmed">
               {flat.length}
             </Text>
           ) : undefined
@@ -169,7 +169,6 @@ export function GlobalSearch({
                     tt="uppercase"
                     c="dimmed"
                     fw={600}
-                    ff="monospace"
                     style={{ letterSpacing: '0.12em' }}
                   >
                     {group.subject.title}
@@ -213,7 +212,6 @@ export function GlobalSearch({
                           </Text>
                         </Box>
                         <Text
-                          ff="monospace"
                           fz={font.micro}
                           style={{ whiteSpace: 'nowrap', color: accent }}
                         >
@@ -230,13 +228,13 @@ export function GlobalSearch({
       </ScrollArea.Autosize>
 
       <Group gap="md" mt="sm" wrap="wrap">
-        <Text fz={font.micro} c="dimmed" ff="monospace">
+        <Text fz={font.micro} c="dimmed">
           <Kbd size="xs">↑</Kbd> <Kbd size="xs">↓</Kbd> navegar
         </Text>
-        <Text fz={font.micro} c="dimmed" ff="monospace">
+        <Text fz={font.micro} c="dimmed">
           <Kbd size="xs">Enter</Kbd> abrir
         </Text>
-        <Text fz={font.micro} c="dimmed" ff="monospace">
+        <Text fz={font.micro} c="dimmed">
           <Kbd size="xs">Esc</Kbd> fechar
         </Text>
       </Group>
@@ -282,7 +280,6 @@ export function GlobalSearch({
             <Text
               fz={font.micro}
               c="dimmed"
-              ff="monospace"
               style={{
                 whiteSpace: 'nowrap',
                 border: `1px solid ${vizVar.line}`,

@@ -24,7 +24,6 @@ export function ComplexityAnalysisCard({ analysis }: { analysis: ComplexityAnaly
               fw={600}
               tt="uppercase"
               c="dimmed"
-              ff="monospace"
               mb={8}
               style={{ letterSpacing: '0.12em' }}
             >
