@@ -54,9 +54,13 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
               width: 22,
               height: 22,
               borderRadius: 7,
-              color: icon ? vizVar.accent : vizVar.muted,
-              background: icon ? vizVar.accentSoft : 'transparent',
-              border: icon ? `1px solid ${vizVar.accentLine}` : 'none',
+              color: icon ? 'var(--subject-accent, var(--viz-accent))' : vizVar.muted,
+              background: icon
+                ? 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 12%, transparent)'
+                : 'transparent',
+              border: icon
+                ? '1px solid color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 34%, transparent)'
+                : 'none',
               flexShrink: 0,
             }}
           >
@@ -64,7 +68,10 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
               <Box
                 w={3}
                 h={10}
-                style={{ background: vizVar.accent, borderRadius: radius.pill }}
+                style={{
+                  background: 'var(--subject-accent, var(--viz-accent))',
+                  borderRadius: radius.pill,
+                }}
               />
             )}
           </Box>
