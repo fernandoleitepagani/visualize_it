@@ -6,6 +6,9 @@
 > agentes de código, revisores, geradores de issues e assistentes de documentação. Se você não lê
 > `AGENTS.md` automaticamente, leia `AGENTS.md` e `CONTEXT.md` no início da sessão. Não peça ao
 > usuário para resumir o contexto: consulte os arquivos.
+>
+> **Tarefas de UI:** leia também `docs/ui-guidelines.md` antes de alterar cores, tipografia,
+> espaçamento, componentes visuais ou temas.
 
 `CONTEXT.md` é o contexto vivo do projeto: estado atual, arquitetura, bugs conhecidos, dívidas
 técnicas e roadmap. `AGENTS.md` é o contrato operacional: como trabalhar sem quebrar o que existe.
@@ -91,11 +94,15 @@ src/
 ├── lib/lines.ts             # utilitário para transformar template em array de linhas
 ├── lib/highlight.tsx        # tokenizer de código (comentários, strings, números, keywords)
 ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
-├── styles/index.css         # ajustes sobre o CSS do Mantine
+├── styles/index.css         # shell, grade, motion e refinamentos sobre o Mantine
 ├── test/                    # setup do Vitest + helpers de render
 ├── theme.ts                 # shim de re-exportação (migração em andamento)
-├── theme/tokens.ts          # fonte única dos tokens visuais
+├── theme/tokens.ts          # fonte única dos tokens visuais + cssVariablesResolver
 └── main.tsx
+
+docs/
+├── export-research.md       # spike de exportação
+└── ui-guidelines.md         # guia de UI, temas, tokens e acentos por matéria
 ```
 
 O alias `@/` aponta para `src/` (configurado em `vite.config.ts` e `tsconfig.app.json`).
@@ -181,6 +188,8 @@ Nenhum componente precisa mudar para adicionar uma lição que use uma view exis
 - Imports ordenados: dependências externas primeiro, depois alias `@/`, depois relativos.
 - Não adicione dependências novas sem justificar o custo e verificar alternativas nativas.
 - Comentários devem explicar **por que**, não repetir o código.
+- Antes de criar um padrão visual, consulte `docs/ui-guidelines.md` e reutilize as primitivas
+  (`Panel`, `PageHeader`, `SectionHeading`, `MetaPill`, `ViewLegend`).
 
 ---
 

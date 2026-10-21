@@ -8,6 +8,8 @@ a linha executada, variáveis do passo e a tabela de complexidade assintótica.
 
 Deploy no [Vercel](https://vercel.com).
 
+Guia visual, temas, tokens e padrões de UI: **[docs/ui-guidelines.md](docs/ui-guidelines.md)**.
+
 ---
 
 ## Stack
@@ -42,12 +44,14 @@ Deploy no [Vercel](https://vercel.com).
 │   │   ├── types.ts             # Lesson, Step, Cell, Node…
 │   │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
-│   ├── lib/                     # utilitários (lines)
+│   ├── lib/                     # lines, highlight (tokenizer de código)
 │   ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
-│   ├── styles/index.css         # estilos base sobre o CSS do Mantine
+│   ├── styles/index.css         # shell, grade, motion e refinamentos sobre o Mantine
 │   ├── test/                    # helpers de render + setup do Vitest
-│   ├── theme.ts                 # tema Mantine (paleta dark/âmbar, tipografia)
+│   ├── theme/tokens.ts          # fonte única de tokens + resolver dos temas
+│   ├── theme.ts                 # shim de re-exportação de @/theme
 │   └── main.tsx
+├── docs/ui-guidelines.md        # guia de UI, temas e tokens
 ├── index.html
 ├── vercel.json
 └── vite.config.ts
@@ -61,7 +65,7 @@ Cada algoritmo é **dado puro + uma função pura**, em `src/content/lessons/<sl
 export const lesson: Lesson = {
   id: 'selecao',
   title: 'Selection Sort',
-  view: 'bars',                 // 'bars' | 'cells' | 'nodes'
+  view: 'bars',                 // 'bars' | 'cells' | 'nodes' | 'plot'
   initial: [7, 3, 9, 1, 5, 8, 2],
   complexity: { time: { best: 'Θ(n²)' /* … */ }, space: 'Θ(1)', stable: false },
   code: { java: [...], c: [...] },
@@ -79,6 +83,7 @@ As três visões reaproveitam o mesmo motor:
 | `bars` | ordenação e busca | `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim` |
 | `cells` | estruturas em vetor e laços | `cells: [{ val, labels, state }]` |
 | `nodes` | estruturas encadeadas | `nodes: [{ id, val, prev, next, labels, state }]` |
+| `plot` | somatório | `plot: { points, current, total }` |
 
 ---
 
@@ -104,10 +109,22 @@ npm run dev      # http://localhost:5173
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
 
-### Tema e atalhos
+### Tema, cores e atalhos
 
-Na primeira visita o tema segue `prefers-color-scheme`; a escolha fica salva em `localStorage`.
-Use o botão ☀/☾ no cabeçalho para alternar entre claro e escuro.
+O tema inicial segue `prefers-color-scheme`; a escolha fica salva em `localStorage`. Use o botão de
+tema no cabeçalho para alternar entre claro e escuro. Todos os valores visuais vêm de
+`src/theme/tokens.ts` e são expostos como variáveis `--viz-*` pelo `cssVariablesResolver`.
+
+Cada matéria tem seu próprio acento, herdado por suas páginas; a home usa o âmbar global:
+
+| Matéria | Acento |
+|---|---|
+| AEDS I | azul |
+| AEDS II | teal |
+| Análise | violeta |
+| Home / playground / 404 | âmbar |
+
+Detalhes de implementação e receitas: **[docs/ui-guidelines.md](docs/ui-guidelines.md)**.
 
 Na página de uma lição:
 

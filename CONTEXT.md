@@ -211,6 +211,9 @@ consumidas por `src/styles/index.css`; o stylesheet não mantém uma segunda có
 `src/theme/`. Não existe `src/theme/index.ts`. Apagar o shim sem criar um índice ou trocar os
 imports quebra o build. Veja BUG-06.
 
+O guia completo de uso (temas, variáveis, acentos por matéria, componentes e anti-padrões) está em
+`docs/ui-guidelines.md`.
+
 ### 4.5 Rotas e catálogo
 
 - `src/app/App.tsx` define as rotas: home, matéria, lição, teoria e playground.
@@ -381,6 +384,7 @@ npm run build
 ## 10. Referências
 
 - `README.md` — visão geral, scripts e instruções de deploy.
+- `docs/ui-guidelines.md` — guia de UI, temas, tokens, acentos por matéria e receitas.
 - `AGENTS.md` — contrato operacional para agentes.
 - `src/engine/types.ts` — contrato de `Lesson` e `Step`.
 - `src/content/lessons/index.ts` — registro de lições.
