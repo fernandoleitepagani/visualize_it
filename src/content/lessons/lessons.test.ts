@@ -169,6 +169,24 @@ describe('aritmetica lesson — pointer arithmetic', () => {
     }
   });
 
+  it('points each step at the C command that performs the operation', () => {
+    const commands: Array<[number, RegExp]> = [
+      [9, /int v\[5\] = \{2, 4, 6, 8, 10\};/],
+      [11, /altera\(v \+ 1\);/],
+      [1, /\*p \+= 5;/],
+      [2, /p \+= 2;/],
+      [3, /\*p = \*\(p-1\) \+ \*\(p\+1\);/],
+      [4, /p--;/],
+      [5, /\*\(p\+2\) = \*p;/],
+      [13, /for\(int i = 0; i < 5; i\+\+\)\{/],
+      [14, /printf\("%d ", v\[i\]\);/],
+    ];
+
+    for (const [line, command] of commands) {
+      expect(lessons.aritmetica.code.c[line]).toMatch(command);
+    }
+  });
+
   it('warns that Java has no pointer arithmetic', () => {
     expect(lessons.aritmetica.code.java.join('\n')).toMatch(/Java não tem aritmética de ponteiros/);
   });
