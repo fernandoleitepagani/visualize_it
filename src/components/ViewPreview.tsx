@@ -5,6 +5,7 @@ import type { ViewKind } from '@/engine/types';
 import { font, radius, vizVar } from '@/theme';
 
 const barHeights = [9, 16, 12, 22, 15, 25];
+const accent = 'var(--subject-accent, var(--viz-accent))';
 
 /** Tiny abstract preview of a lesson's view, used on catalog cards. */
 export function ViewPreview({
@@ -27,7 +28,7 @@ export function ViewPreview({
           border: `1px solid ${vizVar.line2}`,
           borderRadius: radius.sm,
           background: vizVar.surface2,
-          color: vizVar.accent,
+          color: accent,
           fontSize: font.tiny,
         }}
       >
@@ -46,9 +47,9 @@ export function ViewPreview({
             w={9}
             h={20}
             style={{
-              border: `1px solid ${i === 2 ? vizVar.accentLine : vizVar.line2}`,
+              border: `1px solid ${i === 2 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line2}`,
               borderRadius: 4,
-              background: i === 2 ? vizVar.accentSoft : vizVar.surface2,
+              background: i === 2 ? `color-mix(in srgb, ${accent} 12%, transparent)` : vizVar.surface2,
             }}
           />
         ))}
@@ -71,9 +72,9 @@ export function ViewPreview({
               w={13}
               h={20}
               style={{
-                border: `1px solid ${i === 1 ? vizVar.accentLine : vizVar.line2}`,
+                border: `1px solid ${i === 1 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line2}`,
                 borderRadius: 4,
-                background: i === 1 ? vizVar.accentSoft : vizVar.surface2,
+                background: i === 1 ? `color-mix(in srgb, ${accent} 12%, transparent)` : vizVar.surface2,
               }}
             />
           </Fragment>
@@ -93,8 +94,8 @@ export function ViewPreview({
             h={height}
             style={{
               borderRadius: '3px 3px 1px 1px',
-              background: i === 3 ? vizVar.accent : vizVar.greenSoft,
-              border: `1px solid ${i === 3 ? vizVar.accentLine : vizVar.line}`,
+              background: i === 3 ? accent : vizVar.surface3,
+              border: `1px solid ${i === 3 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line}`,
             }}
           />
         ))}
@@ -112,7 +113,7 @@ export function ViewPreview({
           h={height}
           style={{
             borderRadius: '3px 3px 1px 1px',
-            background: i === 5 ? vizVar.accent : vizVar.line3,
+            background: i === 5 ? accent : vizVar.line3,
           }}
         />
       ))}
