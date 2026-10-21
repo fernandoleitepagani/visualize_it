@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Box,
@@ -35,19 +35,67 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
   const [params, setParams] = useSearchParams();
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
 
-  const query = params.get('q') ?? '';
+  const urlQuery = params.get('q') ?? '';
   const groupId = params.get('grupo') ?? 'todos';
   const viewFilter = params.get('view') ?? 'todas';
 
-  const setParam = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
-    if (!value || value === 'todos' || value === 'todas') {
-      next.delete(key);
-    } else {
-      next.set(key, value);
+  /*
+   * The search field is intentionally local. Routing on every keystroke used
+   * to re-render the whole catalog (and rewrite the URL) while the user typed,
+   * which made fast typing lose characters on slower machines. The URL now
+   * catches up after a short pause, while filtering stays immediate.
+   */
+  const [query, setQuery] = useState(urlQuery);
+  const queryRef = useRef(query);
+
+  useEffect(() => {
+    if (urlQuery !== queryRef.current) {
+      queryRef.current = urlQuery;
+      setQuery(urlQuery);
     }
-    setParams(next, { replace: true });
-  };
+  }, [urlQuery]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (query === urlQuery) return;
+      setParams(
+        (previous) => {
+          const current = previous.get('q') ?? '';
+          if (current === query) return previous;
+          const next = new URLSearchParams(previous);
+          if (query) next.set('q', query);
+          else next.delete('q');
+          return next;
+        },
+        { replace: true },
+      );
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+  }, [query, urlQuery, setParams]);
+
+  const updateQuery = useCallback((value: string) => {
+    queryRef.current = value;
+    setQuery(value);
+  }, []);
+
+  const setParam = useCallback(
+    (key: string, value: string) => {
+      setParams(
+        (previous) => {
+          const next = new URLSearchParams(previous);
+          if (!value || value === 'todos' || value === 'todas') {
+            next.delete(key);
+          } else {
+            next.set(key, value);
+          }
+          return next;
+        },
+        { replace: true },
+      );
+    },
+    [setParams],
+  );
 
   const availableViews = useMemo(
     () =>
@@ -78,7 +126,11 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
 
   const hasFilters = Boolean(query || groupId !== 'todos' || viewFilter !== 'todas');
 
-  const clearFilters = () => setParams({}, { replace: true });
+  const clearFilters = useCallback(() => {
+    queryRef.current = '';
+    setQuery('');
+    setParams({}, { replace: true });
+  }, [setParams]);
 
   return (
     <Box>
@@ -98,9 +150,11 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
         <Group align="center" gap="sm" wrap="wrap">
           <TextInput
             value={query}
-            onChange={(event) => setParam('q', event.currentTarget.value)}
+            onChange={(event) => updateQuery(event.currentTarget.value)}
             placeholder="Buscar nesta matéria..."
             aria-label="Buscar nesta matéria"
+            autoComplete="off"
+            spellCheck={false}
             leftSection={<SearchIcon size={15} />}
             rightSection={
               query ? (
@@ -109,7 +163,7 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
                   variant="subtle"
                   color="gray"
                   aria-label="Limpar busca"
-                  onClick={() => setParam('q', '')}
+                  onClick={() => updateQuery('')}
                   px={6}
                 >
                   ×

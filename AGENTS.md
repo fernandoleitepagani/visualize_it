@@ -41,7 +41,7 @@ português (pt-BR).
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
 | Lint | ESLint 10 (flat config) |
-| Fonte | Padrão do navegador (sem fontes customizadas ou self-hosted) |
+| Fonte | Pilha do sistema (sans/mono), sem fontes customizadas |
 | Deploy | Vercel (SPA com rewrites) |
 
 Node.js necessário: **20.19+ ou 22.12+** (requisito do Vite 8).

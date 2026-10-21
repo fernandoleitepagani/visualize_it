@@ -79,7 +79,7 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 | Rotas | React Router 7 |
 | Testes | Vitest 5 + Testing Library + jsdom |
 | Lint | ESLint 10 (flat config) |
-| Fonte | Padrão do navegador (sem fontes customizadas ou self-hosted) |
+| Fonte | Pilha do sistema (sans/mono), sem fontes customizadas |
 | Deploy | Vercel |
 
 ```bash
@@ -365,12 +365,12 @@ npm run build
 | 2026-10-20 | Limpeza visual geral e animações didáticas (curvas spring, sincronização de rótulos em BarsView, elevação e ponteiros em Cells/NodesView, detecção de mutação em VarsPanel, toolbar em linha única e LessonPager integrado) | Reduzir ruído visual de bordas/cabeçalhos e fornecer feedback físico imediato das mudanças de estado algorítmico |
 | 2026-10-20 | Merge da linha de interface por matéria com quiz, playground, view `plot`, tema claro/escuro e Storybook | Unificar as duas frentes mantendo `subjects.ts` como catálogo, o grid 56/44 e os tokens compartilhados |
 | 2026-10-20 | Deck de controles empilha abaixo de 1216px e os atalhos não ocupam mais a linha do player | Impedir que velocidade/copiar link vazem para fora do painel em telas médias e no container máximo |
-| 2026-10-21 | Refatoração visual “Living Graph Paper”: Space Grotesk + JetBrains Mono, `cssVariablesResolver` como fonte única, grade de papel, herói com figura matemática, catálogo editorial, cockpit com timeline, views com curvas/área, editor do playground e 404 | Modernizar a interface mantendo a identidade de código/matemática e paridade entre tema claro e escuro |
+| 2026-10-21 | Refatoração visual “Living Graph Paper”: tipografia do sistema (sans para leitura, mono para código), `cssVariablesResolver` como fonte única, grade de papel, herói com figura matemática, catálogo editorial, cockpit com timeline, views com curvas/área, editor do playground e 404 | Modernizar a interface mantendo a identidade de código/matemática e paridade entre tema claro e escuro |
 | 2026-10-21 | `TimelineBar` integrado ao player, `Panel` com corpo flex, highlighter extraído para `lib/highlight` e ponteiros da lista dupla corrigidos | Aproveitar o componente já testado, eliminar espaços vazios nos painéis e fechar BUG-03/BUG-12 |
 | 2026-10-21 | Tema escuro em preto puro (`#000`), superfícies neutras e remoção de glows/gradientes decorativos | Reduzir ruído visual, melhorar contraste e afastar a interface de um visual genérico |
 | 2026-10-21 | Nav com indicador inferior e hover centralizado; links do drawer em largura total; timeline monocromática | Corrigir desalinhamento de ícones/texto e diminuir a poluição visual do player |
 | 2026-10-21 | `testTimeout` de 20s no Vitest | Renderizações do Mantine em jsdom passam dos 5s padrão em máquinas mais lentas |
-| 2026-10-21 | Remoção de `@fontsource` e de toda `font-family` explícita; UI e código usam a fonte padrão do navegador | Eliminar fontes customizadas/hardcoded e reduzir o bundle |
+| 2026-10-21 | Remoção de `@fontsource`; UI e código usam pilhas do sistema (sans/mono), sem arquivos de fonte | Eliminar fontes customizadas/hardcoded e reduzir o bundle |
 
 ---
 

@@ -18,7 +18,7 @@ Deploy no [Vercel](https://vercel.com).
 | Linguagem | TypeScript 6 (strict) |
 | Build | Vite 8 |
 | UI | Mantine 9 (tema dark + âmbar) |
-| Fonte | Padrão do navegador |
+| Fonte | Pilha do sistema (sans/mono) |
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
 | Lint | ESLint 10 (flat) |

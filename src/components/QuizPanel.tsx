@@ -70,7 +70,7 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
         {question.options.map((option, i) => {
           const correctOption = sameArray(option, question.correct);
           const chosen = choice !== null && sameArray(option, choice);
-          const color = answered ? (correctOption ? 'green' : chosen ? 'red' : 'gray') : undefined;
+          const color = answered ? (correctOption ? 'amber' : chosen ? 'red' : 'gray') : undefined;
 
           return (
             <Button
@@ -94,7 +94,7 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
       </SimpleGrid>
 
       {answered ? (
-        <Text fz="sm" mt="sm" c={isRight ? 'green' : 'red'}>
+        <Text fz="sm" mt="sm" c={isRight ? 'amber' : 'red'}>
           {isRight ? 'Correto!' : `Incorreto — resposta: [${question.correct.join(', ')}]`}
         </Text>
       ) : null}

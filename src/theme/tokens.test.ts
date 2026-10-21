@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { cssVariablesResolver, palette, theme } from './tokens';
 
 describe('theme tokens', () => {
-  it('keeps the amber identity without shipping a custom font', () => {
+  it('keeps the amber identity and a system sans/mono pair', () => {
     expect(theme.primaryColor).toBe('amber');
-    expect(theme.fontFamily).toBe('inherit');
-    expect(theme.fontFamilyMonospace).toBe('inherit');
+    expect(theme.fontFamily).toContain('system-ui');
+    expect(theme.fontFamily).not.toContain('Space Grotesk');
+    expect(theme.fontFamilyMonospace).toContain('monospace');
   });
 
   it('derives scheme-aware visualization variables from the tokens', () => {

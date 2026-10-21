@@ -28,9 +28,11 @@ export const palette = {
   accentGlow: 'rgba(251, 191, 36, 0.08)',
   accentInk: '#2a1d02',
 
-  success: '#4ade80',
-  successSoft: 'rgba(74, 222, 128, 0.12)',
-  successLine: 'rgba(74, 222, 128, 0.34)',
+  // The site uses a single amber accent; `success` is kept as a semantic
+  // alias so state names stay meaningful without introducing a second hue.
+  success: '#fbbf24',
+  successSoft: 'rgba(251, 191, 36, 0.13)',
+  successLine: 'rgba(251, 191, 36, 0.34)',
 
   info: '#c084fc',
   infoSoft: 'rgba(192, 132, 252, 0.14)',
@@ -68,9 +70,9 @@ export const lightPalette = {
   accentHalo: 'rgba(138, 90, 0, 0.16)',
   accentGlow: 'rgba(138, 90, 0, 0.06)',
 
-  success: '#1f7a3d',
-  successSoft: 'rgba(31, 122, 61, 0.10)',
-  successLine: 'rgba(31, 122, 61, 0.28)',
+  success: '#8a5a00',
+  successSoft: 'rgba(138, 90, 0, 0.09)',
+  successLine: 'rgba(138, 90, 0, 0.26)',
 
   info: '#6d3fc0',
   infoSoft: 'rgba(109, 63, 192, 0.10)',
@@ -97,11 +99,13 @@ export const font = {
 } as const;
 
 /**
- * No custom font stack: `inherit` keeps whatever font the browser uses by
- * default, including inside Mantine components and monospace-styled labels.
+ * System stacks keep the bundle free of font files while preserving a
+ * predictable sans for reading and a real monospace for code and notation.
  */
-export const sans = 'inherit';
-export const mono = 'inherit';
+export const sans =
+  'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+export const mono =
+  'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
 export const shadow = {
   card: '0 1px 0 0 rgba(255,255,255,0.04) inset',
@@ -256,13 +260,13 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--viz-grid': 'rgba(255, 255, 255, 0.018)',
     '--viz-grid-major': 'rgba(255, 255, 255, 0.032)',
     '--viz-glow-a': 'rgba(251, 191, 36, 0.04)',
-    '--viz-glow-b': 'rgba(74, 222, 128, 0.02)',
+    '--viz-glow-b': 'rgba(251, 191, 36, 0.02)',
     '--viz-code-bg': '#050505',
     '--viz-code-ink': palette.ink,
     '--viz-code-keyword': '#c9a4ff',
     '--viz-code-number': palette.accent,
     '--viz-code-comment': palette.dim,
-    '--viz-code-string': '#7ee2a8',
+    '--viz-code-string': palette.accent,
     '--viz-noise-opacity': '0',
   },
   light: {
@@ -293,13 +297,13 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--viz-grid': 'rgba(28, 33, 29, 0.045)',
     '--viz-grid-major': 'rgba(28, 33, 29, 0.075)',
     '--viz-glow-a': 'rgba(138, 90, 0, 0.075)',
-    '--viz-glow-b': 'rgba(31, 122, 61, 0.045)',
+    '--viz-glow-b': 'rgba(138, 90, 0, 0.045)',
     '--viz-code-bg': '#fbf8f0',
     '--viz-code-ink': lightPalette.ink,
     '--viz-code-keyword': '#7b3fbf',
     '--viz-code-number': lightPalette.accent,
     '--viz-code-comment': lightPalette.dim,
-    '--viz-code-string': lightPalette.success,
+    '--viz-code-string': lightPalette.accent,
     '--viz-noise-opacity': '0.016',
   },
 });
