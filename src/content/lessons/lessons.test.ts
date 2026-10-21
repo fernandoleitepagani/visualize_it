@@ -121,3 +121,55 @@ describe('summation lesson', () => {
     expect(totals[0]).toBe(0);
   });
 });
+
+describe('aritmetica lesson — pointer arithmetic', () => {
+  const input = lessons.aritmetica.initial ?? [];
+  const steps = lessons.aritmetica.steps([...input]);
+
+  const stepAt = (line: number) => steps.find((step) => step.line === line);
+  const pointerIndex = (line: number) =>
+    stepAt(line)?.cells?.findIndex((cell) => cell.labels?.includes('▼ p')) ?? -1;
+  const writtenIndex = (line: number) =>
+    stepAt(line)?.cells?.findIndex((cell) => cell.state === 'write') ?? -1;
+
+  it('applies the pointer operations to the vector', () => {
+    const last = [...steps].reverse().find((step) => step.cells);
+
+    expect(last?.cells?.map((cell) => cell.val)).toEqual([2, 9, 6, 16, 6]);
+  });
+
+  it('uses the values typed by the user', () => {
+    const custom = lessons.aritmetica.steps([1, 2, 3, 4, 5]);
+    const last = [...custom].reverse().find((step) => step.cells);
+
+    expect(last?.cells?.map((cell) => cell.val)).toEqual([1, 7, 3, 8, 3]);
+  });
+
+  it('moves the pointer when p changes', () => {
+    expect(pointerIndex(11)).toBe(1);
+    expect(pointerIndex(2)).toBe(3);
+    expect(pointerIndex(4)).toBe(2);
+  });
+
+  it('shows the pointer address in the variables panel', () => {
+    expect(stepAt(2)?.vars?.p).toBe('0x100c');
+    expect(stepAt(2)?.vars?.['*p']).toBe(8);
+  });
+
+  it('highlights the cell written by each assignment', () => {
+    expect(writtenIndex(1)).toBe(1);
+    expect(writtenIndex(3)).toBe(3);
+    expect(writtenIndex(5)).toBe(4);
+  });
+
+  it('keeps every highlighted line inside the C listing', () => {
+    for (const step of steps) {
+      expect(step.line).toBeGreaterThanOrEqual(0);
+      expect(step.line).toBeLessThan(lessons.aritmetica.code.c.length);
+    }
+  });
+
+  it('warns that Java has no pointer arithmetic', () => {
+    expect(lessons.aritmetica.code.java.join('\n')).toMatch(/Java não tem aritmética de ponteiros/);
+  });
+});
