@@ -42,7 +42,7 @@ void altera(int *p){
 }
 
 int main(){
-	int v[5];
+	int v[5] = {2, 4, 6, 8, 10};
 
 	altera(v + 1);
 
