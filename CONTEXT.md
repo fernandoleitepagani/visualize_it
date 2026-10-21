@@ -43,10 +43,10 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (20):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`), além de
-  `oop`, `abstracao`, `classes`, `construtores`, `encapsulamento`, `heranca`, `polimorfismo`,
-  `metodos-acessores`, `excecoes` (C++) e `structs`, `alocacao-memoria`, `strings`, `arquivos`,
-  `vetores-matrizes`, `classes-vetores-matrizes` (C).
+- **AEDS I (20):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`); depois
+  `structs`, `alocacao-memoria`, `strings`, `arquivos`, `vetores-matrizes`,
+  `classes-vetores-matrizes` (C) e, por último, `oop`, `abstracao`, `classes`, `construtores`,
+  `encapsulamento`, `heranca`, `polimorfismo`, `metodos-acessores`, `excecoes` (C++).
 - **AEDS II (18):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
     `heapsort`, `counting`, `bucket`, `radix`.

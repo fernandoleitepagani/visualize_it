@@ -115,6 +115,18 @@ export const subjects: Subject[] = [
         ],
       },
       {
+        id: 'dados-memoria',
+        title: 'Dados e memória',
+        entries: [
+          { kind: 'lesson', slug: 'structs', blurb: 'agrupa campos em um novo tipo de dado.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'alocacao-memoria', blurb: 'reserva e libera memória no heap com malloc e free.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'strings', blurb: 'texto como vetor de char terminado em \0.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'arquivos', blurb: 'abre, escreve e fecha arquivos com FILE.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'vetores-matrizes', blurb: 'índices, linhas e colunas em C.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'classes-vetores-matrizes', blurb: 'coleções como atributos de uma classe.', tag: 'conceito' },
+        ],
+      },
+      {
         id: 'orientacao-objetos',
         title: 'Orientação a objetos',
         entries: [
@@ -127,18 +139,6 @@ export const subjects: Subject[] = [
           { kind: 'lesson', slug: 'polimorfismo', blurb: 'um método, várias implementações em tempo de execução.', tag: 'conceito' },
           { kind: 'lesson', slug: 'metodos-acessores', blurb: 'getters e setters preservam o encapsulamento.', tag: 'conceito' },
           { kind: 'lesson', slug: 'excecoes', blurb: 'trata erros com throw, try e catch.', tag: 'conceito' },
-        ],
-      },
-      {
-        id: 'dados-memoria',
-        title: 'Dados e memória',
-        entries: [
-          { kind: 'lesson', slug: 'structs', blurb: 'agrupa campos em um novo tipo de dado.', tag: 'conceito' },
-          { kind: 'lesson', slug: 'alocacao-memoria', blurb: 'reserva e libera memória no heap com malloc e free.', tag: 'conceito' },
-          { kind: 'lesson', slug: 'strings', blurb: 'texto como vetor de char terminado em \0.', tag: 'Θ(n)' },
-          { kind: 'lesson', slug: 'arquivos', blurb: 'abre, escreve e fecha arquivos com FILE.', tag: 'conceito' },
-          { kind: 'lesson', slug: 'vetores-matrizes', blurb: 'índices, linhas e colunas em C.', tag: 'Θ(n)' },
-          { kind: 'lesson', slug: 'classes-vetores-matrizes', blurb: 'coleções como atributos de uma classe.', tag: 'conceito' },
         ],
       },
     ],
