@@ -59,9 +59,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const listing = lesson.codeVariants?.[approach] ?? lesson.code;
 
   const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
+  const inputFormat = lesson.inputFormat ?? 'integers';
   // Single-number lessons (for/while/do-while) do not benefit from ordering presets.
   const singleValue = initialInput.length === 1;
-  const canPreset = !singleValue;
+  // The ordering presets are integer-only; unit-interval lessons rely on "Sortear".
+  const canPreset = !singleValue && inputFormat === 'integers';
 
   const steps = useMemo(() => lesson.steps(input, approach), [lesson, input, approach]);
   const quizSupported = (lesson.view ?? 'bars') === 'bars';
@@ -102,26 +104,38 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   const apply = useCallback(() => {
     const parsed = parseInput(inputValue);
-    if (!parsed || parsed.some((value) => !Number.isInteger(value))) {
+    if (!parsed) {
+      setError('Use entre 1 e 12 números separados por vírgula.');
+      return;
+    }
+    if (inputFormat === 'integers' && parsed.some((value) => !Number.isInteger(value))) {
       setError('Use entre 1 e 12 números inteiros separados por vírgula.');
       return;
     }
+    if (inputFormat === 'unit-interval' && parsed.some((value) => value < 0 || value >= 1)) {
+      setError('Use valores entre 0 (inclusive) e 1 (exclusive), como 0.25 ou 0.70.');
+      return;
+    }
     if (singleValue && parsed.length !== 1) {
-      setError('Use um único inteiro para n.');
+      setError(
+        inputFormat === 'integers' ? 'Use um único inteiro para n.' : 'Use um único valor para n.',
+      );
       return;
     }
     setValues(parsed);
-  }, [inputValue, setValues, singleValue]);
+  }, [inputFormat, inputValue, setValues, singleValue]);
 
   const randomize = useCallback(() => {
-    const values = singleValue
-      ? [3 + Math.floor(Math.random() * 8)]
-      : Array.from(
-          { length: 4 + Math.floor(Math.random() * 4) },
-          () => 1 + Math.floor(Math.random() * 60),
-        );
+    const values =
+      lesson.randomInput?.() ??
+      (singleValue
+        ? [3 + Math.floor(Math.random() * 8)]
+        : Array.from(
+            { length: 4 + Math.floor(Math.random() * 4) },
+            () => 1 + Math.floor(Math.random() * 60),
+          ));
     setValues(values);
-  }, [setValues, singleValue]);
+  }, [lesson, setValues, singleValue]);
 
   const applyPreset = useCallback(
     (kind: 'ordered' | 'reversed' | 'repeated') => {
@@ -323,8 +337,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           }}
         >
           <TextInput
-            aria-label={canPreset ? 'valores' : 'valor de n'}
-            placeholder={canPreset ? 'ex: 45, 12, 85, 32' : 'ex: 5'}
+            aria-label={singleValue ? 'valor de n' : 'valores'}
+            placeholder={singleValue ? 'ex: 5' : 'ex: 45, 12, 85, 32'}
             leftSection={
               <Text fz={font.micro} fw={600} c="dimmed">
                 {singleValue ? 'n =' : 'vetor'}

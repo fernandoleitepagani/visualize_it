@@ -31,11 +31,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 23 (`src/content/lessons/index.ts`) |
+| Lições registradas | 24 (`src/content/lessons/index.ts`) |
 | Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `*` (404) |
-| Testes | 144 testes em 18 arquivos, passando |
+| Testes | 164 testes em 19 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -46,7 +46,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 - **AEDS I (5):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`).
 - **AEDS II (18):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
-    `heapsort`, `counting`, `radix`.
+    `heapsort`, `counting`, `bucket`, `radix`.
   - **Busca:** `busca-sequencial`, `busca-binaria`.
   - **Estruturas lineares:** `lista-sequencial`, `lista-encadeada`, `lista-dupla`,
     `pilha-sequencial`, `pilha-encadeada`, `fila-circular`, `fila-encadeada`.
@@ -113,6 +113,8 @@ export interface Lesson {
   linked?: 'singly' | 'doubly';      // só para nodes
   panelLabel?: string;
   initial?: number[];                // padrão: DEFAULT_INPUT
+  randomInput?: () => number[];      // gerador do botão "Sortear"
+  inputFormat?: 'integers' | 'unit-interval'; // padrão: inteiros
   complexity: Complexity;
   code: { java: string[]; c: string[] };
   steps: (input: number[]) => Step[];
@@ -378,6 +380,7 @@ npm run build
 | 2026-10-21 | Nav com indicador inferior e hover centralizado; links do drawer em largura total; timeline monocromática | Corrigir desalinhamento de ícones/texto e diminuir a poluição visual do player |
 | 2026-10-21 | `testTimeout` de 20s no Vitest | Renderizações do Mantine em jsdom passam dos 5s padrão em máquinas mais lentas |
 | 2026-10-21 | Remoção de `@fontsource`; UI e código usam pilhas do sistema (sans/mono), sem arquivos de fonte | Eliminar fontes customizadas/hardcoded e reduzir o bundle |
+| 2026-10-20 | Integração das lições `counting` e `bucket` com a linha principal (`main`) | Trazer as variantes iterativa/recursiva e a análise de complexidade; `inputFormat` permite valores em [0, 1) no formulário |
 
 ---
 
