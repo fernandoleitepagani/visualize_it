@@ -5,6 +5,7 @@ import {
   Box,
   Divider,
   Group,
+  Kbd,
   Modal,
   ScrollArea,
   Text,
@@ -18,10 +19,13 @@ import {
   getEntryPath,
   getEntrySubtitle,
   getEntryTitle,
+  getEntryView,
   searchEntries,
   subjects,
 } from '@/content/subjects';
-import { font, palette, radius } from '@/theme';
+import { font, radius, vizVar } from '@/theme';
+import { SearchIcon } from './icons';
+import { ViewPreview } from './ViewPreview';
 
 interface Props {
   trigger?: 'input' | 'icon';
@@ -29,6 +33,12 @@ interface Props {
   shortcut?: boolean;
   placeholder?: string;
 }
+
+const accentBySubject = {
+  accent: vizVar.accent,
+  success: vizVar.green,
+  info: vizVar.purple,
+} as const;
 
 /** Search field + modal that finds lessons and theory pages across subjects. */
 export function GlobalSearch({
@@ -106,7 +116,13 @@ export function GlobalSearch({
       title="Buscar"
       size="lg"
       centered
+      overlayProps={{ backgroundOpacity: 0.58, blur: 6 }}
+      transitionProps={{ transition: 'pop', duration: 200 }}
       closeButtonProps={{ 'aria-label': 'Fechar busca' }}
+      styles={{
+        content: { background: 'var(--viz-panel)', border: '1px solid var(--viz-line)' },
+        header: { background: 'transparent' },
+      }}
     >
       <TextInput
         autoFocus
@@ -119,91 +135,125 @@ export function GlobalSearch({
         onKeyDown={onSearchKeyDown}
         placeholder="Nome, tema ou complexidade..."
         aria-label="Buscar algoritmo"
-        leftSection={
-          <Text fz="sm" c="dimmed">
-            ⌕
-          </Text>
+        leftSection={<SearchIcon size={16} />}
+        rightSection={
+          query ? (
+            <Text fz={font.micro} c="dimmed" ff="monospace">
+              {flat.length}
+            </Text>
+          ) : undefined
         }
+        size="md"
       />
 
-      <ScrollArea.Autosize mah={420} mt="md" type="auto" role="listbox" aria-label="Resultados">
+      <ScrollArea.Autosize mah={430} mt="md" type="auto" role="listbox" aria-label="Resultados">
         {flat.length === 0 ? (
-          <Text fz="sm" c="dimmed" py="md">
-            Nenhum resultado para “{query}”. Tente outro nome ou navegue pelas matérias.
-          </Text>
+          <Box py="xl" px="sm">
+            <Text fz={font.body} c="dimmed">
+              Nenhum resultado para “{query}”.
+            </Text>
+            <Text fz={font.small} c="dimmed" mt={4}>
+              Tente outro nome ou navegue pelas matérias.
+            </Text>
+          </Box>
         ) : (
-          grouped.map((group, groupIndex) => (
-            <Box key={group.subject.id} mb="sm">
-              {groupIndex > 0 ? <Divider mb="sm" /> : null}
-              <Text
-                fz={font.tiny}
-                tt="uppercase"
-                c="dimmed"
-                fw={600}
-                mb={4}
-                style={{ letterSpacing: '0.08em' }}
-              >
-                {group.subject.title}
-              </Text>
-              {group.items.map((location) => {
-                const index = flat.indexOf(location);
-                const selected = index === active;
-                return (
-                  <UnstyledButton
-                    key={`${location.subject.id}-${location.entry.slug}`}
-                    role="option"
-                    aria-selected={selected}
-                    onClick={() => go(location)}
-                    onMouseEnter={() => setActive(index)}
-                    className="search-result"
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      padding: '8px 10px',
-                      borderRadius: radius.sm,
-                      background: selected ? palette.surface3 : undefined,
-                    }}
+          grouped.map((group, groupIndex) => {
+            const accent = accentBySubject[group.subject.accent];
+            return (
+              <Box key={group.subject.id} mb="sm">
+                {groupIndex > 0 ? <Divider mb="sm" color="var(--viz-line)" /> : null}
+                <Group gap={8} mb={6} px={4}>
+                  <Box w={5} h={5} style={{ borderRadius: 999, background: accent }} />
+                  <Text
+                    fz={font.micro}
+                    tt="uppercase"
+                    c="dimmed"
+                    fw={600}
+                    ff="monospace"
+                    style={{ letterSpacing: '0.12em' }}
                   >
-                    <Group justify="space-between" wrap="nowrap" gap="sm">
-                      <Box style={{ minWidth: 0 }}>
-                        <Text fz={font.small} fw={600} lineClamp={1}>
-                          {getEntryTitle(location.entry)}
+                    {group.subject.title}
+                  </Text>
+                </Group>
+                {group.items.map((location) => {
+                  const index = flat.indexOf(location);
+                  const selected = index === active;
+                  return (
+                    <UnstyledButton
+                      key={`${location.subject.id}-${location.entry.slug}`}
+                      role="option"
+                      aria-selected={selected}
+                      onClick={() => go(location)}
+                      onMouseEnter={() => setActive(index)}
+                      className="search-result"
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '8px 10px',
+                        borderRadius: radius.md,
+                        background: selected
+                          ? 'color-mix(in srgb, var(--viz-surface-2) 80%, transparent)'
+                          : undefined,
+                        boxShadow: selected ? `inset 2px 0 0 ${accent}` : undefined,
+                      }}
+                    >
+                      <Group wrap="nowrap" gap="sm">
+                        <Box style={{ transform: 'scale(0.9)', transformOrigin: 'left center' }}>
+                          <ViewPreview view={getEntryView(location.entry)} kind={location.entry.kind} />
+                        </Box>
+                        <Box style={{ minWidth: 0, flex: 1 }}>
+                          <Text fz={font.small} fw={600} lineClamp={1}>
+                            {getEntryTitle(location.entry)}
+                          </Text>
+                          <Text fz={font.tiny} c="dimmed" lineClamp={1}>
+                            {location.group.title}
+                            {getEntrySubtitle(location.entry)
+                              ? ` · ${getEntrySubtitle(location.entry)}`
+                              : ''}
+                          </Text>
+                        </Box>
+                        <Text
+                          ff="monospace"
+                          fz={font.micro}
+                          style={{ whiteSpace: 'nowrap', color: accent }}
+                        >
+                          {location.entry.tag}
                         </Text>
-                        <Text fz={font.tiny} c="dimmed" lineClamp={1}>
-                          {location.group.title}
-                          {getEntrySubtitle(location.entry)
-                            ? ` · ${getEntrySubtitle(location.entry)}`
-                            : ''}
-                        </Text>
-                      </Box>
-                      <Text
-                        ff="monospace"
-                        fz={font.tiny}
-                        c="amber"
-                        style={{ whiteSpace: 'nowrap' }}
-                      >
-                        {location.entry.tag}
-                      </Text>
-                    </Group>
-                  </UnstyledButton>
-                );
-              })}
-            </Box>
-          ))
+                      </Group>
+                    </UnstyledButton>
+                  );
+                })}
+              </Box>
+            );
+          })
         )}
       </ScrollArea.Autosize>
 
-      <Text fz={font.tiny} c="dimmed" mt="sm">
-        ↑ ↓ para navegar · Enter para abrir · Esc para fechar
-      </Text>
+      <Group gap="md" mt="sm" wrap="wrap">
+        <Text fz={font.micro} c="dimmed" ff="monospace">
+          <Kbd size="xs">↑</Kbd> <Kbd size="xs">↓</Kbd> navegar
+        </Text>
+        <Text fz={font.micro} c="dimmed" ff="monospace">
+          <Kbd size="xs">Enter</Kbd> abrir
+        </Text>
+        <Text fz={font.micro} c="dimmed" ff="monospace">
+          <Kbd size="xs">Esc</Kbd> fechar
+        </Text>
+      </Group>
     </Modal>
   );
 
   if (trigger === 'icon') {
     return (
       <>
-        <ActionIcon variant="default" size="lg" onClick={openSearch} aria-label="Buscar algoritmo">
-          <Text fz="sm">⌕</Text>
+        <ActionIcon
+          variant="default"
+          size="lg"
+          radius="xl"
+          onClick={openSearch}
+          aria-label="Buscar algoritmo"
+        >
+          <SearchIcon size={16} />
         </ActionIcon>
         {modal}
       </>
@@ -224,16 +274,23 @@ export function GlobalSearch({
         }}
         placeholder={placeholder}
         aria-label="Buscar algoritmo"
-        w={fullWidth ? '100%' : 250}
-        leftSection={
-          <Text fz="sm" c="dimmed">
-            ⌕
-          </Text>
-        }
-        rightSectionWidth={shortcut ? 52 : undefined}
+        w={fullWidth ? '100%' : 260}
+        leftSection={<SearchIcon size={16} />}
+        rightSectionWidth={shortcut ? 62 : undefined}
         rightSection={
           shortcut ? (
-            <Text fz={font.micro} c="dimmed" ff="monospace" style={{ whiteSpace: 'nowrap' }}>
+            <Text
+              fz={font.micro}
+              c="dimmed"
+              ff="monospace"
+              style={{
+                whiteSpace: 'nowrap',
+                border: `1px solid ${vizVar.line}`,
+                borderRadius: 5,
+                padding: '1px 5px',
+                background: 'color-mix(in srgb, var(--viz-surface-2) 60%, transparent)',
+              }}
+            >
               Ctrl K
             </Text>
           ) : undefined

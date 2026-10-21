@@ -9,13 +9,14 @@ import {
   SimpleGrid,
   Text,
   TextInput,
-  Title,
 } from '@mantine/core';
 import type { CatalogGroup, EntryLocation } from '@/content/subjects';
 import { getEntryView, matchesEntry } from '@/content/subjects';
 import type { ViewKind } from '@/engine/types';
-import { font, palette, radius } from '@/theme';
+import { font, radius, vizVar } from '@/theme';
 import { AlgorithmCard } from './AlgorithmCard';
+import { SectionHeading } from './SectionHeading';
+import { SearchIcon } from './icons';
 
 const viewLabels: Record<ViewKind, string> = {
   bars: 'Barras',
@@ -81,97 +82,143 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
 
   return (
     <Box>
-      <Group align="flex-end" gap="sm" mb="md" wrap="wrap">
-        <TextInput
-          value={query}
-          onChange={(event) => setParam('q', event.currentTarget.value)}
-          placeholder="Buscar nesta matéria..."
-          aria-label="Buscar nesta matéria"
-          leftSection={
-            <Text fz="sm" c="dimmed">
-              ⌕
-            </Text>
-          }
-          maw={360}
-          style={{ flex: '1 1 240px' }}
-        />
-        <SegmentedControl
-          size="xs"
-          value={layout}
-          onChange={(value) => setLayout(value as 'grid' | 'list')}
-          data={[
-            { label: 'Grade', value: 'grid' },
-            { label: 'Lista', value: 'list' },
-          ]}
-          aria-label="Modo de exibição"
-        />
-      </Group>
-
-      <Group gap="xs" mb="xs" wrap="wrap">
-        <Button
-          size="xs"
-          variant={groupId === 'todos' ? 'light' : 'default'}
-          aria-pressed={groupId === 'todos'}
-          onClick={() => setParam('grupo', 'todos')}
-        >
-          Todos
-        </Button>
-        {groups.map((group) => (
-          <Button
-            key={group.id}
+      <Paper
+        withBorder
+        radius="xl"
+        p="sm"
+        mb="md"
+        className="filter-bar"
+        style={{
+          borderColor: vizVar.line,
+          background: 'color-mix(in srgb, var(--viz-panel) 82%, transparent)',
+          backdropFilter: 'blur(14px)',
+          WebkitBackdropFilter: 'blur(14px)',
+        }}
+      >
+        <Group align="center" gap="sm" wrap="wrap">
+          <TextInput
+            value={query}
+            onChange={(event) => setParam('q', event.currentTarget.value)}
+            placeholder="Buscar nesta matéria..."
+            aria-label="Buscar nesta matéria"
+            leftSection={<SearchIcon size={15} />}
+            rightSection={
+              query ? (
+                <Button
+                  size="compact-xs"
+                  variant="subtle"
+                  color="gray"
+                  aria-label="Limpar busca"
+                  onClick={() => setParam('q', '')}
+                  px={6}
+                >
+                  ×
+                </Button>
+              ) : undefined
+            }
+            style={{ flex: '1 1 260px' }}
+            size="sm"
+          />
+          <SegmentedControl
             size="xs"
-            variant={groupId === group.id ? 'light' : 'default'}
-            aria-pressed={groupId === group.id}
-            onClick={() => setParam('grupo', group.id)}
-          >
-            {group.title}
-          </Button>
-        ))}
-      </Group>
+            value={layout}
+            onChange={(value) => setLayout(value as 'grid' | 'list')}
+            data={[
+              { label: 'Grade', value: 'grid' },
+              { label: 'Lista', value: 'list' },
+            ]}
+            aria-label="Modo de exibição"
+          />
+          {hasFilters ? (
+            <Button size="xs" variant="subtle" onClick={clearFilters}>
+              Limpar filtros
+            </Button>
+          ) : null}
+        </Group>
 
-      {availableViews.length > 0 ? (
-        <Group gap="xs" mb="md" wrap="wrap">
+        <Group gap={6} mt="sm" wrap="wrap">
+          <Text fz={font.micro} c="dimmed" ff="monospace" mr={4} tt="uppercase" style={{ letterSpacing: '0.1em' }}>
+            grupo
+          </Text>
           <Button
-            size="xs"
-            variant={viewFilter === 'todas' ? 'light' : 'default'}
-            aria-pressed={viewFilter === 'todas'}
-            onClick={() => setParam('view', 'todas')}
+            size="compact-sm"
+            radius="pill"
+            variant={groupId === 'todos' ? 'light' : 'default'}
+            aria-pressed={groupId === 'todos'}
+            onClick={() => setParam('grupo', 'todos')}
           >
-            Todas as views
+            Todos
           </Button>
-          {availableViews.map((view) => (
+          {groups.map((group) => (
             <Button
-              key={view}
-              size="xs"
-              variant={viewFilter === view ? 'light' : 'default'}
-              aria-pressed={viewFilter === view}
-              onClick={() => setParam('view', view)}
+              key={group.id}
+              size="compact-sm"
+              radius="pill"
+              variant={groupId === group.id ? 'light' : 'default'}
+              aria-pressed={groupId === group.id}
+              onClick={() => setParam('grupo', group.id)}
             >
-              {viewLabels[view]}
+              {group.title}
             </Button>
           ))}
         </Group>
-      ) : null}
+
+        {availableViews.length > 0 ? (
+          <Group gap={6} mt={8} wrap="wrap">
+            <Text
+              fz={font.micro}
+              c="dimmed"
+              ff="monospace"
+              mr={4}
+              tt="uppercase"
+              style={{ letterSpacing: '0.1em' }}
+            >
+              view
+            </Text>
+            <Button
+              size="compact-sm"
+              radius="pill"
+              variant={viewFilter === 'todas' ? 'light' : 'default'}
+              aria-pressed={viewFilter === 'todas'}
+              onClick={() => setParam('view', 'todas')}
+            >
+              Todas
+            </Button>
+            {availableViews.map((view) => (
+              <Button
+                key={view}
+                size="compact-sm"
+                radius="pill"
+                variant={viewFilter === view ? 'light' : 'default'}
+                aria-pressed={viewFilter === view}
+                onClick={() => setParam('view', view)}
+              >
+                {viewLabels[view]}
+              </Button>
+            ))}
+          </Group>
+        ) : null}
+      </Paper>
 
       <Group justify="space-between" mb="lg" wrap="wrap">
-        <Text fz={font.small} c="dimmed" aria-live="polite">
+        <Text fz={font.tiny} c="dimmed" aria-live="polite" ff="monospace">
           {filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}
         </Text>
-        {hasFilters ? (
-          <Button size="xs" variant="subtle" onClick={clearFilters}>
-            Limpar filtros
-          </Button>
+        {query ? (
+          <Text fz={font.tiny} c="dimmed" ff="monospace">
+            filtro: “{query}”
+          </Text>
         ) : null}
       </Group>
 
       {filtered.length === 0 ? (
         <Paper
           withBorder
-          radius="md"
-          p="lg"
-          style={{ borderColor: palette.line, background: palette.surface }}
+          radius="xl"
+          p="xl"
+          style={{ borderColor: vizVar.line, background: vizVar.panel }}
         >
-          <Text fz="sm" c="dimmed" mb="sm">
+          <Text fz={font.body} c="dimmed" mb="sm">
             Nenhum resultado com esses filtros.
           </Text>
           <Button size="xs" variant="default" onClick={clearFilters}>
@@ -179,25 +226,19 @@ export function AlgorithmBrowser({ entries, groups }: Props) {
           </Button>
         </Paper>
       ) : (
-        grouped.map(({ group, items }) => (
-          <Box
-            key={group.id}
-            component="section"
-            aria-labelledby={`grupo-${group.id}`}
-            mb="xl"
-          >
-            <Group justify="space-between" mb="sm" align="baseline">
-              <Title order={2} id={`grupo-${group.id}`} fz={font.h3} fw={600}>
-                {group.title}
-              </Title>
-              <Text fz={font.tiny} c="dimmed" ff="monospace">
-                {items.length}
-              </Text>
-            </Group>
+        grouped.map(({ group, items }, groupIndex) => (
+          <Box key={group.id} component="section" aria-labelledby={`grupo-${group.id}`} mb="xl">
+            <SectionHeading
+              id={`grupo-${group.id}`}
+              index={String(groupIndex + 1).padStart(2, '0')}
+              count={items.length}
+            >
+              {group.title}
+            </SectionHeading>
             <SimpleGrid
               cols={layout === 'grid' ? { base: 1, sm: 2, lg: 3 } : 1}
               spacing="md"
-              style={{ borderRadius: radius.md }}
+              style={{ borderRadius: radius.lg }}
             >
               {items.map((location) => (
                 <AlgorithmCard

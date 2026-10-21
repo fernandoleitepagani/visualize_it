@@ -1,14 +1,27 @@
 import { useCallback, useState } from 'react';
-import { Button, Flex, Group, Paper, SegmentedControl, Slider, Switch, Text } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Flex,
+  Group,
+  Paper,
+  SegmentedControl,
+  Slider,
+  Switch,
+  Text,
+} from '@mantine/core';
 import type { Playback } from '@/engine/usePlayback';
-import { font, palette, shadow, vizVar } from '@/theme';
+import type { Step } from '@/engine/types';
+import { font, vizVar } from '@/theme';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   PauseIcon,
   PlayIcon,
   ResetIcon,
+  ShareIcon,
 } from './icons';
+import { TimelineBar } from './TimelineBar';
 
 const SPEEDS = [
   { label: '0,5×', value: 1800 },
@@ -19,10 +32,13 @@ const SPEEDS = [
 
 export function PlayerControls({
   playback,
+  steps,
   quiz,
   onQuizChange,
 }: {
   playback: Playback;
+  /** Step list used by the timeline; omitted in isolated tests. */
+  steps?: Step[];
   /** Enables the quiz toggle; omit it on views that cannot quiz. */
   quiz?: boolean;
   onQuizChange?: (value: boolean) => void;
@@ -30,6 +46,7 @@ export function PlayerControls({
   const { isPlaying, atStart, atEnd, index, total, speedMs } = playback;
   const playLabel = isPlaying ? 'Pausar' : atEnd ? 'Recomeçar' : 'Executar';
   const [copied, setCopied] = useState(false);
+  const empty = total === 0;
 
   const copyLink = useCallback(async () => {
     try {
@@ -44,18 +61,29 @@ export function PlayerControls({
   return (
     <Paper
       withBorder
-      radius="md"
-      px="md"
-      py="sm"
       className="player-deck"
-      style={{ background: 'var(--mantine-color-body)', boxShadow: shadow.deck }}
+      radius="xl"
+      style={{
+        background: 'color-mix(in srgb, var(--viz-panel) 94%, transparent)',
+        borderColor: vizVar.line,
+        boxShadow: 'var(--viz-shadow-deck)',
+        overflow: 'hidden',
+      }}
     >
-      <Flex className="player-deck-inner" align="center" gap="md" wrap="wrap">
+      {steps && steps.length > 0 ? (
+        <Box className="player-timeline">
+          <TimelineBar steps={steps} currentIndex={index} onSeek={playback.goTo} />
+        </Box>
+      ) : null}
+
+      <Flex className="player-deck-inner" align="center" gap="md" wrap="wrap" px="md" py="sm">
         <Group className="player-transport" gap={6} wrap="nowrap">
           <Button
             variant="subtle"
             size="md"
+            radius="pill"
             onClick={playback.reset}
+            disabled={empty}
             aria-label="Voltar ao início"
             aria-keyshortcuts="Home"
             leftSection={<ResetIcon size={15} />}
@@ -68,8 +96,9 @@ export function PlayerControls({
           <Button
             variant="default"
             size="md"
+            radius="pill"
             onClick={playback.prev}
-            disabled={atStart}
+            disabled={atStart || empty}
             aria-label="Passo anterior"
             aria-keyshortcuts="ArrowLeft"
             leftSection={<ChevronLeftIcon size={15} />}
@@ -81,20 +110,22 @@ export function PlayerControls({
           </Button>
           <Button
             size="md"
+            radius="pill"
             aria-pressed={isPlaying}
             aria-keyshortcuts="Space"
+            disabled={empty}
             onClick={playback.toggle}
             leftSection={isPlaying ? <PauseIcon size={15} /> : <PlayIcon size={15} />}
-            className="player-action player-action-play"
-            style={{ boxShadow: shadow.primary }}
+            className="player-action player-action-play btn-primary"
           >
             {playLabel}
           </Button>
           <Button
             variant="default"
             size="md"
+            radius="pill"
             onClick={playback.next}
-            disabled={atEnd}
+            disabled={atEnd || empty}
             aria-label="Próximo passo"
             aria-keyshortcuts="ArrowRight"
             rightSection={<ChevronRightIcon size={15} />}
@@ -116,15 +147,15 @@ export function PlayerControls({
             value={index}
             onChange={playback.goTo}
             disabled={total <= 1}
-            label={(value) => `Passo ${value + 1} de ${total}`}
+            label={(value) => (empty ? 'Sem passos' : `Passo ${value + 1} de ${total}`)}
           />
           <Text
             fz={font.small}
             ff="monospace"
             fw={600}
-            style={{ color: vizVar.ink, minWidth: 54, textAlign: 'right' }}
+            style={{ color: vizVar.ink, minWidth: 60, textAlign: 'right' }}
           >
-            {index + 1} / {total}
+            {empty ? '0 / 0' : `${index + 1} / ${total}`}
           </Text>
         </Group>
 
@@ -135,6 +166,7 @@ export function PlayerControls({
               label="quiz"
               checked={quiz ?? false}
               onChange={(event) => onQuizChange(event.currentTarget.checked)}
+              styles={{ label: { fontFamily: 'var(--mantine-font-family-monospace)', fontSize: font.micro } }}
             />
           ) : null}
           <SegmentedControl
@@ -147,7 +179,14 @@ export function PlayerControls({
               value: String(speed.value),
             }))}
           />
-          <Button variant="subtle" size="xs" onClick={copyLink} style={{ color: palette.accent }}>
+          <Button
+            variant="subtle"
+            size="xs"
+            radius="pill"
+            onClick={copyLink}
+            leftSection={<ShareIcon size={13} />}
+            style={{ color: vizVar.accent }}
+          >
             {copied ? 'Copiado!' : 'Copiar link'}
           </Button>
         </Group>

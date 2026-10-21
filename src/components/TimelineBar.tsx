@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Flex, Group, Text } from '@mantine/core';
 import type { Step } from '@/engine/types';
-import { vizVar } from '@/theme';
+import { font, vizVar } from '@/theme';
 
 interface Props {
   steps: Step[];
@@ -31,7 +31,7 @@ function getKindColor(kind: StepKind): string {
     case 'cmp':
       return vizVar.accent;
     default:
-      return vizVar.line2;
+      return vizVar.line3;
   }
 }
 
@@ -63,58 +63,58 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
   const inspectedKind = inspectedStep ? classifyStep(inspectedStep) : 'normal';
 
   return (
-    <Box mb="sm">
-      {/* Header row: Timeline label + hovered/active step preview + legend */}
+    <Box>
       <Flex justify="space-between" align="center" wrap="wrap" gap="xs" mb={6}>
         <Group gap={8} align="center" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
           <Text
-            fz={10.5}
+            fz={font.micro}
             fw={600}
             tt="uppercase"
             c="dimmed"
-            style={{ letterSpacing: '0.08em', flexShrink: 0 }}
+            ff="monospace"
+            style={{ letterSpacing: '0.12em', flexShrink: 0 }}
           >
-            Timeline
+            timeline
           </Text>
           <Text
             ff="monospace"
-            fz={11}
+            fz={font.micro}
             fw={600}
-            px={6}
+            px={7}
             py={1}
             style={{
-              borderRadius: 4,
-              background: vizVar.surface3,
+              borderRadius: 5,
+              background: 'color-mix(in srgb, var(--viz-surface-3) 74%, transparent)',
               color: getKindColor(inspectedKind),
               border: `1px solid ${vizVar.line2}`,
               flexShrink: 0,
             }}
           >
-            #{inspectIndex + 1}/{total} • L{(inspectedStep?.line ?? 0) + 1} ({getKindLabel(inspectedKind)})
+            #{inspectIndex + 1}/{total} · L{(inspectedStep?.line ?? 0) + 1} ({getKindLabel(inspectedKind)})
           </Text>
           <Text
-            fz="xs"
-            c={hoveredIndex !== null ? 'amber' : 'dimmed'}
+            fz={font.tiny}
+            c={hoveredIndex !== null ? undefined : 'dimmed'}
             truncate="end"
-            style={{ minWidth: 0 }}
+            style={{ minWidth: 0, color: hoveredIndex !== null ? vizVar.accent : undefined }}
           >
             {inspectedStep?.desc}
           </Text>
         </Group>
 
-        <Group gap={10} wrap="nowrap" visibleFrom="sm">
+        <Group gap={10} wrap="nowrap" visibleFrom="md">
           {[
-            { label: 'Comp/Ação', color: vizVar.accent },
-            { label: 'Troca', color: vizVar.green },
-            { label: 'Pivô', color: vizVar.purple },
+            { label: 'comp/ação', color: vizVar.accent },
+            { label: 'troca', color: vizVar.green },
+            { label: 'pivô', color: vizVar.purple },
           ].map((item) => (
             <Group key={item.label} gap={4} wrap="nowrap">
               <Box
-                w={7}
-                h={7}
+                w={6}
+                h={6}
                 style={{ borderRadius: '50%', background: item.color, flexShrink: 0 }}
               />
-              <Text fz={10.5} c="dimmed">
+              <Text fz={font.micro} c="dimmed" ff="monospace">
                 {item.label}
               </Text>
             </Group>
@@ -122,7 +122,6 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
         </Group>
       </Flex>
 
-      {/* Interactive segmented scrubber track */}
       <Box
         role="group"
         aria-label="Linha do tempo de passos"
@@ -131,10 +130,10 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
           display: 'flex',
           alignItems: 'center',
           gap: total > 60 ? 1 : 2,
-          height: 22,
-          padding: '3px 4px',
-          borderRadius: 6,
-          background: vizVar.surface,
+          height: 24,
+          padding: '4px 5px',
+          borderRadius: 7,
+          background: 'color-mix(in srgb, var(--viz-surface-2) 64%, transparent)',
           border: `1px solid ${vizVar.line}`,
           userSelect: 'none',
         }}
@@ -151,6 +150,7 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
               key={i}
               component="button"
               type="button"
+              tabIndex={isCurrent ? 0 : -1}
               aria-label={`Ir para o passo ${i + 1}`}
               aria-current={isCurrent ? 'step' : undefined}
               onClick={() => onSeek(i)}
@@ -166,9 +166,10 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
                 borderRadius: 2,
                 cursor: 'pointer',
                 background: isCurrent ? vizVar.ink : color,
-                opacity: isCurrent ? 1 : isHovered ? 0.95 : isPast ? 0.85 : 0.38,
-                boxShadow: isCurrent ? `0 0 8px ${vizVar.accent}` : undefined,
-                transition: 'height 120ms ease, opacity 120ms ease, background-color 120ms ease',
+                opacity: isCurrent ? 1 : isHovered ? 0.95 : isPast ? 0.82 : 0.34,
+                boxShadow: isCurrent ? `0 0 10px ${vizVar.accent}` : undefined,
+                transition:
+                  'height 140ms ease, opacity 140ms ease, background-color 140ms ease, box-shadow 140ms ease',
               }}
             />
           );
