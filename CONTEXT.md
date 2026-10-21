@@ -35,7 +35,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
-| Testes | 188 testes em 26 arquivos, passando |
+| Testes | 189 testes em 26 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |

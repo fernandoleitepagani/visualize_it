@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { CodePanel } from './CodePanel';
@@ -52,6 +52,17 @@ describe('CodePanel', () => {
     expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
     expect(screen.getByText('C')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+  });
+
+  it('copies the current listing', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    renderWithProviders(
+      <CodePanel code={['int soma = 0;', 'return soma;']} activeLine={0} lang="c" onLangChange={vi.fn()} />,
+    );
+
+    fireEvent.click(screen.getByLabelText('Copiar código'));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith('int soma = 0;\nreturn soma;'));
   });
 
   it('switches the language through the segmented control', () => {
