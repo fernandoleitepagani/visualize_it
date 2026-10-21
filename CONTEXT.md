@@ -7,7 +7,7 @@
 > Este documento descreve o estado atual do projeto, a arquitetura, os bugs conhecidos, as dívidas
 > técnicas e o roadmap. Ele deve ser atualizado junto com o código quando o estado mudar.
 
-**Última atualização:** 2026-10-20
+**Última atualização:** 2026-10-21
 
 ---
 
@@ -79,7 +79,7 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 | Rotas | React Router 7 |
 | Testes | Vitest 5 + Testing Library + jsdom |
 | Lint | ESLint 10 (flat config) |
-| Fonte | JetBrains Mono self-hosted (`@fontsource`) |
+| Fonte | Pilha do sistema (sans/mono), sem fontes customizadas |
 | Deploy | Vercel |
 
 ```bash
@@ -143,21 +143,24 @@ LessonPage (breadcrumb + LessonPager)
        ├─ useMemo: assignElementIds(steps)  // só para bars
        ├─ Canvas → BarsView | CellsView | NodesView | PlotView
        ├─ CodePanel (Java/C, iterativo/recursivo, linha ativa com rolagem automática)
-       ├─ PlayerControls abaixo do grid (transporte, progresso, velocidade, quiz, copiar link)
+       ├─ PlayerControls abaixo do grid (timeline de passos, transporte, progresso,
+       │   velocidade, quiz, copiar link)
        ├─ VarsPanel
        ├─ ComplexityAnalysisCard (lições de ordenação)
        └─ painéis Sobre + Complexidade
 ```
 
-No desktop, visualização e código ficam lado a lado em um grid 56/44; no mobile, viram abas. Os
-controles de reprodução ficam logo abaixo do grid, antes dos painéis Sobre/Complexidade. O
-cabeçalho do painel de visualização mostra um badge com o passo atual, a narração fica em um bloco
-destacado logo abaixo do canvas e as variáveis ficam em um rodapé próprio. Os painéis compartilham
-header, ícone e sombra sutil via `Panel`; `src/components/icons.tsx` concentra os SVGs inline e
-`ViewLegend` padroniza a legenda das views. `usePlayback` mantém o cursor, o estado de
-play/pause, a velocidade, `initialIndex`, `loop` e o callback `onStepChange`; `goTo` atende o slider
-de passo. Quando a lista de `Step` muda de identidade (nova lição ou nova entrada), o cursor
-reinicia durante o render.
+No desktop, visualização e código ficam lado a lado em um grid 1.14/0.86; no mobile, viram abas.
+Os controles de reprodução ficam logo abaixo do grid, antes dos painéis Sobre/Complexidade e,
+abaixo de 62em, o deck vira uma barra sticky no rodapé da viewport. O cabeçalho do painel de
+visualização mostra o passo atual, a narração fica em um bloco destacado logo abaixo do canvas e as
+variáveis ficam em um rodapé próprio. Os painéis compartilham header, ícone e sombra via `Panel`;
+`src/components/icons.tsx` concentra os SVGs inline, `SectionHeading`/`MetaPill` padronizam
+títulos e metadados e `ViewLegend` padroniza a legenda das views. O player combina o `TimelineBar`
+(marcadores clicáveis com preview da operação) com o slider acessível. `usePlayback` mantém o
+cursor, o estado de play/pause, a velocidade, `initialIndex`, `loop` e o callback `onStepChange`.
+Quando a lista de `Step` muda de identidade (nova lição ou nova entrada), o cursor reinicia durante
+o render.
 
 O par `arr`/`step` é espelhado na query string (`replace: true`) e a última entrada aplicada fica
 persistida por lição em `localStorage` (`src/lib/persistedInput.ts`). Lições com `codeVariants`
@@ -166,12 +169,16 @@ tem alternância de tema claro/escuro (`ThemeToggle`) e a paleta das views usa a
 `--viz-*` para acompanhar o esquema de cores.
 
 `assignElementIds` dá identidade estável aos elementos de `arr` para que a troca de barras seja
-animada como deslocamento, não como teletransporte.
+animada como deslocamento, não como teletransporte. O `CodePanel` usa o tokenizer de
+`src/lib/highlight.tsx`, que carrega o estado de comentários de bloco entre linhas e reconhece
+strings; os blocos `Pre` da teoria reutilizam o mesmo highlighter.
 
 `BarsView` usa `getBarScale` (`src/components/barScale.ts`) para mapear valores em uma escala que
 sempre inclui o zero. A view desenha grade discreta, linha de base, valores acima das barras,
 índices abaixo e uma legenda apenas com os estados presentes no passo. Valores negativos crescem
-para baixo a partir da mesma linha de base; zeros aparecem como um traço fino.
+para baixo a partir da mesma linha de base; zeros aparecem como um traço fino. `NodesView` desenha
+conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o terminal `∅`;
+`PlotView` usa área/linha apenas até o termo atual, para não sugerir uma soma que ainda não existe.
 
 ### 4.3 Views
 
@@ -188,17 +195,26 @@ As views são apresentacionais: não calculam o algoritmo, apenas desenham o `St
 
 A fonte única de tokens é `src/theme/tokens.ts`:
 
-- `palette` (cores, incluindo `accentHalo`/`accentGlow`), `space`, `radius`, `font`, `mono`,
+- `palette`/`lightPalette` (cores escuras e de papel), `space`, `radius`, `font`, `sans`, `mono`,
   `shadow` (incluindo `panel`, `deck` e `primary`), `transition`, `vizVar` (aliases `--viz-*`) e
   `tint` (mistura translúcida);
-- `theme` (Mantine `createTheme`, dark + âmbar, com `primaryShade` por esquema de cor).
+- `theme` (Mantine `createTheme`, dark + âmbar, com `primaryShade` por esquema de cor,
+  `respectReducedMotion` e defaults de `Button`/`Paper`/`TextInput`/`Modal`);
+- `cssVariablesResolver`, que emite as variáveis dos dois esquemas a partir dos tokens;
+- `subjectAccent` (`blue`, `teal`, `violet`) e as variáveis `--viz-subject-*`: cada matéria tem
+  sua própria cor, aplicada no cabeçalho, filtros, cards, painéis e controles da página. A home
+  continua usando o âmbar global.
 
 `src/theme.ts` é um shim que re-exporta os tokens e mantém o alias deprecated `viz`. As variáveis
-`--viz-*` são declaradas em `src/styles/index.css` para os esquemas dark e light.
+`--viz-*` dos esquemas dark e light são emitidas por `cssVariablesResolver` (em `tokens.ts`) e
+consumidas por `src/styles/index.css`; o stylesheet não mantém uma segunda cópia da paleta.
 
 **Atenção:** o alias `@/theme` hoje resolve para o **arquivo** `src/theme.ts`, não para o diretório
 `src/theme/`. Não existe `src/theme/index.ts`. Apagar o shim sem criar um índice ou trocar os
 imports quebra o build. Veja BUG-06.
+
+O guia completo de uso (temas, variáveis, acentos por matéria, componentes e anti-padrões) está em
+`docs/ui-guidelines.md`.
 
 ### 4.5 Rotas e catálogo
 
@@ -230,7 +246,7 @@ polimento.
 |---|---|---|---|---|---|
 | BUG-01 | Alta | Destaque da linha ativa desalinhado e compartilhado entre Java e C | `mergesort.ts` usa `push(16, ...)` com `code.java` de 16 linhas (índices 0–15); `for.ts` referencia as linhas 5/8/9/11/… mas o código Java está em 3/6/7/9/…; 12 lições têm listagens Java/C com tamanhos diferentes | A linha destacada às vezes não existe ou aponta para a instrução errada; a aba C fica pior | Modelar `line` por linguagem (`{ java: number; c: number }`) ou usar âncoras nomeadas; testar `0 <= line < code[lang].length` e igualdade semântica nas duas abas |
 | BUG-02 | Alta | `for.ts`: Java, C e simulação calculam resultados diferentes | Java: `i <= N-1` e `p <= N`; C: `i <= N` e `p <= N-1`; simulação: `i <= N` e `p <= N-1`. Para N=3, Java ≈ 3,7 e C/simulação = 1,0 | A lição ensina um código e anima outro; o resultado exibido não corresponde ao Java | Unificar a especificação, corrigir as três versões e adicionar teste do valor final |
-| BUG-03 | Alta | Lista dupla mostra `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` monta nós com `ant`/`prox`; `NodesView.tsx` lê `node.prev`/`node.next` | A view `doubly` não mostra os links reais; o aluno não vê a vantagem da lista dupla | Mapear `prev: nd.ant` e `next: nd.prox`; tipar o retorno como `Node` para o TS acusar propriedades fora do contrato |
+| BUG-03 | Resolvido | Lista dupla mostrava `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` agora mapeia `prev: nd.ant` e `next: nd.prox`; `NodesView` resolve os ids para os valores e desenha conectores curvos | — | Coberto por `lessons.test.ts`; a view também exibe o terminal `∅` |
 | BUG-04 | Média | Entrada aceita negativos e valores enormes | `LessonView.tsx` agora exige inteiros e quantidade 1–12, mas não limita faixa; `counting.ts` faz `new Array(max + 1)` e indexa por valor; `radix.ts` e `counting.ts` convertem negativos para 0; `for`/`while` usam só o primeiro valor e fazem clamp | Valores como `1e9` podem estourar memória; negativos produzem uma visualização diferente do que foi digitado; lições de N único ignoram o resto silenciosamente | Validar faixa (ex.: 0–999) por lição; schema de entrada (`array`, `n`, `array + alvo`); mostrar erro em vez de clampar |
 | BUG-05 | Média | Busca sempre procura o elemento do meio | `busca-sequencial.ts` e `busca-binaria.ts` definem `target = v[Math.floor(v.length / 2)]` | Não dá para demonstrar melhor/pior caso nem o caminho “não encontrado”; a busca sequencial sempre percorre metade do vetor | Permitir alvo explícito na entrada; manter um padrão quando não informado |
 | BUG-06 | Resolvido | Refactor de tema incompleto e com armadilha de resolução | `src/theme/tokens.ts` está rastreado e é a fonte única; `src/theme.ts` permanece como shim que re-exporta tokens, `vizVar` e `tint`, com `viz` deprecated para compatibilidade | — | A migração foi concluída mantendo o shim; criar `src/theme/index.ts` e remover `viz` quando todos os imports migrarem |
@@ -239,7 +255,7 @@ polimento.
 | BUG-09 | Baixa | Higiene do repositório | `dump.txt` (328 KB) e `criar-issues.sh` não rastreados; o script referencia caminhos antigos (`src/lessons/selection-sort/algorithm.ts`, `ArrayView`) e Tailwind/Prettier | Risco de commit acidental de dump e de automação obsoleta | Remover ou ignorar `dump.txt`; atualizar ou remover `criar-issues.sh`; manter `dist/` fora do git |
 | BUG-10 | Resolvido | Testes, documentação e CI defasados | 18 arquivos e 144 testes, incluindo playback, quiz, parsed input, catálogo, busca local/global, escala das barras e complexidade; workflow de CI em `.github/workflows/ci.yml` cobre lint, typecheck, test e build | — | Manter os testes e o workflow atualizados a cada mudança |
 | BUG-11 | Resolvido | Atalho de espaço no fim da animação | `usePlayback.toggle()` reinicia no passo 0 quando `atEnd`, e o botão passa a exibir “Recomeçar” | — | Coberto por `usePlayback.test.ts` |
-| BUG-12 | Baixa | Highlighter não cobre comentários de bloco nem strings | `CodePanel.tsx` reconhece `//`, números e palavras-chave; `aritmetica.ts` usa `/* ... */` | Comentários de bloco e strings ficam sem cor, reduzindo a legibilidade | Melhorar o tokenizer ou documentar a limitação |
+| BUG-12 | Resolvido | Highlighter não cobria comentários de bloco nem strings | `src/lib/highlight.tsx` reconhece `//`, `/* ... */` (com estado entre linhas), strings, números e palavras-chave; `CodePanel` e `Pre` da teoria reutilizam o tokenizer | — | Coberto por `highlight.test.tsx` |
 | BUG-13 | Resolvido | Dependência não utilizada | `@mantine/hooks` passou a ser usado por `useDisclosure` (busca/drawer) e `useMediaQuery` (layout responsivo) | — | Mantido; a dependência agora tem uso real |
 
 ### Observações que não são bugs
@@ -262,7 +278,8 @@ polimento.
 2. **Conteúdo duplicado.** As versões Java e C são mantidas manualmente; elas já divergem em
    `for.ts` e têm contagens de linha diferentes em 12 lições.
 3. **Tema em transição.** Shim + diretório + alias deprecated convivem; é fácil importar do lugar
-   errado, mas os tokens já estão centralizados e as views usam `--viz-*`.
+   errado. A paleta dos dois esquemas agora é emitida por `cssVariablesResolver` e o stylesheet não
+   guarda uma segunda cópia, mas o shim `src/theme.ts` e o alias `viz` continuam por compatibilidade.
 4. **Validação de entrada centralizada e frouxa.** Cada lição assume um formato diferente (vetor,
    N único, vetor + alvo), mas a UI oferece o mesmo campo para todas.
 5. **Contrato de linha frágil em lições sem variantes.** Há testes de playback, entrada e catálogo,
@@ -280,7 +297,7 @@ polimento.
 
 ### Curto prazo (próximas entregas)
 
-- Corrigir BUG-01, BUG-02 e BUG-03.
+- Corrigir BUG-01 e BUG-02.
 - Remover o shim/alias `viz` depois de migrar os imports restantes.
 - Validar entrada por lição (inteiros, faixa, quantidade, N único, alvo).
 - Adicionar testes de limites de linha e de igualdade entre Java e C.
@@ -356,6 +373,13 @@ npm run build
 | 2026-10-20 | Limpeza visual geral e animações didáticas (curvas spring, sincronização de rótulos em BarsView, elevação e ponteiros em Cells/NodesView, detecção de mutação em VarsPanel, toolbar em linha única e LessonPager integrado) | Reduzir ruído visual de bordas/cabeçalhos e fornecer feedback físico imediato das mudanças de estado algorítmico |
 | 2026-10-20 | Merge da linha de interface por matéria com quiz, playground, view `plot`, tema claro/escuro e Storybook | Unificar as duas frentes mantendo `subjects.ts` como catálogo, o grid 56/44 e os tokens compartilhados |
 | 2026-10-20 | Deck de controles empilha abaixo de 1216px e os atalhos não ocupam mais a linha do player | Impedir que velocidade/copiar link vazem para fora do painel em telas médias e no container máximo |
+| 2026-10-21 | Refatoração visual “Living Graph Paper”: tipografia do sistema (sans para leitura, mono para código), `cssVariablesResolver` como fonte única, grade de papel, herói com figura matemática, catálogo editorial, cockpit com timeline, views com curvas/área, editor do playground e 404 | Modernizar a interface mantendo a identidade de código/matemática e paridade entre tema claro e escuro |
+| 2026-10-21 | `TimelineBar` integrado ao player, `Panel` com corpo flex, highlighter extraído para `lib/highlight` e ponteiros da lista dupla corrigidos | Aproveitar o componente já testado, eliminar espaços vazios nos painéis e fechar BUG-03/BUG-12 |
+| 2026-10-21 | Cores por matéria (`blue` para AEDS I, `teal` para AEDS II, `violet` para Análise) via `--subject-accent`; a home mantém o âmbar | Dar identidade a cada matéria e manter o âmbar como assinatura da home |
+| 2026-10-21 | Tema escuro em preto puro (`#000`), superfícies neutras e remoção de glows/gradientes decorativos | Reduzir ruído visual, melhorar contraste e afastar a interface de um visual genérico |
+| 2026-10-21 | Nav com indicador inferior e hover centralizado; links do drawer em largura total; timeline monocromática | Corrigir desalinhamento de ícones/texto e diminuir a poluição visual do player |
+| 2026-10-21 | `testTimeout` de 20s no Vitest | Renderizações do Mantine em jsdom passam dos 5s padrão em máquinas mais lentas |
+| 2026-10-21 | Remoção de `@fontsource`; UI e código usam pilhas do sistema (sans/mono), sem arquivos de fonte | Eliminar fontes customizadas/hardcoded e reduzir o bundle |
 | 2026-10-20 | Integração das lições `counting` e `bucket` com a linha principal (`main`) | Trazer as variantes iterativa/recursiva e a análise de complexidade; `inputFormat` permite valores em [0, 1) no formulário |
 
 ---
@@ -363,6 +387,7 @@ npm run build
 ## 10. Referências
 
 - `README.md` — visão geral, scripts e instruções de deploy.
+- `docs/ui-guidelines.md` — guia de UI, temas, tokens, acentos por matéria e receitas.
 - `AGENTS.md` — contrato operacional para agentes.
 - `src/engine/types.ts` — contrato de `Lesson` e `Step`.
 - `src/content/lessons/index.ts` — registro de lições.

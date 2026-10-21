@@ -17,6 +17,11 @@ describe('subjects catalog', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('gives every subject a distinct accent', () => {
+    const accents = subjects.map((subject) => subject.accent);
+    expect(new Set(accents).size).toBe(subjects.length);
+  });
+
   it('places every lesson in exactly one subject', () => {
     const slugs = allEntryLocations()
       .filter((location) => location.entry.kind === 'lesson')

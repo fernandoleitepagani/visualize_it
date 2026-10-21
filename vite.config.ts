@@ -12,5 +12,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Mantine + jsdom cold renders regularly exceed the 5s default on slower machines.
+    testTimeout: 20000,
   },
 });

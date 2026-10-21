@@ -91,6 +91,20 @@ describe('sorting lessons — complexity analysis placeholder', () => {
   });
 });
 
+describe('linked-list lesson', () => {
+  it('lista-dupla exposes prev/next so the nodes view can draw both directions', () => {
+    const steps = lessons['lista-dupla'].steps([10, 20, 30]);
+    const last = steps[steps.length - 1];
+    const nodes = last.nodes ?? [];
+
+    expect(nodes.length).toBeGreaterThan(1);
+    expect(nodes[0].prev ?? null).toBeNull();
+    expect(nodes[1].prev).toBe(nodes[0].id);
+    expect(nodes[0].next).toBe(nodes[1].id);
+    expect(nodes.every((node) => 'prev' in node && 'next' in node)).toBe(true);
+  });
+});
+
 describe('loop lessons', () => {
   const sumTo = (n: number) => (n * (n + 1)) / 2;
 

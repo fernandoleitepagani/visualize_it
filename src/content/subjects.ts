@@ -7,6 +7,7 @@
  */
 
 import type { ViewKind } from '@/engine/types';
+import type { SubjectAccent } from '@/theme';
 import { getLesson } from './lessons';
 
 export interface LessonEntry {
@@ -41,7 +42,7 @@ export interface Subject {
   short: string;
   description: string;
   /** Palette key used as a subtle accent on cards and headers. */
-  accent: 'accent' | 'success' | 'info';
+  accent: SubjectAccent;
   groups: CatalogGroup[];
 }
 
@@ -62,7 +63,7 @@ export const subjects: Subject[] = [
     title: 'AEDS I',
     short: 'AEDS I',
     description: 'Fundamentos de programação: laços de repetição e aritmética de ponteiros.',
-    accent: 'accent',
+    accent: 'blue',
     groups: [
       {
         id: 'lacos',
@@ -120,7 +121,7 @@ export const subjects: Subject[] = [
     title: 'AEDS II',
     short: 'AEDS II',
     description: 'Ordenação, busca e estruturas lineares com visualizações passo a passo.',
-    accent: 'success',
+    accent: 'teal',
     groups: [
       {
         id: 'ordenacao',
@@ -261,7 +262,7 @@ export const subjects: Subject[] = [
     title: 'Análise',
     short: 'Análise',
     description: 'Complexidade assintótica e provas por indução para justificar os algoritmos.',
-    accent: 'info',
+    accent: 'violet',
     groups: [
       {
         id: 'analise',
