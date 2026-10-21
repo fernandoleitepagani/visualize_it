@@ -17,5 +17,8 @@ describe('theme tokens', () => {
     expect(vars.dark?.['--viz-canvas']).toBe(palette.canvas);
     expect(vars.light?.['--viz-canvas']).toBeTruthy();
     expect(vars.light?.['--viz-accent']).not.toBe(vars.dark?.['--viz-accent']);
+    expect(vars.dark?.['--viz-subject-blue']).toBeTruthy();
+    expect(vars.dark?.['--viz-subject-teal']).toBeTruthy();
+    expect(vars.light?.['--viz-subject-violet']).toBeTruthy();
   });
 });

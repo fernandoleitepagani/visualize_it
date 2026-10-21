@@ -156,6 +156,15 @@ export const vizVar = {
   codeString: 'var(--viz-code-string)',
 } as const;
 
+/** Per-subject accents. The home page keeps the global amber accent. */
+export const subjectAccent = {
+  blue: 'var(--viz-subject-blue)',
+  teal: 'var(--viz-subject-teal)',
+  violet: 'var(--viz-subject-violet)',
+} as const;
+
+export type SubjectAccent = keyof typeof subjectAccent;
+
 /** Translucent tint of a palette colour, for highlighted states. */
 export const tint = (color: string, percent: number) =>
   `color-mix(in srgb, ${color} ${percent}%, transparent)`;
@@ -268,6 +277,10 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--viz-code-comment': palette.dim,
     '--viz-code-string': palette.accent,
     '--viz-noise-opacity': '0',
+    '--viz-subject-blue': '#7aa2ff',
+    '--viz-subject-teal': '#5eead4',
+    '--viz-subject-violet': '#c084fc',
+    '--viz-subject-ink': '#0b1220',
   },
   light: {
     '--viz-canvas': lightPalette.canvas,
@@ -305,5 +318,9 @@ export const cssVariablesResolver: CSSVariablesResolver = () => ({
     '--viz-code-comment': lightPalette.dim,
     '--viz-code-string': lightPalette.accent,
     '--viz-noise-opacity': '0.016',
+    '--viz-subject-blue': '#1d4ed8',
+    '--viz-subject-teal': '#0f766e',
+    '--viz-subject-violet': '#6d3fc0',
+    '--viz-subject-ink': '#fffdf7',
   },
 });
