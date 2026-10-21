@@ -1,18 +1,14 @@
+import type { CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
+import { Box } from '@mantine/core';
 import { LessonPager, LessonRelated } from '@/components/LessonNav';
 import { LessonView } from '@/components/LessonView';
 import { MetaPill } from '@/components/MetaPill';
 import { PageHeader } from '@/components/PageHeader';
 import { getLesson } from '@/content/lessons';
 import { getEntryLocation } from '@/content/subjects';
-import { vizVar } from '@/theme';
+import { subjectAccent, vizVar } from '@/theme';
 import { NotFound } from './NotFound';
-
-const accents = {
-  accent: vizVar.accent,
-  success: vizVar.green,
-  info: vizVar.purple,
-} as const;
 
 const viewLabels = {
   bars: 'barras',
@@ -28,12 +24,19 @@ export function LessonPage() {
 
   if (!lesson) return <NotFound />;
 
-  const accent = location ? accents[location.subject.accent] : vizVar.accent;
+  const accent = location ? subjectAccent[location.subject.accent] : vizVar.accent;
   const time = lesson.complexity.time ?? {};
   const worst = time.worst ?? time.avg ?? time.best;
 
   return (
-    <>
+    <Box
+      style={
+        {
+          '--subject-accent': accent,
+          '--subject-accent-ink': 'var(--viz-subject-ink)',
+        } as CSSProperties
+      }
+    >
       <PageHeader
         breadcrumb={
           location
@@ -52,7 +55,7 @@ export function LessonPage() {
         meta={
           <>
             {lesson.panelLabel ? <MetaPill>{lesson.panelLabel}</MetaPill> : null}
-            {worst ? <MetaPill tone="accent">{worst}</MetaPill> : null}
+            {worst ? <MetaPill tone="subject">{worst}</MetaPill> : null}
             {lesson.complexity.space ? <MetaPill>{lesson.complexity.space}</MetaPill> : null}
             <MetaPill>{viewLabels[lesson.view ?? 'bars']}</MetaPill>
           </>
@@ -61,6 +64,6 @@ export function LessonPage() {
       />
       <LessonView key={lesson.id} lesson={lesson} />
       {location ? <LessonRelated location={location} /> : null}
-    </>
+    </Box>
   );
 }

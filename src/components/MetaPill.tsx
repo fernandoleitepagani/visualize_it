@@ -4,7 +4,7 @@ import { font } from '@/theme';
 interface Props {
   children: ReactNode;
   /** Optional semantic colour; defaults to the muted pill. */
-  tone?: 'accent' | 'green' | 'purple' | 'danger';
+  tone?: 'accent' | 'green' | 'purple' | 'danger' | 'subject';
 }
 
 const tones = {
@@ -12,6 +12,7 @@ const tones = {
   green: 'var(--viz-green)',
   purple: 'var(--viz-purple)',
   danger: 'var(--viz-danger)',
+  subject: 'var(--subject-accent, var(--viz-accent))',
 } as const;
 
 /** Compact mono pill used for complexity tags, group labels and metadata. */

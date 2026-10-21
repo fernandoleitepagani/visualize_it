@@ -3,16 +3,10 @@ import { Link } from 'react-router-dom';
 import { Box, Group, Paper, Text, Title } from '@mantine/core';
 import type { EntryLocation } from '@/content/subjects';
 import { getEntryPath, getEntrySubtitle, getEntryTitle, getEntryView } from '@/content/subjects';
-import { font, vizVar } from '@/theme';
+import { font, subjectAccent, vizVar } from '@/theme';
 import { ArrowRightIcon } from './icons';
 import { MetaPill } from './MetaPill';
 import { ViewPreview } from './ViewPreview';
-
-const accents = {
-  accent: vizVar.accent,
-  success: vizVar.green,
-  info: vizVar.purple,
-} as const;
 
 /** Card used in the subject catalog and in the home page highlights. */
 export function AlgorithmCard({
@@ -26,9 +20,10 @@ export function AlgorithmCard({
   const title = getEntryTitle(entry);
   const subtitle = getEntrySubtitle(entry);
   const view = getEntryView(entry);
-  const accent = accents[location.subject.accent];
+  const accent = subjectAccent[location.subject.accent];
   const glowStyle = {
     '--card-glow': `color-mix(in srgb, ${accent} 12%, transparent)`,
+    '--subject-accent': accent,
   } as CSSProperties;
 
   if (compact) {
@@ -84,7 +79,7 @@ export function AlgorithmCard({
     >
       <Group justify="space-between" align="center" wrap="nowrap" mb="sm">
         <ViewPreview view={view} kind={entry.kind} />
-        <MetaPill tone="accent">{entry.tag}</MetaPill>
+        <MetaPill tone="subject">{entry.tag}</MetaPill>
       </Group>
 
       <Title order={3} fz={font.lead} fw={600} mb={2} style={{ letterSpacing: '-0.015em' }}>

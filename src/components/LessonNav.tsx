@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Anchor, Button, Group, Paper, Text, Title } from '@mantine/core';
 import type { EntryLocation } from '@/content/subjects';
 import { getEntryPath, getEntryTitle } from '@/content/subjects';
-import { font, vizVar } from '@/theme';
+import { font, subjectAccent, vizVar } from '@/theme';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
 
 function siblingLessons(location: EntryLocation) {
@@ -60,6 +60,7 @@ export function LessonPager({ location }: { location: EntryLocation }) {
 /** Bottom panel listing the other lessons in the same group. */
 export function LessonRelated({ location }: { location: EntryLocation }) {
   const entries = siblingLessons(location);
+  const accent = subjectAccent[location.subject.accent];
   if (entries.length <= 1) return null;
 
   return (
@@ -90,9 +91,9 @@ export function LessonRelated({ location }: { location: EntryLocation }) {
               underline="never"
               aria-current={current ? 'page' : undefined}
               style={{
-                color: current ? vizVar.accent : vizVar.muted,
-                border: `1px solid ${current ? vizVar.accentLine : vizVar.line}`,
-                background: current ? vizVar.accentSoft : 'transparent',
+                color: current ? accent : vizVar.muted,
+                border: `1px solid ${current ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line}`,
+                background: current ? `color-mix(in srgb, ${accent} 12%, transparent)` : 'transparent',
                 borderRadius: 999,
                 padding: '3px 9px',
                 fontWeight: current ? 600 : 400,

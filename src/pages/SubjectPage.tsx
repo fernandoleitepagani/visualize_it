@@ -1,16 +1,12 @@
+import type { CSSProperties } from 'react';
 import { useParams } from 'react-router-dom';
+import { Box } from '@mantine/core';
 import { AlgorithmBrowser } from '@/components/AlgorithmBrowser';
 import { MetaPill } from '@/components/MetaPill';
 import { PageHeader } from '@/components/PageHeader';
 import { getSubject, getSubjectEntries } from '@/content/subjects';
-import { vizVar } from '@/theme';
+import { subjectAccent } from '@/theme';
 import { NotFound } from './NotFound';
-
-const accents = {
-  accent: vizVar.accent,
-  success: vizVar.green,
-  info: vizVar.purple,
-} as const;
 
 export function SubjectPage() {
   const { subjectId } = useParams();
@@ -21,10 +17,17 @@ export function SubjectPage() {
   const entries = getSubjectEntries(subject);
   const lessons = entries.filter((location) => location.entry.kind === 'lesson').length;
   const theory = entries.length - lessons;
-  const accent = accents[subject.accent];
+  const accent = subjectAccent[subject.accent];
 
   return (
-    <>
+    <Box
+      style={
+        {
+          '--subject-accent': accent,
+          '--subject-accent-ink': 'var(--viz-subject-ink)',
+        } as CSSProperties
+      }
+    >
       <PageHeader
         breadcrumb={[{ label: 'Início', to: '/' }, { label: subject.title }]}
         kicker={theory === entries.length ? 'análise' : 'matéria'}
@@ -41,6 +44,6 @@ export function SubjectPage() {
         }
       />
       <AlgorithmBrowser entries={entries} groups={subject.groups} />
-    </>
+    </Box>
   );
 }

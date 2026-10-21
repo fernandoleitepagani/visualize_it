@@ -2,14 +2,8 @@ import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Group, Paper, Text, Title } from '@mantine/core';
 import type { Subject } from '@/content/subjects';
-import { font, radius, vizVar } from '@/theme';
+import { font, radius, subjectAccent, vizVar } from '@/theme';
 import { ArrowRightIcon } from './icons';
-
-const accents = {
-  accent: vizVar.accent,
-  success: vizVar.green,
-  info: vizVar.purple,
-} as const;
 
 /** Large card shown on the home page for each subject. */
 export function SubjectCard({ subject, index }: { subject: Subject; index?: number }) {
@@ -17,9 +11,10 @@ export function SubjectCard({ subject, index }: { subject: Subject; index?: numb
   const theoryOnly = subject.groups.every((group) =>
     group.entries.every((entry) => entry.kind === 'theory'),
   );
-  const accent = accents[subject.accent];
+  const accent = subjectAccent[subject.accent];
   const style = {
     '--card-glow': `color-mix(in srgb, ${accent} 14%, transparent)`,
+    '--subject-accent': accent,
     borderColor: vizVar.line,
     background: vizVar.panel,
   } as CSSProperties;

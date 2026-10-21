@@ -23,7 +23,7 @@ import {
   searchEntries,
   subjects,
 } from '@/content/subjects';
-import { font, radius, vizVar } from '@/theme';
+import { font, radius, subjectAccent, vizVar } from '@/theme';
 import { SearchIcon } from './icons';
 import { ViewPreview } from './ViewPreview';
 
@@ -33,12 +33,6 @@ interface Props {
   shortcut?: boolean;
   placeholder?: string;
 }
-
-const accentBySubject = {
-  accent: vizVar.accent,
-  success: vizVar.green,
-  info: vizVar.purple,
-} as const;
 
 /** Search field + modal that finds lessons and theory pages across subjects. */
 export function GlobalSearch({
@@ -158,7 +152,7 @@ export function GlobalSearch({
           </Box>
         ) : (
           grouped.map((group, groupIndex) => {
-            const accent = accentBySubject[group.subject.accent];
+            const accent = subjectAccent[group.subject.accent];
             return (
               <Box key={group.subject.id} mb="sm">
                 {groupIndex > 0 ? <Divider mb="sm" color="var(--viz-line)" /> : null}
