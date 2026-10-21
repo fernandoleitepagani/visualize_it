@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Box, Group, Paper, Text } from '@mantine/core';
-import { palette, font, radius, shadow, tint, vizVar } from '@/theme';
+import { font, radius, vizVar } from '@/theme';
 
 interface Props {
   /** Left-aligned header text. */
@@ -19,60 +19,66 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
   return (
     <Paper
       withBorder
-      radius="md"
+      radius="xl"
       style={{
         overflow: 'hidden',
-        background: 'var(--mantine-color-body)',
-        boxShadow: shadow.panel,
+        background: vizVar.panel,
+        borderColor: vizVar.line,
+        boxShadow: 'var(--viz-shadow-panel)',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
       }}
     >
       <Group
         justify="space-between"
         gap="sm"
         px="md"
-        py={8}
+        py={9}
         wrap="nowrap"
         style={{
           borderBottom: `1px solid ${vizVar.line}`,
-          background: tint(vizVar.surface, 55),
+          background:
+            'linear-gradient(180deg, color-mix(in srgb, var(--viz-surface-2) 42%, transparent), transparent)',
           flexShrink: 0,
-          minHeight: 40,
+          minHeight: 42,
         }}
       >
-        <Group gap={8} wrap="nowrap" style={{ minWidth: 0 }}>
-          {icon ? (
-            <Box
-              aria-hidden
-              style={{
-                color: palette.accent,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              {icon}
-            </Box>
-          ) : (
-            <Box
-              w={3}
-              h={12}
-              aria-hidden
-              style={{ background: palette.accent, borderRadius: radius.pill, flexShrink: 0 }}
-            />
-          )}
+        <Group gap={9} wrap="nowrap" style={{ minWidth: 0 }}>
+          <Box
+            aria-hidden
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 22,
+              height: 22,
+              borderRadius: 7,
+              color: icon ? vizVar.accent : vizVar.muted,
+              background: icon ? vizVar.accentSoft : 'transparent',
+              border: icon ? `1px solid ${vizVar.accentLine}` : 'none',
+              flexShrink: 0,
+            }}
+          >
+            {icon ?? (
+              <Box
+                w={3}
+                h={10}
+                style={{ background: vizVar.accent, borderRadius: radius.pill }}
+              />
+            )}
+          </Box>
           <Text
-            fz={font.tiny}
-            fw={700}
+            fz={font.micro}
+            fw={600}
             tt="uppercase"
             style={{
-              color: vizVar.ink,
-              letterSpacing: '0.1em',
+              color: vizVar.ink2,
+              letterSpacing: '0.14em',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              fontFamily: 'var(--mantine-font-family-monospace)',
             }}
           >
             {label}
@@ -87,7 +93,7 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
           py="sm"
           style={{
             borderTop: `1px solid ${vizVar.line}`,
-            background: tint(vizVar.surface, 55),
+            background: 'color-mix(in srgb, var(--viz-surface-2) 32%, transparent)',
             flexShrink: 0,
           }}
         >

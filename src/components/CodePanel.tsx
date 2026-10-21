@@ -1,50 +1,12 @@
 import { useEffect, useRef } from 'react';
-import type { ReactNode } from 'react';
 import { Box, Group, SegmentedControl } from '@mantine/core';
 import type { CodeApproach } from '@/engine/types';
-import { font, space, tint, vizVar } from '@/theme';
+import { highlightCode } from '@/lib/highlight';
+import { font, space, vizVar } from '@/theme';
 import { Panel } from './Panel';
 import { CodeIcon } from './icons';
 
 export type CodeLang = 'java' | 'c';
-
-const KEYWORDS =
-  'void|int|char|float|double|boolean|for|if|else|while|return|new|length|break|continue|struct|typedef|malloc|free|class|public|static|throws|throw|true|false|null|String|System|Scanner|RuntimeException';
-const TOKEN = new RegExp(`(//.*$)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b(?:${KEYWORDS})\\b)`, 'g');
-
-/** Very small syntax highlighter: comments, numbers, keywords. */
-function highlight(line: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  let last = 0;
-  let key = 0;
-  let match: RegExpExecArray | null;
-
-  TOKEN.lastIndex = 0;
-  while ((match = TOKEN.exec(line)) !== null) {
-    if (match.index > last) nodes.push(line.slice(last, match.index));
-    if (match[1])
-      nodes.push(
-        <span key={key++} style={{ color: vizVar.dim, fontStyle: 'italic' }}>
-          {match[1]}
-        </span>,
-      );
-    else if (match[2])
-      nodes.push(
-        <span key={key++} style={{ color: vizVar.accent }}>
-          {match[2]}
-        </span>,
-      );
-    else
-      nodes.push(
-        <span key={key++} style={{ color: vizVar.purple }}>
-          {match[3]}
-        </span>,
-      );
-    last = TOKEN.lastIndex;
-  }
-  if (last < line.length) nodes.push(line.slice(last));
-  return nodes;
-}
 
 interface Props {
   code: string[];
@@ -90,10 +52,12 @@ export function CodePanel({
     }
   }, [activeLine, lang]);
 
+  const highlighted = highlightCode(code);
+
   return (
     <Panel
       label="código"
-      icon={<CodeIcon size={14} />}
+      icon={<CodeIcon size={13} />}
       aside={
         <Group gap="xs" wrap="nowrap">
           {showApproach ? (
@@ -120,23 +84,39 @@ export function CodePanel({
           />
         </Group>
       }
+      footer={
+        <Group justify="space-between" wrap="nowrap" gap="sm">
+          <Box
+            ff="monospace"
+            fz={font.micro}
+            c="dimmed"
+            style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
+          >
+            {lang} · {showApproach ? approach : 'implementação única'}
+          </Box>
+          <Box ff="monospace" fz={font.micro} c="dimmed">
+            linha {Math.min(activeLine + 1, code.length)} de {code.length}
+          </Box>
+        </Group>
+      }
     >
       <Box
         ref={scrollRef}
         role="region"
         aria-label={`Código ${lang === 'java' ? 'Java' : 'C'}`}
-        mah={520}
+        className="code-scroll"
         py="sm"
         ff="monospace"
-        fz={font.small}
+        fz={12.5}
         style={{
           overflow: 'auto',
           position: 'relative',
-          lineHeight: 1.65,
-          background: vizVar.surface,
+          lineHeight: 1.72,
+          background: vizVar.codeBg,
+          color: vizVar.codeInk,
         }}
       >
-        {code.map((line, i) => {
+        {code.map((_, i) => {
           const active = i === activeLine;
           return (
             <div
@@ -146,25 +126,24 @@ export function CodePanel({
               style={{
                 display: 'flex',
                 whiteSpace: 'pre',
-                minHeight: 24,
+                minHeight: 25,
                 paddingRight: space.lg,
                 borderLeft: `3px solid ${active ? vizVar.accent : 'transparent'}`,
                 background: active
-                  ? `linear-gradient(90deg, ${tint(vizVar.accent, 14)} 0%, ${tint(
-                      vizVar.accent,
-                      4,
-                    )} 90%, transparent 100%)`
+                  ? `linear-gradient(90deg, ${vizVar.accentSoft} 0%, color-mix(in srgb, var(--viz-accent) 3%, transparent) 88%, transparent 100%)`
                   : undefined,
-                transition: `background 160ms ease-out, border-color 160ms ease-out`,
+                transition:
+                  'background 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease',
               }}
             >
               <span
+                aria-hidden
                 style={{
-                  flex: '0 0 38px',
+                  flex: '0 0 42px',
                   textAlign: 'right',
                   paddingRight: 14,
-                  fontSize: font.tiny,
-                  lineHeight: '24px',
+                  fontSize: font.micro,
+                  lineHeight: '25px',
                   userSelect: 'none',
                   color: active ? vizVar.accent : vizVar.dim,
                   fontWeight: active ? 700 : 400,
@@ -172,7 +151,7 @@ export function CodePanel({
               >
                 {i + 1}
               </span>
-              <span style={{ lineHeight: '24px', color: vizVar.ink }}>{highlight(line)}</span>
+              <span style={{ lineHeight: '25px', color: vizVar.codeInk }}>{highlighted[i]}</span>
             </div>
           );
         })}
