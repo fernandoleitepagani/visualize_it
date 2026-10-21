@@ -31,6 +31,7 @@ describe('sorting invariants', () => {
     ['mergesort', [5, 2, 9, 1, 7]],
     ['heapsort', [5, 2, 9, 1, 7]],
     ['counting', [5, 2, 9, 1, 7]],
+    ['bucket', [0.5, 0.2, 0.9, 0.1, 0.7]],
     ['radix', [5, 2, 9, 1, 7]],
   ];
 
@@ -41,10 +42,10 @@ describe('sorting invariants', () => {
   });
 });
 
-describe.each(['selecao', 'insercao', 'bolha'] as const)(
+describe.each(['selecao', 'insercao', 'bolha', 'counting', 'bucket'] as const)(
   '%s — variantes de implementação',
   (slug) => {
-    const input = [5, 2, 9, 1, 7];
+    const input = lessons[slug].initial ?? [5, 2, 9, 1, 7];
     const approaches = ['iterativo', 'recursivo'] as const;
 
     it.each(approaches)('%s termina com o vetor ordenado', (approach) => {
@@ -86,11 +87,26 @@ describe('sorting lessons — complexity analysis placeholder', () => {
     'mergesort',
     'heapsort',
     'counting',
+    'bucket',
     'radix',
   ] as const;
 
   it.each(sortingLessons)('%s reserves the analysis card', (slug) => {
     expect(lessons[slug].complexityAnalysis).toBeDefined();
+  });
+});
+
+describe('linked-list lesson', () => {
+  it('lista-dupla exposes prev/next so the nodes view can draw both directions', () => {
+    const steps = lessons['lista-dupla'].steps([10, 20, 30]);
+    const last = steps[steps.length - 1];
+    const nodes = last.nodes ?? [];
+
+    expect(nodes.length).toBeGreaterThan(1);
+    expect(nodes[0].prev ?? null).toBeNull();
+    expect(nodes[1].prev).toBe(nodes[0].id);
+    expect(nodes[0].next).toBe(nodes[1].id);
+    expect(nodes.every((node) => 'prev' in node && 'next' in node)).toBe(true);
   });
 });
 

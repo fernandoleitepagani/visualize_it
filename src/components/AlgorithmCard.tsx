@@ -1,8 +1,11 @@
+import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Group, Paper, Text, Title } from '@mantine/core';
 import type { EntryLocation } from '@/content/subjects';
 import { getEntryPath, getEntrySubtitle, getEntryTitle, getEntryView } from '@/content/subjects';
-import { font, palette, radius } from '@/theme';
+import { font, subjectAccent, vizVar } from '@/theme';
+import { ArrowRightIcon } from './icons';
+import { MetaPill } from './MetaPill';
 import { ViewPreview } from './ViewPreview';
 
 /** Card used in the subject catalog and in the home page highlights. */
@@ -17,6 +20,11 @@ export function AlgorithmCard({
   const title = getEntryTitle(entry);
   const subtitle = getEntrySubtitle(entry);
   const view = getEntryView(entry);
+  const accent = subjectAccent[location.subject.accent];
+  const glowStyle = {
+    '--card-glow': `color-mix(in srgb, ${accent} 12%, transparent)`,
+    '--subject-accent': accent,
+  } as CSSProperties;
 
   if (compact) {
     return (
@@ -24,10 +32,10 @@ export function AlgorithmCard({
         component={Link}
         to={getEntryPath(entry)}
         withBorder
-        radius="md"
+        radius="xl"
         p="sm"
         className="algorithm-card"
-        style={{ display: 'block', textDecoration: 'none' }}
+        style={{ ...glowStyle, display: 'block', borderColor: vizVar.line }}
       >
         <Group wrap="nowrap" align="center" gap="md">
           <ViewPreview view={view} kind={entry.kind} />
@@ -37,15 +45,13 @@ export function AlgorithmCard({
                 {title}
               </Title>
               <Group gap={6} wrap="nowrap">
-                <Text ff="monospace" fz={font.tiny} c="amber" style={{ whiteSpace: 'nowrap' }}>
+                <Text fz={font.micro} style={{ color: accent, whiteSpace: 'nowrap' }}>
                   {entry.tag}
                 </Text>
-                <Text span className="card-arrow" c="amber" fz={font.tiny}>
-                  →
-                </Text>
+                <ArrowRightIcon size={13} className="card-arrow" style={{ color: accent }} />
               </Group>
             </Group>
-            <Text fz={font.small} c="dimmed" lineClamp={1}>
+            <Text fz={font.tiny} c="dimmed" lineClamp={1}>
               {entry.blurb}
             </Text>
           </Box>
@@ -59,52 +65,43 @@ export function AlgorithmCard({
       component={Link}
       to={getEntryPath(entry)}
       withBorder
-      radius="md"
+      radius="xl"
       p="md"
       className="algorithm-card"
       style={{
+        ...glowStyle,
         display: 'flex',
         flexDirection: 'column',
-        textDecoration: 'none',
         height: '100%',
-        background: palette.surface,
+        borderColor: vizVar.line,
+        background: vizVar.panel,
       }}
     >
-      <Group justify="space-between" align="center" wrap="nowrap" mb="xs">
+      <Group justify="space-between" align="center" wrap="nowrap" mb="sm">
         <ViewPreview view={view} kind={entry.kind} />
-        <Text
-          ff="monospace"
-          fz={font.micro}
-          c="amber"
-          style={{
-            border: `1px solid ${palette.line2}`,
-            borderRadius: radius.pill,
-            padding: '2px 8px',
-            background: palette.surface2,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {entry.tag}
-        </Text>
+        <MetaPill tone="subject">{entry.tag}</MetaPill>
       </Group>
 
-      <Title order={3} fz={font.body} fw={600} mb={2}>
+      <Title order={3} fz={font.lead} fw={600} mb={2} style={{ letterSpacing: '-0.015em' }}>
         {title}
       </Title>
       {subtitle ? (
-        <Text fz={font.tiny} c="dimmed" mb={4}>
+        <Text fz={font.tiny} c="dimmed" mb={6}>
           {subtitle}
         </Text>
       ) : null}
 
-      <Text fz={font.small} c="dimmed" lh={1.35} lineClamp={2} style={{ flexGrow: 1 }}>
+      <Text fz={font.small} c="dimmed" lh={1.5} lineClamp={2} style={{ flexGrow: 1 }}>
         {entry.blurb}
       </Text>
 
-      <Group justify="flex-end" align="center" mt="sm">
-        <Text fz={font.small} c="amber" fw={600}>
-          Abrir <span className="card-arrow">→</span>
+      <Group justify="space-between" align="center" mt="md">
+        <Text fz={font.tiny} c="dimmed">
+          abrir lição
         </Text>
+        <Box style={{ display: 'inline-flex', color: accent }}>
+          <ArrowRightIcon size={15} className="card-arrow" />
+        </Box>
       </Group>
     </Paper>
   );

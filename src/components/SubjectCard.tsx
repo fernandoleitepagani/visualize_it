@@ -1,33 +1,50 @@
+import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
-import { Group, Paper, Text, Title } from '@mantine/core';
+import { Box, Group, Paper, Text, Title } from '@mantine/core';
 import type { Subject } from '@/content/subjects';
-import { font, palette, radius } from '@/theme';
+import { font, radius, subjectAccent, vizVar } from '@/theme';
+import { ArrowRightIcon } from './icons';
 
 /** Large card shown on the home page for each subject. */
-export function SubjectCard({ subject }: { subject: Subject }) {
+export function SubjectCard({ subject, index }: { subject: Subject; index?: number }) {
   const total = subject.groups.reduce((count, group) => count + group.entries.length, 0);
   const theoryOnly = subject.groups.every((group) =>
     group.entries.every((entry) => entry.kind === 'theory'),
   );
-  const accent = palette[subject.accent];
+  const accent = subjectAccent[subject.accent];
+  const style = {
+    '--card-glow': `color-mix(in srgb, ${accent} 14%, transparent)`,
+    '--subject-accent': accent,
+    borderColor: vizVar.line,
+    background: vizVar.panel,
+  } as CSSProperties;
 
   return (
     <Paper
       component={Link}
       to={`/materias/${subject.id}`}
       withBorder
-      radius="md"
+      radius="xl"
       p="lg"
       className="subject-card"
-      style={{
-        display: 'block',
-        textDecoration: 'none',
-        height: '100%',
-        borderTop: `3px solid ${accent}`,
-      }}
+      style={style}
     >
-      <Group justify="space-between" mb="xs">
-        <Text fz={font.tiny} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.08em' }}>
+      <Box
+        aria-hidden
+        pos="absolute"
+        top={0}
+        left={0}
+        right={0}
+        h={2}
+        style={{ background: `linear-gradient(90deg, ${accent}, transparent 78%)`, opacity: 0.75 }}
+      />
+      <Group justify="space-between" mb="md" wrap="nowrap">
+        <Text
+          fz={font.micro}
+          tt="uppercase"
+          style={{ color: accent, letterSpacing: '0.14em' }}
+        >
+          {index !== undefined ? `${String(index).padStart(2, '0')} · ` : ''}
           {theoryOnly ? 'análise' : 'matéria'}
         </Text>
         <Text fz={font.tiny} c="dimmed">
@@ -35,23 +52,24 @@ export function SubjectCard({ subject }: { subject: Subject }) {
         </Text>
       </Group>
 
-      <Title order={2} fz={font.h3} fw={600} mb={4}>
+      <Title order={2} fz={font.h3} fw={600} mb={6} style={{ letterSpacing: '-0.02em' }}>
         {subject.title}
       </Title>
-      <Text fz={font.small} c="dimmed" lh={1.4} mb="md">
+      <Text fz={font.small} c="dimmed" lh={1.55} mb="md" maw="34ch">
         {subject.description}
       </Text>
 
-      <Group gap={6} mb="md" wrap="wrap">
+      <Group gap={6} mb="lg" wrap="wrap">
         {subject.groups.map((group) => (
           <Text
             key={group.id}
-            fz={font.tiny}
+            fz={font.micro}
             c="dimmed"
             style={{
-              border: `1px solid ${palette.line}`,
+              border: `1px solid ${vizVar.line}`,
               borderRadius: radius.pill,
               padding: '2px 8px',
+              background: 'color-mix(in srgb, var(--viz-surface-2) 52%, transparent)',
             }}
           >
             {group.title}
@@ -59,9 +77,14 @@ export function SubjectCard({ subject }: { subject: Subject }) {
         ))}
       </Group>
 
-      <Text fz={font.small} c="amber" fw={600}>
-        Explorar →
-      </Text>
+      <Group justify="space-between" align="center">
+        <Text fz={font.small} style={{ color: accent }} fw={500}>
+          Explorar
+        </Text>
+        <Box style={{ display: 'inline-flex', color: accent }}>
+          <ArrowRightIcon size={16} className="card-arrow" />
+        </Box>
+      </Group>
     </Paper>
   );
 }

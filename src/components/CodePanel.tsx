@@ -1,51 +1,10 @@
-import { useEffect, useRef } from 'react';
-import type { ReactNode } from 'react';
-import { Box, Group, SegmentedControl, Text } from '@mantine/core';
+import { useEffect, useRef, useState } from 'react';
+import { ActionIcon, Box, Group, SegmentedControl, Text, Tooltip } from '@mantine/core';
 import type { CodeApproach, CodeLang } from '@/engine/types';
-import { font, space, tint, vizVar } from '@/theme';
+import { highlightCode } from '@/lib/highlight';
+import { font, space, vizVar } from '@/theme';
 import { Panel } from './Panel';
-import { CodeIcon } from './icons';
-
-const LABELS: Record<CodeLang, string> = { java: 'java', c: 'c' };
-const ARIA: Record<CodeLang, string> = { java: 'Java', c: 'C' };
-
-const KEYWORDS =
-  'void|int|char|float|double|boolean|for|if|else|while|return|new|length|break|continue|struct|typedef|malloc|free|class|public|static|throws|throw|true|false|null|String|System|Scanner|RuntimeException';
-const TOKEN = new RegExp(`(//.*$)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b(?:${KEYWORDS})\\b)`, 'g');
-
-/** Very small syntax highlighter: comments, numbers, keywords. */
-function highlight(line: string): ReactNode[] {
-  const nodes: ReactNode[] = [];
-  let last = 0;
-  let key = 0;
-  let match: RegExpExecArray | null;
-
-  TOKEN.lastIndex = 0;
-  while ((match = TOKEN.exec(line)) !== null) {
-    if (match.index > last) nodes.push(line.slice(last, match.index));
-    if (match[1])
-      nodes.push(
-        <span key={key++} style={{ color: vizVar.dim, fontStyle: 'italic' }}>
-          {match[1]}
-        </span>,
-      );
-    else if (match[2])
-      nodes.push(
-        <span key={key++} style={{ color: vizVar.accent }}>
-          {match[2]}
-        </span>,
-      );
-    else
-      nodes.push(
-        <span key={key++} style={{ color: vizVar.purple }}>
-          {match[3]}
-        </span>,
-      );
-    last = TOKEN.lastIndex;
-  }
-  if (last < line.length) nodes.push(line.slice(last));
-  return nodes;
-}
+import { CheckIcon, CodeIcon, CopyIcon, DownloadIcon } from './icons';
 
 interface Props {
   code: string[];
@@ -54,10 +13,16 @@ interface Props {
   onLangChange: (lang: CodeLang) => void;
   /** Languages available for this lesson. Defaults to Java and C. */
   languages?: CodeLang[];
+  /** Base name for copy/download, e.g. `selecao-iterativo`. */
+  fileBaseName?: string;
   /** Optional implementation picker (iterative / recursive). */
   approach?: CodeApproach;
   onApproachChange?: (approach: CodeApproach) => void;
 }
+
+const LABELS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'c++' };
+const ARIA: Record<CodeLang, string> = { java: 'Java', c: 'C', cpp: 'C++' };
+const EXTENSIONS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'cpp' };
 
 export function CodePanel({
   code,
@@ -65,13 +30,16 @@ export function CodePanel({
   lang,
   onLangChange,
   languages = ['java', 'c'],
+  fileBaseName = 'codigo',
   approach,
   onApproachChange,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef<HTMLDivElement | null>(null);
+  const [copied, setCopied] = useState(false);
   const showApproach = approach !== undefined && onApproachChange !== undefined;
   const showLanguage = languages.length > 1;
+  const extension = EXTENSIONS[lang];
 
   // Keep the highlighted line visible inside the code box without scrolling the page.
   useEffect(() => {
@@ -95,10 +63,34 @@ export function CodePanel({
     }
   }, [activeLine, lang]);
 
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code.join('\n'));
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard access can be denied; the code remains selectable.
+    }
+  };
+
+  const downloadCode = () => {
+    const blob = new Blob([code.join('\n')], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${fileBaseName}.${extension}`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
+  const highlighted = highlightCode(code);
+
   return (
     <Panel
       label="código"
-      icon={<CodeIcon size={14} />}
+      icon={<CodeIcon size={13} />}
       aside={
         <Group gap="xs" wrap="nowrap">
           {showApproach ? (
@@ -131,23 +123,55 @@ export function CodePanel({
           )}
         </Group>
       }
+      footer={
+        <Group justify="space-between" wrap="nowrap" gap="sm">
+          <Group gap={4} wrap="nowrap">
+            <Tooltip label={copied ? 'Código copiado' : 'Copiar código'} withArrow>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                aria-label={copied ? 'Código copiado' : 'Copiar código'}
+                onClick={copyCode}
+              >
+                {copied ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Baixar código" withArrow>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                aria-label="Baixar código"
+                onClick={downloadCode}
+              >
+                <DownloadIcon size={13} />
+              </ActionIcon>
+            </Tooltip>
+            <Text fz={font.micro} c="dimmed" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {LABELS[lang]} · {showApproach ? approach : 'implementação única'}
+            </Text>
+          </Group>
+          <Text fz={font.micro} c="dimmed" ff="monospace">
+            linha {Math.min(activeLine + 1, code.length)} de {code.length}
+          </Text>
+        </Group>
+      }
     >
       <Box
         ref={scrollRef}
         role="region"
         aria-label={`Código ${ARIA[lang]}`}
-        mah={520}
+        className="code-scroll"
         py="sm"
-        ff="monospace"
-        fz={font.small}
+        fz={12.5}
         style={{
           overflow: 'auto',
           position: 'relative',
-          lineHeight: 1.65,
-          background: vizVar.surface,
+          lineHeight: 1.72,
+          background: vizVar.codeBg,
+          color: vizVar.codeInk,
         }}
       >
-        {code.map((line, i) => {
+        {code.map((_, i) => {
           const active = i === activeLine;
           return (
             <div
@@ -157,33 +181,32 @@ export function CodePanel({
               style={{
                 display: 'flex',
                 whiteSpace: 'pre',
-                minHeight: 24,
+                minHeight: 25,
                 paddingRight: space.lg,
-                borderLeft: `3px solid ${active ? vizVar.accent : 'transparent'}`,
+                borderLeft: `3px solid ${active ? 'var(--subject-accent, var(--viz-accent))' : 'transparent'}`,
                 background: active
-                  ? `linear-gradient(90deg, ${tint(vizVar.accent, 14)} 0%, ${tint(
-                      vizVar.accent,
-                      4,
-                    )} 90%, transparent 100%)`
+                  ? `linear-gradient(90deg, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 11%, transparent) 0%, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 3%, transparent) 88%, transparent 100%)`
                   : undefined,
-                transition: `background 160ms ease-out, border-color 160ms ease-out`,
+                transition:
+                  'background 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease',
               }}
             >
               <span
+                aria-hidden
                 style={{
-                  flex: '0 0 38px',
+                  flex: '0 0 42px',
                   textAlign: 'right',
                   paddingRight: 14,
-                  fontSize: font.tiny,
-                  lineHeight: '24px',
+                  fontSize: font.micro,
+                  lineHeight: '25px',
                   userSelect: 'none',
-                  color: active ? vizVar.accent : vizVar.dim,
+                  color: active ? 'var(--subject-accent, var(--viz-accent))' : vizVar.dim,
                   fontWeight: active ? 700 : 400,
                 }}
               >
                 {i + 1}
               </span>
-              <span style={{ lineHeight: '24px', color: vizVar.ink }}>{highlight(line)}</span>
+              <span style={{ lineHeight: '25px', color: vizVar.codeInk }}>{highlighted[i]}</span>
             </div>
           );
         })}

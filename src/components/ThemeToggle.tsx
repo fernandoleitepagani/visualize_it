@@ -1,4 +1,5 @@
 import { ActionIcon, Tooltip, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
+import { MoonIcon, SunIcon } from './icons';
 
 /** Switches between the light and dark color schemes. */
 export function ThemeToggle() {
@@ -12,10 +13,11 @@ export function ThemeToggle() {
       <ActionIcon
         variant="default"
         size="lg"
+        radius="xl"
         aria-label={`Mudar para ${label}`}
         onClick={() => setColorScheme(next)}
       >
-        {scheme === 'dark' ? '☀' : '☾'}
+        {scheme === 'dark' ? <SunIcon size={16} /> : <MoonIcon size={16} />}
       </ActionIcon>
     </Tooltip>
   );

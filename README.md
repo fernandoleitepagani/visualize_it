@@ -8,6 +8,8 @@ a linha executada, variáveis do passo e a tabela de complexidade assintótica.
 
 Deploy no [Vercel](https://vercel.com).
 
+Guia visual, temas, tokens e padrões de UI: **[docs/ui-guidelines.md](docs/ui-guidelines.md)**.
+
 ---
 
 ## Stack
@@ -17,8 +19,8 @@ Deploy no [Vercel](https://vercel.com).
 | Framework | React 19 |
 | Linguagem | TypeScript 6 (strict) |
 | Build | Vite 8 |
-| UI | Mantine 9 (tema dark + âmbar) |
-| Fonte | JetBrains Mono (self-hosted) |
+| UI | Mantine 9 (tema dark + âmbar; acento próprio por matéria) |
+| Fonte | Pilha do sistema (sans/mono) |
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
 | Lint | ESLint 10 (flat) |
@@ -34,6 +36,7 @@ Deploy no [Vercel](https://vercel.com).
 │   ├── app/App.tsx              # tabela de rotas
 │   ├── components/              # views, player, catálogo, busca (AlgorithmBrowser, GlobalSearch)
 │   ├── content/
+│   │   ├── insights.ts          # dicas e curiosidades por lição
 │   │   ├── subjects.ts          # fonte única das matérias, grupos e entradas
 │   │   ├── catalog.ts           # re-export de compatibilidade
 │   │   ├── lessons/             # um arquivo por algoritmo + index.ts (registro)
@@ -42,12 +45,14 @@ Deploy no [Vercel](https://vercel.com).
 │   │   ├── types.ts             # Lesson, Step, Cell, Node…
 │   │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
-│   ├── lib/                     # utilitários (lines)
-│   ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
-│   ├── styles/index.css         # estilos base sobre o CSS do Mantine
+│   ├── lib/                     # lines, highlight (tokenizer de código)
+│   ├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, ComparePage, NotFound
+│   ├── styles/index.css         # shell, grade, motion e refinamentos sobre o Mantine
 │   ├── test/                    # helpers de render + setup do Vitest
-│   ├── theme.ts                 # tema Mantine (paleta dark/âmbar, tipografia)
+│   ├── theme/tokens.ts          # fonte única de tokens + resolver dos temas
+│   ├── theme.ts                 # shim de re-exportação de @/theme
 │   └── main.tsx
+├── docs/ui-guidelines.md        # guia de UI, temas e tokens
 ├── index.html
 ├── vercel.json
 └── vite.config.ts
@@ -61,7 +66,7 @@ Cada algoritmo é **dado puro + uma função pura**, em `src/content/lessons/<sl
 export const lesson: Lesson = {
   id: 'selecao',
   title: 'Selection Sort',
-  view: 'bars',                 // 'bars' | 'cells' | 'nodes'
+  view: 'bars',                 // 'bars' | 'cells' | 'nodes' | 'plot'
   initial: [7, 3, 9, 1, 5, 8, 2],
   complexity: { time: { best: 'Θ(n²)' /* … */ }, space: 'Θ(1)', stable: false },
   code: { java: [...], c: [...] },
@@ -79,6 +84,7 @@ As três visões reaproveitam o mesmo motor:
 | `bars` | ordenação e busca | `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim` |
 | `cells` | estruturas em vetor e laços | `cells: [{ val, labels, state }]` |
 | `nodes` | estruturas encadeadas | `nodes: [{ id, val, prev, next, labels, state }]` |
+| `plot` | somatório | `plot: { points, current, total }` |
 
 ---
 
@@ -104,10 +110,22 @@ npm run dev      # http://localhost:5173
 | `npm test` | Vitest (uma execução) |
 | `npm run test:watch` | Vitest em modo watch |
 
-### Tema e atalhos
+### Tema, cores e atalhos
 
-Na primeira visita o tema segue `prefers-color-scheme`; a escolha fica salva em `localStorage`.
-Use o botão ☀/☾ no cabeçalho para alternar entre claro e escuro.
+O tema inicial segue `prefers-color-scheme`; a escolha fica salva em `localStorage`. Use o botão de
+tema no cabeçalho para alternar entre claro e escuro. Todos os valores visuais vêm de
+`src/theme/tokens.ts` e são expostos como variáveis `--viz-*` pelo `cssVariablesResolver`.
+
+Cada matéria tem seu próprio acento, herdado por suas páginas; a home usa o âmbar global:
+
+| Matéria | Acento |
+|---|---|
+| AEDS I | azul |
+| AEDS II | teal |
+| Análise | violeta |
+| Home / playground / 404 | âmbar |
+
+Detalhes de implementação e receitas: **[docs/ui-guidelines.md](docs/ui-guidelines.md)**.
 
 Na página de uma lição:
 
@@ -224,6 +242,15 @@ vêm de trocas plausíveis no vetor atual.
 **Playground** — em `/playground` você escreve `generateSteps(arr)` em JavaScript e vê o resultado
 com o mesmo player. O código roda em um **Web Worker isolado** (sem acesso ao DOM) com timeout de
 1,5 s, e o botão **Compartilhar** guarda o código na URL (`?code=`).
+
+**Comparar** — em `/comparar` você usa a mesma entrada em vários algoritmos de ordenação e compara
+passos, eventos de comparação e trocas. A contagem vem de `Step[]`; não é tempo de animação. Bucket
+Sort fica de fora porque usa valores em `[0, 1)`.
+
+**Código e atalhos** — o painel de código permite copiar e baixar a listagem atual; `lang` e
+`approach` entram na URL compartilhável. Os módulos de AEDS I usam uma única linguagem: C ou C++,
+conforme o tópico. Use `?` para abrir a
+ajuda de atalhos (`←/→`, espaço, `Home`, `End`, `R`, `N`, `+/-`).
 
 Formato mínimo de um passo:
 

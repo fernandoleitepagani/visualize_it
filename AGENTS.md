@@ -6,6 +6,9 @@
 > agentes de código, revisores, geradores de issues e assistentes de documentação. Se você não lê
 > `AGENTS.md` automaticamente, leia `AGENTS.md` e `CONTEXT.md` no início da sessão. Não peça ao
 > usuário para resumir o contexto: consulte os arquivos.
+>
+> **Tarefas de UI:** leia também `docs/ui-guidelines.md` antes de alterar cores, tipografia,
+> espaçamento, componentes visuais ou temas.
 
 `CONTEXT.md` é o contexto vivo do projeto: estado atual, arquitetura, bugs conhecidos, dívidas
 técnicas e roadmap. `AGENTS.md` é o contrato operacional: como trabalhar sem quebrar o que existe.
@@ -41,7 +44,7 @@ português (pt-BR).
 | Rotas | React Router 7 |
 | Testes | Vitest + Testing Library |
 | Lint | ESLint 10 (flat config) |
-| Fonte | JetBrains Mono self-hosted |
+| Fonte | Pilha do sistema (sans/mono), sem fontes customizadas |
 | Deploy | Vercel (SPA com rewrites) |
 
 Node.js necessário: **20.19+ ou 22.12+** (requisito do Vite 8).
@@ -81,6 +84,7 @@ src/
 ├── components/              # views, player, catálogo, busca (AlgorithmBrowser, GlobalSearch), shell
 ├── content/
 │   ├── subjects.ts          # fonte única: matérias, grupos, entradas e busca
+│   ├── insights.ts          # dicas e curiosidades por lição
 │   ├── catalog.ts           # re-export de compatibilidade de subjects.ts
 │   ├── lessons/             # uma lição por arquivo + index.ts (registro)
 │   └── theory/              # artigos de teoria (Complexidade, Indução)
@@ -89,12 +93,17 @@ src/
 │   ├── elementIds.ts        # identidade estável dos elementos (animação de troca)
 │   └── usePlayback.ts       # play/pause/prev/next/goTo/velocidade
 ├── lib/lines.ts             # utilitário para transformar template em array de linhas
-├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, NotFound
-├── styles/index.css         # ajustes sobre o CSS do Mantine
+├── lib/highlight.tsx        # tokenizer de código (comentários, strings, números, keywords)
+├── pages/                   # HomePage, SubjectPage, LessonPage, TheoryPage, ComparePage, NotFound
+├── styles/index.css         # shell, grade, motion e refinamentos sobre o Mantine
 ├── test/                    # setup do Vitest + helpers de render
 ├── theme.ts                 # shim de re-exportação (migração em andamento)
-├── theme/tokens.ts          # fonte única dos tokens visuais
+├── theme/tokens.ts          # fonte única dos tokens visuais + cssVariablesResolver
 └── main.tsx
+
+docs/
+├── export-research.md       # spike de exportação
+└── ui-guidelines.md         # guia de UI, temas, tokens e acentos por matéria
 ```
 
 O alias `@/` aponta para `src/` (configurado em `vite.config.ts` e `tsconfig.app.json`).
@@ -133,9 +142,13 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
 
 5. **Tokens visuais vêm de `@/theme`.**
    Não introduza cores, fontes, espaçamentos ou raios soltos em componentes. Se precisar de um
-   valor novo, adicione em `src/theme/tokens.ts` e use o token.
+   valor novo, adicione em `src/theme/tokens.ts` e use o token. Cores que mudam com o esquema
+   devem vir de `vizVar`/`--viz-*`; o `cssVariablesResolver` é a única fonte dos dois temas e preci-
+   sa ser passado em `main.tsx`, `src/test/render.tsx` e `.storybook/preview.tsx`. Cada matéria
+   define `--subject-accent` na página; a home usa o âmbar global como acento. Use
+   `var(--subject-accent, var(--viz-accent))` em elementos que devem acompanhar a matéria.
 
-6. **As três views compartilham o mesmo motor.**
+6. **As views compartilham o mesmo motor.**
    `BarsView` lê `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`; `CellsView` lê `cells`; `NodesView`
    lê `nodes` e `linked`. Não crie um quarto caminho de renderização sem uma decisão explícita.
 
@@ -147,6 +160,11 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
 8. **Acessibilidade faz parte da definição de pronto.**
    A visualização não pode depender só de cor; controles precisam de rótulos; a descrição do passo
    deve ser anunciada. Veja BUG-08 no `CONTEXT.md`.
+
+9. **Linguagens vêm de `Lesson.languages`.** O padrão é `['java','c']`; AEDS I usa `['c']` ou `['cpp']`.
+   `CodePanel` esconde o seletor quando há uma só língua. Nunca selecione uma língua que a lição
+   não declara, e mantenha `step.line` dentro da listagem de cada língua. Módulos conceituais usam
+   `inputless: true`.
 
 ---
 
@@ -176,6 +194,8 @@ Nenhum componente precisa mudar para adicionar uma lição que use uma view exis
 - Imports ordenados: dependências externas primeiro, depois alias `@/`, depois relativos.
 - Não adicione dependências novas sem justificar o custo e verificar alternativas nativas.
 - Comentários devem explicar **por que**, não repetir o código.
+- Antes de criar um padrão visual, consulte `docs/ui-guidelines.md` e reutilize as primitivas
+  (`Panel`, `PageHeader`, `SectionHeading`, `MetaPill`, `ViewLegend`).
 
 ---
 
@@ -192,6 +212,8 @@ O que merece teste:
 - playback (`play`, `pause`, `next`, `prev`, `reset`, fim da lista);
 - validação da entrada (inteiros, faixa, quantidade);
 - views (`BarsView`, `CellsView`, `NodesView`) com estados vazios e estados ativos;
+- timeline do player, estado vazio (`0 / 0`) e tokenizer de código;
+- métricas de comparação, insights, atalhos e link de reportar problema;
 - rotas e 404.
 
 Evite testes que dependem de tempo real ou de animações CSS. Prefira testar dados e comportamento
@@ -210,7 +232,9 @@ Consulte a seção "Bugs conhecidos" do `CONTEXT.md` antes de mexer nestes ponto
 - **Entrada:** `parseInput` aceita decimais, negativos e valores enormes; `counting` aloca
   `max + 1` posições.
 - **Tema:** `@/theme` resolve hoje para `src/theme.ts` (arquivo), não para `src/theme/tokens.ts`.
-  Não apague o shim sem criar um `src/theme/index.ts` ou trocar todos os imports.
+  Não apague o shim sem criar um `src/theme/index.ts` ou trocar todos os imports. O
+  `cssVariablesResolver` precisa ser passado em todos os providers (app, testes e Storybook), senão
+  as cores `--viz-*` somem.
 - **`viz`:** alias deprecated e sem uso; pode ser removido junto com a migração do tema.
 - **Estabilidade:** `ComplexityTable` mostra "Não" quando `stable` é `undefined` ou não se aplica.
 

@@ -7,6 +7,7 @@
  */
 
 import type { ViewKind } from '@/engine/types';
+import type { SubjectAccent } from '@/theme';
 import { getLesson } from './lessons';
 
 export interface LessonEntry {
@@ -41,7 +42,7 @@ export interface Subject {
   short: string;
   description: string;
   /** Palette key used as a subtle accent on cards and headers. */
-  accent: 'accent' | 'success' | 'info';
+  accent: SubjectAccent;
   groups: CatalogGroup[];
 }
 
@@ -62,7 +63,7 @@ export const subjects: Subject[] = [
     title: 'AEDS I',
     short: 'AEDS I',
     description: 'Fundamentos de programação: laços de repetição e aritmética de ponteiros.',
-    accent: 'accent',
+    accent: 'blue',
     groups: [
       {
         id: 'lacos',
@@ -113,6 +114,33 @@ export const subjects: Subject[] = [
           },
         ],
       },
+      {
+        id: 'dados-memoria',
+        title: 'Dados e memória',
+        entries: [
+          { kind: 'lesson', slug: 'structs', blurb: 'agrupa campos em um novo tipo de dado.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'alocacao-memoria', blurb: 'reserva e libera memória no heap com malloc e free.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'strings', blurb: 'texto como vetor de char terminado em \0.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'arquivos', blurb: 'abre, escreve e fecha arquivos com FILE.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'vetores-matrizes', blurb: 'índices, linhas e colunas em C.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'classes-vetores-matrizes', blurb: 'coleções como atributos de uma classe.', tag: 'conceito' },
+        ],
+      },
+      {
+        id: 'orientacao-objetos',
+        title: 'Orientação a objetos',
+        entries: [
+          { kind: 'lesson', slug: 'oop', blurb: 'objetos, classes e os quatro pilares da POO.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'abstracao', blurb: 'expõe o essencial e esconde detalhes de implementação.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'classes', blurb: 'define um novo tipo com atributos e métodos.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'construtores', blurb: 'inicializa objetos no momento da criação.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'encapsulamento', blurb: 'protege o estado atrás de uma interface pública.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'heranca', blurb: 'reaproveita e especializa comportamento entre classes.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'polimorfismo', blurb: 'um método, várias implementações em tempo de execução.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'metodos-acessores', blurb: 'getters e setters preservam o encapsulamento.', tag: 'conceito' },
+          { kind: 'lesson', slug: 'excecoes', blurb: 'trata erros com throw, try e catch.', tag: 'conceito' },
+        ],
+      },
     ],
   },
   {
@@ -120,7 +148,7 @@ export const subjects: Subject[] = [
     title: 'AEDS II',
     short: 'AEDS II',
     description: 'Ordenação, busca e estruturas lineares com visualizações passo a passo.',
-    accent: 'success',
+    accent: 'teal',
     groups: [
       {
         id: 'ordenacao',
@@ -173,6 +201,12 @@ export const subjects: Subject[] = [
             slug: 'counting',
             blurb: 'Conta ocorrências e distribui direto na posição final.',
             tag: 'Θ(n + k)',
+          },
+          {
+            kind: 'lesson',
+            slug: 'bucket',
+            blurb: 'Distribui em baldes por faixa e ordena cada balde com inserção.',
+            tag: 'Θ(n) – Θ(n²)',
           },
           {
             kind: 'lesson',
@@ -255,7 +289,7 @@ export const subjects: Subject[] = [
     title: 'Análise',
     short: 'Análise',
     description: 'Complexidade assintótica e provas por indução para justificar os algoritmos.',
-    accent: 'info',
+    accent: 'violet',
     groups: [
       {
         id: 'analise',

@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { CodePanel } from './CodePanel';
@@ -38,6 +38,33 @@ describe('CodePanel', () => {
     expect(active).toHaveTextContent('return soma;');
   });
 
+  it('hides the language picker when only C is available', () => {
+    renderWithProviders(
+      <CodePanel
+        code={['int soma = 0;', 'return soma;']}
+        activeLine={0}
+        lang="c"
+        languages={['c']}
+        onLangChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+  });
+
+  it('copies the current listing', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    renderWithProviders(
+      <CodePanel code={['int soma = 0;', 'return soma;']} activeLine={0} lang="c" onLangChange={vi.fn()} />,
+    );
+
+    fireEvent.click(screen.getByLabelText('Copiar código'));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith('int soma = 0;\nreturn soma;'));
+  });
+
   it('switches the language through the segmented control', () => {
     const onLangChange = vi.fn();
     renderWithProviders(
@@ -54,10 +81,10 @@ describe('CodePanel', () => {
     expect(onLangChange).toHaveBeenCalledWith('c');
   });
 
-  it('shows only the language label when the lesson offers a single language', () => {
+  it('hides the language picker when only C is available', () => {
     renderWithProviders(
       <CodePanel
-        code={['int soma = 0;']}
+        code={['int soma = 0;', 'return soma;']}
         activeLine={0}
         lang="c"
         languages={['c']}
@@ -65,7 +92,8 @@ describe('CodePanel', () => {
       />,
     );
 
-    expect(screen.getByLabelText('linguagem')).toHaveTextContent('C');
     expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
   });
 });

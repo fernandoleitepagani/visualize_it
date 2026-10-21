@@ -95,8 +95,8 @@ void removerFim() {
           return {
             id: nd.id,
             val: nd.val,
-            ant: nd.ant,
-            prox: nd.prox,
+            prev: nd.ant,
+            next: nd.prox,
             labels: lbls,
             state: states[nd.id] || '',
           };

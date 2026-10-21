@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Anchor, Button, Group, Paper, Text, Title } from '@mantine/core';
 import type { EntryLocation } from '@/content/subjects';
 import { getEntryPath, getEntryTitle } from '@/content/subjects';
-import { font } from '@/theme';
+import { font, subjectAccent, vizVar } from '@/theme';
 import { ChevronLeftIcon, ChevronRightIcon } from './icons';
 
 function siblingLessons(location: EntryLocation) {
@@ -24,18 +24,14 @@ export function LessonPager({ location }: { location: EntryLocation }) {
           to={getEntryPath(previous)}
           variant="default"
           size="xs"
+          radius="pill"
           leftSection={<ChevronLeftIcon size={13} />}
           title={getEntryTitle(previous)}
         >
           Anterior
         </Button>
       ) : (
-        <Button
-          variant="default"
-          size="xs"
-          leftSection={<ChevronLeftIcon size={13} />}
-          disabled
-        >
+        <Button variant="default" size="xs" radius="pill" leftSection={<ChevronLeftIcon size={13} />} disabled>
           Anterior
         </Button>
       )}
@@ -46,18 +42,14 @@ export function LessonPager({ location }: { location: EntryLocation }) {
           to={getEntryPath(next)}
           variant="default"
           size="xs"
+          radius="pill"
           rightSection={<ChevronRightIcon size={13} />}
           title={getEntryTitle(next)}
         >
           Próximo
         </Button>
       ) : (
-        <Button
-          variant="default"
-          size="xs"
-          rightSection={<ChevronRightIcon size={13} />}
-          disabled
-        >
+        <Button variant="default" size="xs" radius="pill" rightSection={<ChevronRightIcon size={13} />} disabled>
           Próximo
         </Button>
       )}
@@ -68,14 +60,26 @@ export function LessonPager({ location }: { location: EntryLocation }) {
 /** Bottom panel listing the other lessons in the same group. */
 export function LessonRelated({ location }: { location: EntryLocation }) {
   const entries = siblingLessons(location);
+  const accent = subjectAccent[location.subject.accent];
   if (entries.length <= 1) return null;
 
   return (
-    <Paper withBorder radius="md" p="md" mt="xl">
-      <Title order={2} fz={font.small} fw={600} mb="xs">
-        Outros em {location.group.title}
-      </Title>
-      <Group gap="sm" wrap="wrap">
+    <Paper
+      withBorder
+      radius="xl"
+      p="md"
+      mt="xl"
+      style={{ borderColor: vizVar.line, background: 'color-mix(in srgb, var(--viz-surface) 74%, transparent)' }}
+    >
+      <Group justify="space-between" align="baseline" mb="sm" wrap="wrap">
+        <Title order={2} fz={font.small} fw={600}>
+          Outros em {location.group.title}
+        </Title>
+        <Text fz={font.micro} c="dimmed">
+          {location.subject.title} · {location.group.title}
+        </Text>
+      </Group>
+      <Group gap={6} wrap="wrap">
         {entries.map((entry) => {
           const current = entry.slug === location.entry.slug;
           return (
@@ -83,19 +87,23 @@ export function LessonRelated({ location }: { location: EntryLocation }) {
               key={entry.slug}
               component={Link}
               to={getEntryPath(entry)}
-              fz={font.small}
-              c={current ? 'amber' : 'dimmed'}
-              fw={current ? 600 : 400}
+              fz={font.tiny}
+              underline="never"
               aria-current={current ? 'page' : undefined}
+              style={{
+                color: current ? accent : vizVar.muted,
+                border: `1px solid ${current ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line}`,
+                background: current ? `color-mix(in srgb, ${accent} 12%, transparent)` : 'transparent',
+                borderRadius: 999,
+                padding: '3px 9px',
+                fontWeight: current ? 600 : 400,
+              }}
             >
               {getEntryTitle(entry)}
             </Anchor>
           );
         })}
       </Group>
-      <Text fz={font.tiny} c="dimmed" mt="xs">
-        {location.subject.title} · {location.group.title}
-      </Text>
     </Paper>
   );
 }

@@ -1,5 +1,5 @@
 import { Box, Group, Text } from '@mantine/core';
-import { palette, radius, font, space } from '@/theme';
+import { font, radius, space, vizVar } from '@/theme';
 
 export interface LegendItem {
   key: string;
@@ -18,16 +18,16 @@ export function ViewLegend({ items }: { items: LegendItem[] }) {
       wrap="wrap"
       pt="xs"
       mt={space.xs}
-      style={{ borderTop: `1px solid ${palette.line}` }}
+      style={{ borderTop: `1px solid ${vizVar.line}` }}
     >
       {items.map((item) => (
         <Group key={item.key} gap={6} wrap="nowrap">
           <Box
-            w={8}
-            h={8}
+            w={7}
+            h={7}
             style={{ background: item.color, borderRadius: radius.pill, flexShrink: 0 }}
           />
-          <Text fz={font.micro} style={{ color: palette.muted }}>
+          <Text fz={font.micro} style={{ color: vizVar.muted }}>
             {item.label}
           </Text>
         </Group>
