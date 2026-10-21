@@ -80,4 +80,20 @@ describe('CodePanel', () => {
 
     expect(onLangChange).toHaveBeenCalledWith('c');
   });
+
+  it('hides the language picker when only C is available', () => {
+    renderWithProviders(
+      <CodePanel
+        code={['int soma = 0;', 'return soma;']}
+        activeLine={0}
+        lang="c"
+        languages={['c']}
+        onLangChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+    expect(screen.getByText('C')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+  });
 });
