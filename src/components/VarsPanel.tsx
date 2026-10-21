@@ -36,11 +36,17 @@ export function VarsPanel({ vars, prevVars }: Props) {
               py={3}
               style={{
                 background: isChanged
-                  ? 'color-mix(in srgb, var(--viz-accent-soft) 80%, var(--viz-surface-2))'
+                  ? 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 10%, var(--viz-surface-2))'
                   : 'color-mix(in srgb, var(--viz-surface-2) 66%, transparent)',
-                border: `1px solid ${isChanged ? vizVar.accentLine : vizVar.line}`,
+                border: `1px solid ${
+                  isChanged
+                    ? 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 34%, transparent)'
+                    : vizVar.line
+                }`,
                 borderRadius: radius.sm,
-                boxShadow: isChanged ? `0 0 0 1px ${vizVar.accentSoft}` : undefined,
+                boxShadow: isChanged
+                  ? '0 0 0 1px color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 12%, transparent)'
+                  : undefined,
               }}
             >
               <Text span fz={font.small} style={{ color: vizVar.muted }}>
@@ -64,9 +70,9 @@ export function VarsPanel({ vars, prevVars }: Props) {
                   h={4}
                   aria-hidden
                   style={{
-                    background: vizVar.accent,
+                    background: 'var(--subject-accent, var(--viz-accent))',
                     borderRadius: radius.pill,
-                    boxShadow: `0 0 6px ${vizVar.accent}`,
+                    boxShadow: '0 0 6px var(--subject-accent, var(--viz-accent))',
                   }}
                 />
               ) : null}
