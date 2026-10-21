@@ -126,9 +126,9 @@ export function CodePanel({
                 whiteSpace: 'pre',
                 minHeight: 25,
                 paddingRight: space.lg,
-                borderLeft: `3px solid ${active ? vizVar.accent : 'transparent'}`,
+                borderLeft: `3px solid ${active ? 'var(--subject-accent, var(--viz-accent))' : 'transparent'}`,
                 background: active
-                  ? `linear-gradient(90deg, ${vizVar.accentSoft} 0%, color-mix(in srgb, var(--viz-accent) 3%, transparent) 88%, transparent 100%)`
+                  ? `linear-gradient(90deg, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 11%, transparent) 0%, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 3%, transparent) 88%, transparent 100%)`
                   : undefined,
                 transition:
                   'background 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease',
@@ -143,7 +143,7 @@ export function CodePanel({
                   fontSize: font.micro,
                   lineHeight: '25px',
                   userSelect: 'none',
-                  color: active ? vizVar.accent : vizVar.dim,
+                  color: active ? 'var(--subject-accent, var(--viz-accent))' : vizVar.dim,
                   fontWeight: active ? 700 : 400,
                 }}
               >
