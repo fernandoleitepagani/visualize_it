@@ -99,6 +99,10 @@ export interface Lesson {
   panelLabel?: string;
   /** Seed values for the input bar. Falls back to the shared default. */
   initial?: number[];
+  /** Optional generator for the "Sortear" button (e.g. values in [0, 1)). */
+  randomInput?: () => number[];
+  /** Accepted values in the input bar. Defaults to `integers`. */
+  inputFormat?: 'integers' | 'unit-interval';
   complexity: Complexity;
   /** Shown as an extra card above "Sobre" (sorting lessons). */
   complexityAnalysis?: ComplexityAnalysis;

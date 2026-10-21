@@ -31,11 +31,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 23 (`src/content/lessons/index.ts`) |
+| Lições registradas | 24 (`src/content/lessons/index.ts`) |
 | Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `*` (404) |
-| Testes | 144 testes em 18 arquivos, passando |
+| Testes | 164 testes em 19 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -46,7 +46,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 - **AEDS I (5):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`).
 - **AEDS II (18):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
-    `heapsort`, `counting`, `radix`.
+    `heapsort`, `counting`, `bucket`, `radix`.
   - **Busca:** `busca-sequencial`, `busca-binaria`.
   - **Estruturas lineares:** `lista-sequencial`, `lista-encadeada`, `lista-dupla`,
     `pilha-sequencial`, `pilha-encadeada`, `fila-circular`, `fila-encadeada`.
@@ -113,6 +113,8 @@ export interface Lesson {
   linked?: 'singly' | 'doubly';      // só para nodes
   panelLabel?: string;
   initial?: number[];                // padrão: DEFAULT_INPUT
+  randomInput?: () => number[];      // gerador do botão "Sortear"
+  inputFormat?: 'integers' | 'unit-interval'; // padrão: inteiros
   complexity: Complexity;
   code: { java: string[]; c: string[] };
   steps: (input: number[]) => Step[];
@@ -354,6 +356,7 @@ npm run build
 | 2026-10-20 | Limpeza visual geral e animações didáticas (curvas spring, sincronização de rótulos em BarsView, elevação e ponteiros em Cells/NodesView, detecção de mutação em VarsPanel, toolbar em linha única e LessonPager integrado) | Reduzir ruído visual de bordas/cabeçalhos e fornecer feedback físico imediato das mudanças de estado algorítmico |
 | 2026-10-20 | Merge da linha de interface por matéria com quiz, playground, view `plot`, tema claro/escuro e Storybook | Unificar as duas frentes mantendo `subjects.ts` como catálogo, o grid 56/44 e os tokens compartilhados |
 | 2026-10-20 | Deck de controles empilha abaixo de 1216px e os atalhos não ocupam mais a linha do player | Impedir que velocidade/copiar link vazem para fora do painel em telas médias e no container máximo |
+| 2026-10-20 | Integração das lições `counting` e `bucket` com a linha principal (`main`) | Trazer as variantes iterativa/recursiva e a análise de complexidade; `inputFormat` permite valores em [0, 1) no formulário |
 
 ---
 
