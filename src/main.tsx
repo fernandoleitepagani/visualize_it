@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { localStorageColorSchemeManager, MantineProvider } from '@mantine/core';
 import { App } from './app/App';
-import { theme } from '@/theme';
+import { cssVariablesResolver, theme } from '@/theme';
+import '@fontsource-variable/space-grotesk';
 import '@fontsource/jetbrains-mono/latin-400.css';
 import '@fontsource/jetbrains-mono/latin-500.css';
 import '@fontsource/jetbrains-mono/latin-600.css';
@@ -21,6 +22,7 @@ createRoot(container).render(
       theme={theme}
       defaultColorScheme="auto"
       colorSchemeManager={colorSchemeManager}
+      cssVariablesResolver={cssVariablesResolver}
     >
       <BrowserRouter>
         <App />

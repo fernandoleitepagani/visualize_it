@@ -2,14 +2,17 @@
 export {
   theme,
   palette,
+  lightPalette,
   space,
   radius,
   font,
+  sans,
   mono,
   shadow,
   transition,
   tint,
   vizVar,
+  cssVariablesResolver,
 } from './theme/tokens';
 
 /**
