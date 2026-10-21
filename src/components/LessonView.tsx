@@ -230,7 +230,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       label={lesson.panelLabel ?? 'visualização'}
       icon={<BarsIcon size={13} />}
       aside={
-        <Group gap={6} wrap="nowrap">
+        <Group gap={6} wrap="nowrap" align="center" h={22}>
           <Box
             aria-hidden
             w={6}
@@ -389,6 +389,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   return (
     <>
+      {!lesson.inputless ? (
       <Paper
         withBorder
         radius="xl"
@@ -469,6 +470,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           ) : null}
         </Box>
       </Paper>
+      ) : null}
 
       {isDesktop ? (
         <>

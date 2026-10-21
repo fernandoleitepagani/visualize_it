@@ -20,7 +20,9 @@ interface Props {
   onApproachChange?: (approach: CodeApproach) => void;
 }
 
-const LABELS: Record<CodeLang, string> = { java: 'java', c: 'c' };
+const LABELS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'c++' };
+const ARIA: Record<CodeLang, string> = { java: 'Java', c: 'C', cpp: 'C++' };
+const EXTENSIONS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'cpp' };
 
 export function CodePanel({
   code,
@@ -37,7 +39,7 @@ export function CodePanel({
   const [copied, setCopied] = useState(false);
   const showApproach = approach !== undefined && onApproachChange !== undefined;
   const showLanguage = languages.length > 1;
-  const extension = lang === 'java' ? 'java' : 'c';
+  const extension = EXTENSIONS[lang];
 
   // Keep the highlighted line visible inside the code box without scrolling the page.
   useEffect(() => {
@@ -115,8 +117,8 @@ export function CodePanel({
               }))}
             />
           ) : (
-            <Text ff="monospace" fz={font.micro} c="dimmed" aria-label="linguagem">
-              {lang.toUpperCase()}
+            <Text ff="monospace" fz={font.micro} c="dimmed" lh={1} aria-label="linguagem">
+              {ARIA[lang]}
             </Text>
           )}
         </Group>
@@ -145,7 +147,7 @@ export function CodePanel({
               </ActionIcon>
             </Tooltip>
             <Text fz={font.micro} c="dimmed" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              {lang} · {showApproach ? approach : 'implementação única'}
+              {LABELS[lang]} · {showApproach ? approach : 'implementação única'}
             </Text>
           </Group>
           <Text fz={font.micro} c="dimmed" ff="monospace">
@@ -157,7 +159,7 @@ export function CodePanel({
       <Box
         ref={scrollRef}
         role="region"
-        aria-label={`Código ${lang === 'java' ? 'Java' : 'C'}`}
+        aria-label={`Código ${ARIA[lang]}`}
         className="code-scroll"
         py="sm"
         fz={12.5}

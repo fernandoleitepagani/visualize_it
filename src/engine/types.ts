@@ -9,7 +9,7 @@
 export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
-export type CodeLang = 'java' | 'c';
+export type CodeLang = 'java' | 'c' | 'cpp';
 
 /** One source listing per language available for a lesson. */
 export type CodeListing = Partial<Record<CodeLang, string[]>>;
@@ -101,6 +101,8 @@ export interface Lesson {
   randomInput?: () => number[];
   /** Accepted values in the input bar. Defaults to `integers`. */
   inputFormat?: 'integers' | 'unit-interval';
+  /** Concept modules hide the input toolbar. */
+  inputless?: boolean;
   complexity: Complexity;
   /** Shown as an extra card above "Sobre" (sorting lessons). */
   complexityAnalysis?: ComplexityAnalysis;

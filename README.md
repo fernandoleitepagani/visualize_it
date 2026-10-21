@@ -248,7 +248,8 @@ passos, eventos de comparação e trocas. A contagem vem de `Step[]`; não é te
 Sort fica de fora porque usa valores em `[0, 1)`.
 
 **Código e atalhos** — o painel de código permite copiar e baixar a listagem atual; `lang` e
-`approach` entram na URL compartilhável. As lições de AEDS I mostram somente C. Use `?` para abrir a
+`approach` entram na URL compartilhável. Os módulos de AEDS I usam uma única linguagem: C ou C++,
+conforme o tópico. Use `?` para abrir a
 ajuda de atalhos (`←/→`, espaço, `Home`, `End`, `R`, `N`, `+/-`).
 
 Formato mínimo de um passo:

@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { vizVar } from '@/theme';
 
 const KEYWORDS =
-  'void|int|char|float|double|boolean|for|if|else|while|do|return|new|length|break|continue|struct|typedef|malloc|free|class|public|private|static|throws|throw|true|false|null|String|System|Scanner|RuntimeException|const|let|function';
+  'void|int|char|float|double|boolean|for|if|else|while|do|return|new|delete|length|break|continue|struct|typedef|malloc|free|class|public|private|protected|virtual|override|namespace|using|template|typename|try|catch|throw|throws|true|false|null|nullptr|String|System|Scanner|RuntimeException|const|let|function|std|cout|cin|vector|string';
 
 const INLINE_TOKEN = new RegExp(
   `("(?:\\\\.|[^"\\\\])*"|'(?:\\\\.|[^'\\\\])*')|(/\\*[\\s\\S]*?\\*/)|(//.*$)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b(?:${KEYWORDS})\\b)`,

@@ -61,7 +61,7 @@ export function LessonPage() {
             {worst ? <MetaPill tone="subject">{worst}</MetaPill> : null}
             {lesson.complexity.space ? <MetaPill>{lesson.complexity.space}</MetaPill> : null}
             <MetaPill>{viewLabels[lesson.view ?? 'bars']}</MetaPill>
-            <MetaPill>{languages.map((lang) => (lang === 'java' ? 'Java' : 'C')).join(' · ')}</MetaPill>
+            <MetaPill>{languages.map((lang) => (lang === 'java' ? 'Java' : lang === 'cpp' ? 'C++' : 'C')).join(' · ')}</MetaPill>
           </>
         }
         actions={location ? <LessonPager location={location} /> : undefined}

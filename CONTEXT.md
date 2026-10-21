@@ -31,7 +31,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 24 (`src/content/lessons/index.ts`) |
+| Lições registradas | 39 (`src/content/lessons/index.ts`) |
 | Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
@@ -43,7 +43,10 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (5):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`).
+- **AEDS I (20):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`), além de
+  `oop`, `abstracao`, `classes`, `construtores`, `encapsulamento`, `heranca`, `polimorfismo`,
+  `metodos-acessores`, `excecoes` (C++) e `structs`, `alocacao-memoria`, `strings`, `arquivos`,
+  `vetores-matrizes`, `classes-vetores-matrizes` (C).
 - **AEDS II (18):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
     `heapsort`, `counting`, `bucket`, `radix`.
@@ -383,6 +386,7 @@ npm run build
 | 2026-10-20 | Integração das lições `counting` e `bucket` com a linha principal (`main`) | Trazer as variantes iterativa/recursiva e a análise de complexidade; `inputFormat` permite valores em [0, 1) no formulário |
 | 2026-10-21 | AEDS I somente em C; `Lesson.languages`, listagens parciais e linhas recalibradas | Remover ambiguidade Java/C nas lições introdutórias e evitar código não utilizado |
 | 2026-10-21 | Comparação determinística em `/comparar`, dicas/curiosidades em `content/insights.ts`, copiar/baixar código, atalhos com modal e link de reportar problema | Aproveitar ideias do SortVision sem copiar a arquitetura imperativa nem métricas de tempo de animação |
+| 2026-10-21 | 15 novos módulos de AEDS I: OOP (C++) e dados/memória (C), com `inputless` e `languages` | Cobrir os tópicos das notas sem duplicar a toolbar de entrada e mantendo uma única linguagem por módulo |
 
 ---
 

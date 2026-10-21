@@ -210,7 +210,7 @@ export function ComparePage() {
       </Paper>
 
       <Box mt="xl">
-        <SectionHeading index="01" kicker="mesma entrada" count={`${rows.length} algoritmos`}>
+        <SectionHeading index="01" kicker="mais rápido → mais lento" count={`${rows.length} algoritmos`}>
           Resultados
         </SectionHeading>
         {rows.length === 0 ? (
@@ -223,7 +223,7 @@ export function ComparePage() {
               <Table verticalSpacing="xs" fz={font.small} style={{ minWidth: 620 }}>
                 <Table.Thead>
                   <Table.Tr>
-                    {['algoritmo', 'passos', 'comparações', 'trocas', 'pior caso', 'escala'].map((heading) => (
+                    {['#', 'algoritmo', 'passos', 'comparações', 'trocas', 'pior caso', 'escala'].map((heading) => (
                       <Table.Th
                         key={heading}
                         fz={font.micro}
@@ -238,8 +238,11 @@ export function ComparePage() {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {rows.map((row) => (
+                  {rows.map((row, index) => (
                     <Table.Tr key={row.slug}>
+                      <Table.Td ff="monospace" c="dimmed" style={{ borderColor: vizVar.line }}>
+                        {index + 1}
+                      </Table.Td>
                       <Table.Td style={{ borderColor: vizVar.line }}>
                         <Text fz={font.small} fw={600}>
                           {row.title}

@@ -161,9 +161,10 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
    A visualização não pode depender só de cor; controles precisam de rótulos; a descrição do passo
    deve ser anunciada. Veja BUG-08 no `CONTEXT.md`.
 
-9. **Linguagens vêm de `Lesson.languages`.** O padrão é `['java','c']`; AEDS I usa `['c']`.
+9. **Linguagens vêm de `Lesson.languages`.** O padrão é `['java','c']`; AEDS I usa `['c']` ou `['cpp']`.
    `CodePanel` esconde o seletor quando há uma só língua. Nunca selecione uma língua que a lição
-   não declara, e mantenha `step.line` dentro da listagem de cada língua.
+   não declara, e mantenha `step.line` dentro da listagem de cada língua. Módulos conceituais usam
+   `inputless: true`.
 
 ---
 

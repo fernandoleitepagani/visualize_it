@@ -245,7 +245,8 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 ### 7.1 Linguagens por lição
 
 `Lesson.languages` define quais abas de código aparecem. O padrão é `['java', 'c']`; lições de
-AEDS I usam somente `['c']` e não têm listagem Java. `CodePanel` recebe `languages` e esconde o
+AEDS I usam somente `['c']` ou `['cpp']` e não têm listagem Java. `Lesson.inputless` esconde a
+toolbar de entrada em módulos conceituais (OOP, structs, memória). `CodePanel` recebe `languages` e esconde o
 seletor quando há apenas uma opção. `lang` e `approach` também entram na URL compartilhável.
 
 ### 7.2 Receitas
