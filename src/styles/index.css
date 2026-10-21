@@ -210,7 +210,7 @@ body::before {
 }
 
 .section-index {
-  color: var(--viz-accent);
+  color: var(--subject-accent, var(--viz-accent));
   font-size: 11px;
   letter-spacing: 0.12em;
   white-space: nowrap;
@@ -571,13 +571,14 @@ body::before {
 }
 
 .btn-primary {
-  background: var(--viz-accent) !important;
-  color: var(--viz-accent-ink, #2a1d02) !important;
-  border: 1px solid var(--viz-accent) !important;
+  background: var(--subject-accent, var(--viz-accent)) !important;
+  color: var(--subject-accent-ink, #2a1d02) !important;
+  border: 1px solid color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 72%, #000) !important;
+  box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 55%, transparent) !important;
 }
 
 .btn-primary:hover {
-  background: color-mix(in srgb, var(--viz-accent) 88%, #fff) !important;
+  background: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 86%, #fff) !important;
 }
 
 .player-timeline {
@@ -661,11 +662,11 @@ body::before {
 }
 
 .mantine-Slider-bar {
-  background: var(--viz-accent);
+  background: var(--subject-accent, var(--viz-accent));
 }
 
 .mantine-Slider-thumb {
-  border-color: var(--viz-accent);
+  border-color: var(--subject-accent, var(--viz-accent));
   background: var(--viz-surface);
 }
 
@@ -675,7 +676,8 @@ body::before {
 }
 
 .mantine-Tabs-tab[data-active] {
-  color: var(--viz-ink);
+  color: var(--subject-accent, var(--viz-ink));
+  border-color: var(--subject-accent, var(--viz-accent));
 }
 
 .mantine-Modal-content {
