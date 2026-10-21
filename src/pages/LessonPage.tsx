@@ -1,10 +1,18 @@
 import { useParams } from 'react-router-dom';
 import { LessonPager, LessonRelated } from '@/components/LessonNav';
 import { LessonView } from '@/components/LessonView';
+import { MetaPill } from '@/components/MetaPill';
 import { PageHeader } from '@/components/PageHeader';
 import { getLesson } from '@/content/lessons';
 import { getEntryLocation } from '@/content/subjects';
+import { vizVar } from '@/theme';
 import { NotFound } from './NotFound';
+
+const accents = {
+  accent: vizVar.accent,
+  success: vizVar.green,
+  info: vizVar.purple,
+} as const;
 
 export function LessonPage() {
   const { slug } = useParams();
@@ -12,6 +20,10 @@ export function LessonPage() {
   const location = getEntryLocation(slug);
 
   if (!lesson) return <NotFound />;
+
+  const accent = location ? accents[location.subject.accent] : vizVar.accent;
+  const time = lesson.complexity.time ?? {};
+  const worst = time.worst ?? time.avg ?? time.best;
 
   return (
     <>
@@ -26,8 +38,18 @@ export function LessonPage() {
               ]
             : undefined
         }
+        kicker={location ? `${location.subject.title} · ${location.group.title}` : 'lição'}
         title={lesson.title}
         subtitle={lesson.subtitle}
+        accent={accent}
+        meta={
+          <>
+            {lesson.panelLabel ? <MetaPill>{lesson.panelLabel}</MetaPill> : null}
+            {worst ? <MetaPill tone="accent">{worst}</MetaPill> : null}
+            {lesson.complexity.space ? <MetaPill>{lesson.complexity.space}</MetaPill> : null}
+            <MetaPill>{lesson.view ?? 'bars'}</MetaPill>
+          </>
+        }
         actions={location ? <LessonPager location={location} /> : undefined}
       />
       <LessonView key={lesson.id} lesson={lesson} />

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Box, Button, Group, Paper, Tabs, Text, TextInput } from '@mantine/core';
+import { Box, Button, Group, Paper, Tabs, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import type { CodeApproach, Lesson, Step } from '@/engine/types';
@@ -8,7 +8,7 @@ import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
 import { parseInput } from '@/lib/parseInput';
 import { readStoredInput, storeInput } from '@/lib/persistedInput';
-import { palette, font, radius, vizVar } from '@/theme';
+import { font, radius, vizVar } from '@/theme';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
@@ -181,18 +181,23 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const vizPanel = (
     <Panel
       label={lesson.panelLabel ?? 'visualização'}
-      icon={<BarsIcon size={14} />}
+      icon={<BarsIcon size={13} />}
       aside={
-        <Badge
-          variant="light"
-          color="gray"
-          radius="sm"
-          ff="monospace"
-          fz={font.tiny}
-          style={{ color: vizVar.ink, textTransform: 'none' }}
-        >
-          passo {playback.index + 1} / {playback.total}
-        </Badge>
+        <Group gap={6} wrap="nowrap">
+          <Box
+            aria-hidden
+            w={6}
+            h={6}
+            style={{
+              borderRadius: 999,
+              background: vizVar.accent,
+              boxShadow: `0 0 8px ${vizVar.accent}`,
+            }}
+          />
+          <Text fz={font.micro} ff="monospace" style={{ color: vizVar.ink2, whiteSpace: 'nowrap' }}>
+            passo {playback.index + 1} / {playback.total}
+          </Text>
+        </Group>
       }
     >
       <Box
@@ -201,7 +206,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         pt="md"
         pb="sm"
         style={{
-          background: `radial-gradient(ellipse at 50% 100%, ${palette.accentGlow}, transparent 62%)`,
+          background: `radial-gradient(ellipse at 50% 100%, ${vizVar.accentSoft}, transparent 64%)`,
         }}
       >
         <Box className="viz-canvas">
@@ -209,18 +214,29 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         </Box>
 
         <Box
-          mt="md"
-          p="sm"
+          mt="lg"
+          pl="md"
+          pr="sm"
+          py={10}
           style={{
-            background: vizVar.surface2,
-            border: `1px solid ${vizVar.line}`,
-            borderLeft: `3px solid ${vizVar.accent}`,
-            borderRadius: radius.sm,
-            minHeight: 52,
+            borderLeft: `2px solid ${vizVar.accent}`,
+            background: `linear-gradient(90deg, ${vizVar.accentSoft}, transparent 72%)`,
+            borderRadius: `0 ${radius.sm}px ${radius.sm}px 0`,
+            minHeight: 58,
             display: 'flex',
-            alignItems: 'center',
+            flexDirection: 'column',
+            justifyContent: 'center',
           }}
         >
+          <Text
+            fz={font.micro}
+            ff="monospace"
+            tt="uppercase"
+            c="dimmed"
+            style={{ letterSpacing: '0.12em', marginBottom: 2 }}
+          >
+            narração
+          </Text>
           <Text
             key={playback.index}
             className="viz-step-desc"
@@ -252,14 +268,14 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   const aboutPanel = (
     <Box className="lesson-about-grid">
-      <Panel label="sobre" icon={<InfoIcon size={14} />}>
+      <Panel label="sobre" icon={<InfoIcon size={13} />}>
         <Box p="md">
-          <Text c="dimmed" lh={1.65}>
+          <Text c="dimmed" lh={1.7} fz={font.body} style={{ maxWidth: '68ch' }}>
             {lesson.description ?? 'Sem descrição disponível.'}
           </Text>
         </Box>
       </Panel>
-      <Panel label="complexidade" icon={<GaugeIcon size={14} />}>
+      <Panel label="complexidade" icon={<GaugeIcon size={13} />}>
         <Box p="md" style={{ overflowX: 'auto' }}>
           <ComplexityTable complexity={lesson.complexity} />
         </Box>
@@ -283,7 +299,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     ) : null;
 
   const analysisPanel = lesson.complexityAnalysis ? (
-    <Box mt="xl">
+    <Box mt="md">
       <ComplexityAnalysisCard analysis={lesson.complexityAnalysis} />
     </Box>
   ) : null;
@@ -292,11 +308,14 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     <>
       <Paper
         withBorder
-        radius="md"
+        radius="xl"
         px="md"
-        py="xs"
+        py={10}
         mt="sm"
-        style={{ background: 'var(--mantine-color-body)' }}
+        style={{
+          borderColor: vizVar.line,
+          background: 'color-mix(in srgb, var(--viz-panel) 78%, transparent)',
+        }}
       >
         <Box
           component="form"
@@ -310,23 +329,23 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             aria-label={canPreset ? 'valores' : 'valor de n'}
             placeholder={canPreset ? 'ex: 45, 12, 85, 32' : 'ex: 5'}
             leftSection={
-              <Text fz={font.micro} fw={700} ff="monospace" c="dimmed">
+              <Text fz={font.micro} fw={600} ff="monospace" c="dimmed">
                 {singleValue ? 'n =' : 'vetor'}
               </Text>
             }
-            leftSectionWidth={singleValue ? 38 : 52}
+            leftSectionWidth={singleValue ? 42 : 54}
             value={inputValue}
             onChange={(event) => setInputValue(event.currentTarget.value)}
             error={error || undefined}
             size="sm"
-            style={{ flex: '1 1 200px', maxWidth: 300 }}
+            style={{ flex: '1 1 220px', maxWidth: 320 }}
           />
-          <Button type="submit" variant="light" size="sm" leftSection={<CheckIcon size={14} />}>
+          <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
             Aplicar
           </Button>
           <Button
             type="button"
-            variant="default"
+            variant="subtle"
             size="sm"
             onClick={randomize}
             leftSection={<ShuffleIcon size={14} />}
@@ -341,37 +360,27 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                 fw={600}
                 tt="uppercase"
                 c="dimmed"
-                style={{ letterSpacing: '0.08em' }}
+                ff="monospace"
+                style={{ letterSpacing: '0.1em' }}
               >
-                presets:
+                presets
               </Text>
-              <Button
-                type="button"
-                variant="default"
-                size="xs"
-                radius="pill"
-                onClick={() => applyPreset('ordered')}
-              >
-                Ordenado
-              </Button>
-              <Button
-                type="button"
-                variant="default"
-                size="xs"
-                radius="pill"
-                onClick={() => applyPreset('reversed')}
-              >
-                Invertido
-              </Button>
-              <Button
-                type="button"
-                variant="default"
-                size="xs"
-                radius="pill"
-                onClick={() => applyPreset('repeated')}
-              >
-                Repetido
-              </Button>
+              {[
+                ['ordered', 'Ordenado'],
+                ['reversed', 'Invertido'],
+                ['repeated', 'Repetido'],
+              ].map(([kind, label]) => (
+                <Button
+                  key={kind}
+                  type="button"
+                  variant="default"
+                  size="compact-sm"
+                  radius="pill"
+                  onClick={() => applyPreset(kind as 'ordered' | 'reversed' | 'repeated')}
+                >
+                  {label}
+                </Button>
+              ))}
             </Group>
           ) : null}
         </Box>
@@ -386,13 +395,14 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           <Box mt="lg">
             <PlayerControls
               playback={playback}
+              steps={steps}
               quiz={quizSupported ? quiz : undefined}
               onQuizChange={quizSupported ? setQuiz : undefined}
             />
           </Box>
           {quizPanel}
           {analysisPanel}
-          <Box mt="xl">{aboutPanel}</Box>
+          <Box mt="lg">{aboutPanel}</Box>
         </>
       ) : (
         <>
@@ -416,6 +426,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           <Box mt="md">
             <PlayerControls
               playback={playback}
+              steps={steps}
               quiz={quizSupported ? quiz : undefined}
               onQuizChange={quizSupported ? setQuiz : undefined}
             />

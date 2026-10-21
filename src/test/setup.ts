@@ -25,6 +25,9 @@ if (!window.matchMedia) {
   });
 }
 
+// jsdom does not implement scrolling; the app resets it on route changes.
+window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
+
 if (!('ResizeObserver' in globalThis)) {
   globalThis.ResizeObserver = class {
     observe() {}

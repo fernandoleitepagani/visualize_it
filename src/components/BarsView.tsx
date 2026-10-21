@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import { Box, Text } from '@mantine/core';
 import { useReducedMotion } from '@mantine/hooks';
 import type { Step } from '@/engine/types';
-import { radius, transition, font, space, tint, vizVar } from '@/theme';
+import { transition, font, space, tint, vizVar } from '@/theme';
 import { getBarScale } from './barScale';
 import { ViewLegend } from './ViewLegend';
 
@@ -20,8 +20,8 @@ interface Flags {
   dim: boolean;
 }
 
-const BAR_GAP = 6;
-const PLOT_HEIGHT = 260;
+const BAR_GAP = 7;
+const PLOT_HEIGHT = 268;
 const GRID_LINES = [25, 50, 75, 100];
 
 const LEGEND = [
@@ -41,11 +41,30 @@ function barColor(flags: Flags): string {
 }
 
 function barStyle(flags: Flags): CSSProperties {
-  if (flags.swap) return { borderColor: vizVar.green, background: tint(vizVar.green, 20) };
-  if (flags.pivot) return { borderColor: vizVar.purple, background: tint(vizVar.purple, 20) };
-  if (flags.cmp) return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15) };
-  if (flags.sorted) return { borderColor: vizVar.accentDim, background: tint(vizVar.accent, 8) };
-  return { borderColor: vizVar.line2, background: vizVar.surface3 };
+  if (flags.swap)
+    return {
+      borderColor: vizVar.green,
+      background: `linear-gradient(180deg, ${tint(vizVar.green, 46)}, ${tint(vizVar.green, 14)})`,
+    };
+  if (flags.pivot)
+    return {
+      borderColor: vizVar.purple,
+      background: `linear-gradient(180deg, ${tint(vizVar.purple, 44)}, ${tint(vizVar.purple, 13)})`,
+    };
+  if (flags.cmp)
+    return {
+      borderColor: vizVar.accent,
+      background: `linear-gradient(180deg, ${tint(vizVar.accent, 42)}, ${tint(vizVar.accent, 12)})`,
+    };
+  if (flags.sorted)
+    return {
+      borderColor: vizVar.accentDim,
+      background: `linear-gradient(180deg, ${tint(vizVar.accent, 20)}, ${tint(vizVar.accent, 5)})`,
+    };
+  return {
+    borderColor: vizVar.line2,
+    background: `linear-gradient(180deg, ${vizVar.surface3}, ${vizVar.surface2})`,
+  };
 }
 
 function labelColor(flags: Flags): string {
@@ -90,7 +109,7 @@ export function BarsView({ state, ids = [] }: Props) {
     <Box
       role="img"
       aria-label={`Vetor com ${arr.length} elementos: ${arr.join(', ')}`}
-      pt={space.lg}
+      pt={space.md}
     >
       <Box pos="relative" h={PLOT_HEIGHT} mx={space.xs} mb={space.lg}>
         {GRID_LINES.map((line) => (
@@ -101,8 +120,11 @@ export function BarsView({ state, ids = [] }: Props) {
             right={0}
             bottom={`${line}%`}
             h={1}
-            bg={vizVar.line}
-            style={{ opacity: line === 100 ? 0.6 : 0.45, pointerEvents: 'none' }}
+            style={{
+              background: line === 100 ? vizVar.line2 : vizVar.line,
+              opacity: line === 100 ? 0.5 : 0.65,
+              pointerEvents: 'none',
+            }}
           />
         ))}
 
@@ -112,8 +134,7 @@ export function BarsView({ state, ids = [] }: Props) {
           right={0}
           bottom={`${scale.zeroPercent}%`}
           h={1}
-          bg={vizVar.line2}
-          style={{ pointerEvents: 'none' }}
+          style={{ background: vizVar.line3, pointerEvents: 'none' }}
         />
 
         {arr.map((_, i) => {
@@ -125,8 +146,12 @@ export function BarsView({ state, ids = [] }: Props) {
             dim: dim.has(i),
           };
           const metrics = scale.bars[i];
-
           const isActive = flags.swap || flags.cmp || flags.pivot;
+          const glow = flags.swap
+            ? tint(vizVar.green, 20)
+            : flags.pivot
+              ? tint(vizVar.purple, 20)
+              : tint(vizVar.accent, 20);
 
           return (
             <Box
@@ -140,23 +165,15 @@ export function BarsView({ state, ids = [] }: Props) {
                 maxWidth: 88,
                 bottom: `${metrics.bottomPercent}%`,
                 height: metrics.zero ? 2 : `${Math.max(metrics.heightPercent, 1.5)}%`,
-                minHeight: 3,
-                transform: isActive ? 'translateX(-50%) translateY(-3px)' : 'translateX(-50%)',
+                minHeight: 4,
+                transform: isActive ? 'translateX(-50%) translateY(-4px)' : 'translateX(-50%)',
                 border: '1.5px solid',
-                borderRadius: radius.sm,
-                opacity: flags.dim ? 0.28 : 1,
+                borderRadius: '9px 9px 3px 3px',
+                opacity: flags.dim ? 0.26 : 1,
                 transition: reducedMotion
                   ? 'none'
-                  : `left ${transition.spring}, bottom ${transition.spring}, height ${transition.spring}, transform ${transition.base}, background-color ${transition.base}, border-color ${transition.base}, opacity ${transition.base}, box-shadow ${transition.base}`,
-                boxShadow: isActive
-                  ? `0 4px 14px ${
-                      flags.swap
-                        ? tint(vizVar.green, 22)
-                        : flags.pivot
-                          ? tint(vizVar.purple, 22)
-                          : tint(vizVar.accent, 22)
-                    }, 0 0 0 1px ${barColor(flags)}`
-                  : undefined,
+                  : `left ${transition.spring}, bottom ${transition.spring}, height ${transition.spring}, transform ${transition.base}, background ${transition.base}, border-color ${transition.base}, opacity ${transition.base}, box-shadow ${transition.base}`,
+                boxShadow: isActive ? `0 10px 22px -12px ${glow}, 0 0 0 1px ${barColor(flags)}` : undefined,
                 ...barStyle(flags),
               }}
             />
@@ -188,12 +205,12 @@ export function BarsView({ state, ids = [] }: Props) {
               style={{
                 left: `${(i + 0.5) * slot}%`,
                 width: `calc(${slot}% - 2px)`,
-                bottom: `calc(${Math.min(topPercent, 100)}% + ${isActive ? 9 : 6}px)`,
+                bottom: `calc(${Math.min(topPercent, 100)}% + ${isActive ? 10 : 7}px)`,
                 transform: 'translateX(-50%)',
                 textAlign: 'center',
                 whiteSpace: 'nowrap',
                 color: labelColor(flags),
-                opacity: flags.dim ? 0.55 : 1,
+                opacity: flags.dim ? 0.5 : 1,
                 transition: reducedMotion
                   ? 'none'
                   : `left ${transition.spring}, bottom ${transition.spring}, color ${transition.base}`,
@@ -209,7 +226,7 @@ export function BarsView({ state, ids = [] }: Props) {
             key={`index-${i}`}
             aria-hidden
             pos="absolute"
-            top="calc(100% + 6px)"
+            top="calc(100% + 7px)"
             fz={font.micro}
             lh={1}
             ff="monospace"

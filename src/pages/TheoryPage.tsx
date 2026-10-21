@@ -16,7 +16,7 @@ export function TheoryPage() {
   const Article = page.Component;
 
   return (
-    <Box component="article" pb={space.xxl}>
+    <Box component="article" className="prose" pb={space.xxl}>
       <PageHeader
         breadcrumb={
           location

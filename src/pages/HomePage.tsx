@@ -1,61 +1,80 @@
-import { Anchor, Box, Group, SimpleGrid, Text, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import { Anchor, Box, Group, Paper, SimpleGrid, Text, Title } from '@mantine/core';
 import { AlgorithmCard } from '@/components/AlgorithmCard';
 import { GlobalSearch } from '@/components/GlobalSearch';
+import { HeroFigure } from '@/components/HeroFigure';
+import { MetaPill } from '@/components/MetaPill';
+import { SectionHeading } from '@/components/SectionHeading';
 import { SubjectCard } from '@/components/SubjectCard';
 import type { EntryLocation } from '@/content/subjects';
-import { getEntryLocation, subjects } from '@/content/subjects';
-import { font, space } from '@/theme';
+import {
+  allEntryLocations,
+  getEntryLocation,
+  getEntryView,
+  subjects,
+} from '@/content/subjects';
+import { font, radius, space, vizVar } from '@/theme';
+import { ArrowRightIcon, SigmaIcon } from '@/components/icons';
 
 const featuredSlugs = ['selecao', 'busca-binaria', 'pilha-sequencial'];
 
 export function HomePage() {
+  const all = allEntryLocations();
+  const lessons = all.filter((location) => location.entry.kind === 'lesson').length;
+  const views = new Set(
+    all
+      .map((location) => getEntryView(location.entry))
+      .filter((view): view is NonNullable<typeof view> => Boolean(view)),
+  ).size;
+
   const featured = featuredSlugs
     .map((slug) => getEntryLocation(slug))
     .filter((location): location is EntryLocation => Boolean(location));
 
   return (
     <>
-      <Box
-        pt="md"
-        pb="xl"
-        mb="lg"
-        style={{
-          background:
-            'radial-gradient(ellipse 65% 50% at 50% 0%, rgba(251, 191, 36, 0.05), transparent 70%)',
-        }}
-      >
-        <Title order={1} fz={{ base: font.h2, sm: font.h1 }} fw={600} mb="sm">
-          Escolha uma matéria para começar.
-        </Title>
-        <Text c="dimmed" fz={font.lead} maw={720} mb="lg">
-          Percorra cada algoritmo linha por linha, com a estrutura animada, código em Java ou C e a
-          análise assintótica lado a lado.
-        </Text>
-        <Box maw={640}>
-          <GlobalSearch
-            trigger="input"
-            fullWidth
-            placeholder="Buscar por algoritmo, matéria ou tag..."
-          />
+      <Box component="section" className="hero" aria-labelledby="hero-title">
+        <Box>
+          <Text className="hero-kicker">visualizador interativo · AEDS I/II</Text>
+          <Title order={1} id="hero-title" className="hero-title" fw={500}>
+            Escolha uma <em>matéria</em> para começar.
+          </Title>
+          <Text className="hero-lead">
+            Percorra cada algoritmo linha por linha, com a estrutura animada, código em Java ou C e
+            a análise assintótica lado a lado.
+          </Text>
+          <Group className="hero-stats" gap={8}>
+            <MetaPill>{lessons} lições</MetaPill>
+            <MetaPill>{views} views</MetaPill>
+            <MetaPill>Java &amp; C</MetaPill>
+            <MetaPill tone="accent">passo a passo</MetaPill>
+          </Group>
+          <Box maw={620} mt="lg">
+            <GlobalSearch
+              trigger="input"
+              fullWidth
+              placeholder="Buscar por algoritmo, matéria ou tag..."
+            />
+          </Box>
         </Box>
+        <HeroFigure />
       </Box>
 
       <Box component="section" aria-labelledby="materias" mb={space.xxl}>
-        <Title order={2} id="materias" fz={font.h3} fw={600} mb="md">
+        <SectionHeading id="materias" index="01" kicker="trilha">
           Matérias
-        </Title>
+        </SectionHeading>
         <SimpleGrid cols={{ base: 1, md: 3 }} spacing="lg">
-          {subjects.map((subject) => (
-            <SubjectCard key={subject.id} subject={subject} />
+          {subjects.map((subject, index) => (
+            <SubjectCard key={subject.id} subject={subject} index={index + 1} />
           ))}
         </SimpleGrid>
       </Box>
 
       <Box component="section" aria-labelledby="comece-por-aqui" mb={space.xxl}>
-        <Title order={2} id="comece-por-aqui" fz={font.h3} fw={600} mb="md">
+        <SectionHeading id="comece-por-aqui" index="02" kicker="destaques">
           Comece por aqui
-        </Title>
+        </SectionHeading>
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
           {featured.map((location) => (
             <AlgorithmCard key={location.entry.slug} location={location} />
@@ -63,16 +82,80 @@ export function HomePage() {
         </SimpleGrid>
       </Box>
 
-      <Box mt={space.xxl} pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
-        <Group justify="space-between" gap="sm">
-          <Text fz={font.small} c="dimmed">
-            Última fase — busca, complexidade e provas por indução.
-          </Text>
-          <Anchor component={Link} to="/playground" fz={font.small}>
-            playground
+      <Paper
+        withBorder
+        radius="xl"
+        p={{ base: 'md', sm: 'lg' }}
+        mt={space.xxl}
+        style={{
+          borderColor: vizVar.line,
+          background:
+            'linear-gradient(120deg, color-mix(in srgb, var(--viz-surface-2) 62%, transparent), transparent 70%)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          aria-hidden
+          pos="absolute"
+          right={-30}
+          bottom={-46}
+          style={{ color: 'var(--viz-accent)', opacity: 0.08 }}
+        >
+          <SigmaIcon size={190} />
+        </Box>
+        <Group justify="space-between" align="center" gap="lg" wrap="wrap" style={{ position: 'relative' }}>
+          <Group gap="md" align="flex-start" wrap="nowrap">
+            <Box
+              aria-hidden
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 40,
+                height: 40,
+                borderRadius: radius.md,
+                background: vizVar.accentSoft,
+                border: `1px solid ${vizVar.accentLine}`,
+                color: vizVar.accent,
+                flexShrink: 0,
+              }}
+            >
+              <SigmaIcon size={20} />
+            </Box>
+            <Box>
+              <Title order={2} fz={font.lead} fw={600} mb={4}>
+                Playground — escreva o seu próprio algoritmo
+              </Title>
+              <Text fz={font.small} c="dimmed" maw="58ch">
+                Um sandbox isolado que transforma <code>generateSteps(arr)</code> em uma visualização
+                animada. Ideal para testar variações e comparar com as lições.
+              </Text>
+            </Box>
+          </Group>
+          <Anchor
+            component={Link}
+            to="/playground"
+            underline="never"
+            fz={font.small}
+            fw={600}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              color: 'var(--viz-accent)',
+              border: `1px solid ${vizVar.accentLine}`,
+              background: vizVar.accentSoft,
+              borderRadius: radius.pill,
+              padding: '8px 14px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            abrir playground
+            <ArrowRightIcon size={14} />
           </Anchor>
         </Group>
-      </Box>
+      </Paper>
     </>
   );
 }

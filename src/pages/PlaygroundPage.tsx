@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Flex,
+  Group,
   SimpleGrid,
   Text,
   Textarea,
@@ -11,12 +12,15 @@ import {
 } from '@mantine/core';
 import { useSearchParams } from 'react-router-dom';
 import { BarsView } from '@/components/BarsView';
+import { MetaPill } from '@/components/MetaPill';
 import { PageHeader } from '@/components/PageHeader';
 import { Panel } from '@/components/Panel';
 import { PlayerControls } from '@/components/PlayerControls';
 import type { Step } from '@/engine/types';
 import { usePlayback } from '@/engine/usePlayback';
 import { runSandbox } from '@/lib/sandbox';
+import { font, radius, space, vizVar } from '@/theme';
+import { CodeIcon, PlayIcon, SigmaIcon } from '@/components/icons';
 
 const DEFAULT_CODE = `function generateSteps(arr) {
   const steps = [];
@@ -102,20 +106,56 @@ export function PlaygroundPage() {
   return (
     <Box pb={40}>
       <PageHeader
+        kicker="sandbox"
         title="Playground"
         subtitle="Escreva generateSteps(arr) e veja os passos animados"
+        meta={
+          <>
+            <MetaPill>Web Worker isolado</MetaPill>
+            <MetaPill>sem acesso ao DOM</MetaPill>
+            <MetaPill tone="accent">compartilhável</MetaPill>
+          </>
+        }
       />
 
       <SimpleGrid cols={{ base: 1, lg: 2 }} spacing="lg">
-        <Panel label="seu código">
+        <Panel
+          label="seu código"
+          icon={<CodeIcon size={13} />}
+          aside={
+            <Group gap={6} wrap="nowrap">
+              <Text fz={font.micro} ff="monospace" c="dimmed">
+                generateSteps.js
+              </Text>
+              <Button
+                size="compact-xs"
+                variant="subtle"
+                radius="pill"
+                onClick={() => setCode(DEFAULT_CODE)}
+              >
+                exemplo
+              </Button>
+            </Group>
+          }
+        >
           <Box p="md">
             <Textarea
               value={code}
               onChange={(event) => setCode(event.currentTarget.value)}
-              minRows={16}
+              autosize
+              minRows={14}
+              maxRows={26}
               ff="monospace"
-              fz={12.5}
+              fz={font.small}
               aria-label="código do playground"
+              styles={{
+                input: {
+                  background: vizVar.codeBg,
+                  color: vizVar.codeInk,
+                  lineHeight: 1.7,
+                  borderColor: vizVar.line,
+                },
+              }}
             />
             <Flex gap="sm" mt="sm" wrap="wrap" align="flex-end">
               <TextInput
@@ -124,38 +164,98 @@ export function PlaygroundPage() {
                 onChange={(event) => setInputValue(event.currentTarget.value)}
                 w={200}
                 size="sm"
+                ff="monospace"
               />
-              <Button onClick={run} loading={running}>
+              <Button onClick={run} loading={running} radius="md" leftSection={<PlayIcon size={13} />}>
                 Executar
               </Button>
-              <Button variant="default" onClick={share}>
+              <Button variant="default" onClick={share} radius="md">
                 {copied ? 'Link copiado!' : 'Compartilhar'}
               </Button>
             </Flex>
             {error ? (
-              <Alert color="red" title="Erro" mt="sm">
+              <Alert color="red" title="Erro" mt="sm" radius="md">
                 {error}
               </Alert>
             ) : null}
           </Box>
         </Panel>
 
-        <Panel label="prévia">
-          <Box px="md" pt="lg" pb="md">
-            <BarsView state={playback.step} />
-            <Text fz="sm" c="dimmed" mt="sm">
-              {playback.step?.desc ?? 'Execute o código para ver os passos.'}
+        <Panel
+          label="prévia"
+          icon={<SigmaIcon size={13} />}
+          aside={
+            <Text fz={font.micro} ff="monospace" c="dimmed">
+              {steps.length} passos
             </Text>
+          }
+        >
+          <Box px="md" pt="lg" pb="md" style={{ minHeight: 360 }}>
+            {steps.length > 0 && playback.step ? (
+              <>
+                <BarsView state={playback.step} />
+                <Text fz={font.small} c="dimmed" mt="sm" lh={1.6}>
+                  {playback.step.desc}
+                </Text>
+              </>
+            ) : (
+              <Flex
+                align="center"
+                justify="center"
+                direction="column"
+                gap="sm"
+                mih={320}
+                style={{
+                  border: `1px dashed ${vizVar.line2}`,
+                  borderRadius: radius.lg,
+                  background: 'color-mix(in srgb, var(--viz-surface-2) 28%, transparent)',
+                }}
+              >
+                <Box style={{ color: vizVar.accent, opacity: 0.8 }}>
+                  <SigmaIcon size={34} />
+                </Box>
+                <Text fz={font.body} c="dimmed">
+                  Execute o código para ver os passos.
+                </Text>
+                <Text fz={font.tiny} c="dimmed" ff="monospace">
+                  cada passo precisa de line, desc e arr
+                </Text>
+              </Flex>
+            )}
           </Box>
         </Panel>
       </SimpleGrid>
 
-      <PlayerControls playback={playback} />
+      <Box mt="lg">
+        <PlayerControls playback={playback} steps={steps} />
+      </Box>
 
-      <Text fz="xs" c="dimmed" mt="sm">
-        O código roda em um Web Worker isolado, sem acesso ao DOM. Cada passo pode trazer
-        <code> arr</code>, <code>cmp</code>, <code>swap</code>, <code>pivot</code>,{' '}
-        <code>sorted</code> e <code>dim</code>.
+      <Group gap={6} mt="md" wrap="wrap">
+        <Text fz={font.tiny} c="dimmed" maw="72ch">
+          O código roda em um Web Worker isolado, sem acesso ao DOM. Cada passo pode trazer
+        </Text>
+        {['arr', 'cmp', 'swap', 'pivot', 'sorted', 'dim'].map((field) => (
+          <Text
+            key={field}
+            component="code"
+            fz={font.micro}
+            ff="monospace"
+            px={6}
+            py={1}
+            style={{
+              color: vizVar.accent,
+              border: `1px solid ${vizVar.line}`,
+              borderRadius: 5,
+              background: vizVar.surface2,
+            }}
+          >
+            {field}
+          </Text>
+        ))}
+      </Group>
+
+      <Text fz={font.micro} c="dimmed" ff="monospace" mt={space.sm}>
+        dica: use os presets e o timeline para revisar cada operação
       </Text>
     </Box>
   );

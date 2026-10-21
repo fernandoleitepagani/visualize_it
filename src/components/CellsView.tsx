@@ -2,20 +2,30 @@ import type { CSSProperties } from 'react';
 import { Box, Flex, Text } from '@mantine/core';
 import { useReducedMotion } from '@mantine/hooks';
 import type { Cell } from '@/engine/types';
-import { radius, font, transition, shadow, space, tint, vizVar } from '@/theme';
+import { radius, font, transition, space, vizVar } from '@/theme';
 import { ViewLegend } from './ViewLegend';
 
 function boxStyle(state: string): CSSProperties {
   switch (state) {
     case 'active':
     case 'write':
-      return { borderColor: vizVar.accent, background: tint(vizVar.accent, 15), boxShadow: shadow.focus };
+      return {
+        borderColor: vizVar.accent,
+        background: `linear-gradient(180deg, ${vizVar.accentSoft}, color-mix(in srgb, var(--viz-surface-2) 70%, transparent))`,
+        boxShadow: `0 0 0 3px ${vizVar.accentSoft}, 0 12px 24px -16px ${vizVar.accent}`,
+      };
     case 'compare':
-      return { borderColor: vizVar.green, background: tint(vizVar.green, 12) };
+      return {
+        borderColor: vizVar.green,
+        background: `linear-gradient(180deg, ${vizVar.greenSoft}, color-mix(in srgb, var(--viz-surface-2) 70%, transparent))`,
+      };
     case 'empty':
       return { borderColor: vizVar.line2, borderStyle: 'dashed', background: 'transparent' };
     default:
-      return { borderColor: vizVar.line2, background: vizVar.surface2 };
+      return {
+        borderColor: vizVar.line2,
+        background: `linear-gradient(180deg, ${vizVar.surface3}, ${vizVar.surface2})`,
+      };
   }
 }
 
@@ -44,14 +54,15 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
   return (
     <Box>
       <Flex
-        gap={6}
+        gap={8}
         align="flex-end"
         justify="center"
         wrap="nowrap"
-        pt="xl"
+        pt="lg"
         pb="sm"
-        mih={240}
-        style={{ overflowX: 'auto' }}
+        mih={250}
+        className="scroll-fade-x"
+        style={{ overflowX: 'auto', paddingInline: 4 }}
         role="img"
         aria-label={list.length > 0 ? `Estrutura com ${list.length} células` : 'Estrutura vazia'}
       >
@@ -71,18 +82,37 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
               direction="column"
               align="center"
               gap={6}
-              style={{ flexShrink: 0, minWidth: 50 }}
+              style={{ flexShrink: 0, minWidth: 58 }}
             >
-              <Flex gap={space.xs} wrap="nowrap" h={14} ff="monospace" fz={font.micro} c="amber">
+              <Flex
+                gap={space.xs}
+                wrap="nowrap"
+                h={18}
+                ff="monospace"
+                fz={font.micro}
+                style={{ color: vizVar.accent }}
+              >
                 {(cell.labels ?? []).map((label, j) => (
-                  <Text key={j} span className="viz-pointer-badge">
+                  <Text
+                    key={j}
+                    span
+                    className="viz-pointer-badge"
+                    px={5}
+                    py={0}
+                    style={{
+                      borderRadius: radius.pill,
+                      border: `1px solid ${vizVar.accentLine}`,
+                      background: vizVar.accentSoft,
+                      lineHeight: 1.5,
+                    }}
+                  >
                     {label}
                   </Text>
                 ))}
               </Flex>
               <Flex
-                w={50}
-                h={48}
+                w={56}
+                h={54}
                 align="center"
                 justify="center"
                 ff="monospace"
@@ -91,17 +121,17 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
                 c={empty ? 'dimmed' : undefined}
                 style={{
                   border: '1.5px solid',
-                  borderRadius: radius.sm,
-                  transform: isActive ? 'translateY(-3px)' : undefined,
+                  borderRadius: radius.md,
+                  transform: isActive ? 'translateY(-4px)' : undefined,
                   transition: reducedMotion
                     ? 'none'
-                    : `transform ${transition.base}, background-color ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
+                    : `transform ${transition.base}, background ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
                   ...boxStyle(state),
                 }}
               >
                 {empty ? '' : cell.val}
               </Flex>
-              <Text ff="monospace" fz={font.micro} c="dimmed">
+              <Text ff="monospace" fz={font.micro} style={{ color: vizVar.dim }}>
                 {i}
               </Text>
             </Flex>

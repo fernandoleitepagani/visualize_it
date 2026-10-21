@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { App } from './App';
@@ -16,7 +16,7 @@ const views = [
 describe('App', () => {
   it('presents the subjects on the home page', () => {
     renderWithProviders(<App />, '/');
-    expect(screen.getByText(/Visualize It/)).toBeInTheDocument();
+    expect(within(screen.getByRole('banner')).getByText(/Visualize It/)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'AEDS I' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'AEDS II' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Análise' })).toBeInTheDocument();

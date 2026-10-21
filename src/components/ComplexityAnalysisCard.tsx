@@ -1,6 +1,8 @@
 import { Box, SimpleGrid, Text } from '@mantine/core';
 import type { ComplexityAnalysis } from '@/engine/types';
+import { font, vizVar } from '@/theme';
 import { Panel } from './Panel';
+import { GaugeIcon } from './icons';
 
 /**
  * Card for the comparison/movement cost analysis. Lessons without copy keep
@@ -13,24 +15,30 @@ export function ComplexityAnalysisCard({ analysis }: { analysis: ComplexityAnaly
   ];
 
   return (
-    <Panel label="análise de complexidade">
+    <Panel label="análise de complexidade" icon={<GaugeIcon size={13} />}>
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" p="md">
         {columns.map(({ label, content }) => (
           <Box key={label}>
             <Text
-              fz={11}
+              fz={font.micro}
               fw={600}
               tt="uppercase"
               c="dimmed"
-              mb={6}
-              style={{ letterSpacing: '0.1em' }}
+              ff="monospace"
+              mb={8}
+              style={{ letterSpacing: '0.12em' }}
             >
               {label}
             </Text>
             <Text
-              fz="sm"
+              fz={font.small}
               c={content ? undefined : 'dimmed'}
-              style={{ minHeight: 48, whiteSpace: 'pre-wrap' }}
+              style={{
+                minHeight: 48,
+                whiteSpace: 'pre-wrap',
+                lineHeight: 1.7,
+                color: content ? vizVar.ink2 : undefined,
+              }}
             >
               {content || '—'}
             </Text>

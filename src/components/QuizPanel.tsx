@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
-import { Badge, Button, Group, Paper, SimpleGrid, Text } from '@mantine/core';
+import { Button, Group, Paper, SimpleGrid, Text } from '@mantine/core';
 import type { Step } from '@/engine/types';
 import type { QuizQuestion } from '@/engine/quiz';
 import { buildQuizQuestion, sameArray } from '@/engine/quiz';
+import { font, vizVar } from '@/theme';
+import { MetaPill } from './MetaPill';
 
 interface Props {
   steps: Step[];
@@ -23,7 +25,14 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
 
   if (!question) {
     return (
-      <Paper withBorder radius="md" px="md" py="sm" mt="sm">
+      <Paper
+        withBorder
+        radius="xl"
+        px="md"
+        py="sm"
+        mt="sm"
+        style={{ borderColor: vizVar.line, background: vizVar.panel }}
+      >
         <Text fz="sm" c="dimmed">
           Não há próximo passo para perguntar.
         </Text>
@@ -40,14 +49,21 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
   const isRight = choice !== null && sameArray(choice, question.correct);
 
   return (
-    <Paper withBorder radius="md" px="md" py="md" mt="sm">
+    <Paper
+      withBorder
+      radius="xl"
+      px="md"
+      py="md"
+      mt="sm"
+      style={{ borderColor: vizVar.line, background: vizVar.panel }}
+    >
       <Group justify="space-between" mb="sm" gap="xs">
-        <Text fz="sm" fw={600}>
+        <Text fz={font.body} fw={600}>
           Qual é o vetor do próximo passo?
         </Text>
-        <Badge variant="light" color="amber">
+        <MetaPill tone="accent">
           {score.correct} / {score.total}
-        </Badge>
+        </MetaPill>
       </Group>
 
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xs">
@@ -59,6 +75,7 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
           return (
             <Button
               key={i}
+              radius="md"
               variant={answered && correctOption ? 'filled' : 'default'}
               color={color}
               disabled={answered}
@@ -67,6 +84,7 @@ export function QuizPanel({ steps, index, score, onAnswer }: Props) {
                 label: {
                   fontFamily: 'var(--mantine-font-family-monospace)',
                   whiteSpace: 'normal',
+                  fontSize: font.small,
                 },
               }}
             >
