@@ -190,8 +190,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             h={6}
             style={{
               borderRadius: 999,
-              background: vizVar.accent,
-              boxShadow: `0 0 8px ${vizVar.accent}`,
+              background: 'var(--subject-accent, var(--viz-accent))',
+              boxShadow: '0 0 8px var(--subject-accent, var(--viz-accent))',
             }}
           />
           <Text fz={font.micro} style={{ color: vizVar.ink2, whiteSpace: 'nowrap' }}>
@@ -216,8 +216,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           pr="sm"
           py={10}
           style={{
-            borderLeft: `2px solid ${vizVar.accent}`,
-            background: `linear-gradient(90deg, color-mix(in srgb, var(--viz-accent) 6%, var(--viz-surface-2)), var(--viz-surface-2) 72%)`,
+            borderLeft: '2px solid var(--subject-accent, var(--viz-accent))',
+            background:
+              'linear-gradient(90deg, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 7%, var(--viz-surface-2)), var(--viz-surface-2) 72%)',
             borderRadius: `0 ${radius.sm}px ${radius.sm}px 0`,
             minHeight: 58,
             display: 'flex',
