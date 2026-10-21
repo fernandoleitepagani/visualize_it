@@ -53,4 +53,19 @@ describe('CodePanel', () => {
 
     expect(onLangChange).toHaveBeenCalledWith('c');
   });
+
+  it('shows only the language label when the lesson offers a single language', () => {
+    renderWithProviders(
+      <CodePanel
+        code={['int soma = 0;']}
+        activeLine={0}
+        lang="c"
+        languages={['c']}
+        onLangChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText('linguagem')).toHaveTextContent('C');
+    expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
+  });
 });

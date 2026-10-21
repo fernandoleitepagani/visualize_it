@@ -54,13 +54,18 @@ describe.each(['selecao', 'insercao', 'bolha'] as const)(
     });
 
     it.each(approaches)('%s destaca apenas linhas existentes no código', (approach) => {
-      const listing = lessons[slug].codeVariants?.[approach] ?? lessons[slug].code;
-      const steps = lessons[slug].steps([...input], approach);
+      const lesson = lessons[slug];
+      const listing = lesson.codeVariants?.[approach] ?? lesson.code;
+      const steps = lesson.steps([...input], approach);
+      const languages = lesson.languages ?? (['java', 'c'] as const);
 
-      for (const step of steps) {
-        expect(step.line).toBeGreaterThanOrEqual(0);
-        expect(step.line).toBeLessThan(listing.java.length);
-        expect(step.line).toBeLessThan(listing.c.length);
+      for (const language of languages) {
+        const code = listing[language];
+        expect(code).toBeDefined();
+        for (const step of steps) {
+          expect(step.line).toBeGreaterThanOrEqual(0);
+          expect(step.line).toBeLessThan(code!.length);
+        }
       }
     });
 
@@ -125,6 +130,7 @@ describe('summation lesson', () => {
 describe('aritmetica lesson — pointer arithmetic', () => {
   const input = lessons.aritmetica.initial ?? [];
   const steps = lessons.aritmetica.steps([...input]);
+  const cCode = lessons.aritmetica.code.c ?? [];
 
   const stepAt = (line: number) => steps.find((step) => step.line === line);
   const pointerIndex = (line: number) =>
@@ -165,7 +171,7 @@ describe('aritmetica lesson — pointer arithmetic', () => {
   it('keeps every highlighted line inside the C listing', () => {
     for (const step of steps) {
       expect(step.line).toBeGreaterThanOrEqual(0);
-      expect(step.line).toBeLessThan(lessons.aritmetica.code.c.length);
+      expect(step.line).toBeLessThan(cCode.length);
     }
   });
 
@@ -183,11 +189,13 @@ describe('aritmetica lesson — pointer arithmetic', () => {
     ];
 
     for (const [line, command] of commands) {
-      expect(lessons.aritmetica.code.c[line]).toMatch(command);
+      expect(cCode[line]).toMatch(command);
     }
   });
 
-  it('warns that Java has no pointer arithmetic', () => {
-    expect(lessons.aritmetica.code.java.join('\n')).toMatch(/Java não tem aritmética de ponteiros/);
+  it('offers only C and warns that Java has no pointer arithmetic', () => {
+    expect(lessons.aritmetica.languages).toEqual(['c']);
+    expect(lessons.aritmetica.code.java).toBeUndefined();
+    expect(lessons.aritmetica.description).toMatch(/Java não tem aritmética de ponteiros/);
   });
 });

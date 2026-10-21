@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { Box, Group, SegmentedControl } from '@mantine/core';
-import type { CodeApproach } from '@/engine/types';
+import { Box, Group, SegmentedControl, Text } from '@mantine/core';
+import type { CodeApproach, CodeLang } from '@/engine/types';
 import { font, space, tint, vizVar } from '@/theme';
 import { Panel } from './Panel';
 import { CodeIcon } from './icons';
 
-export type CodeLang = 'java' | 'c';
+const LABELS: Record<CodeLang, string> = { java: 'java', c: 'c' };
+const ARIA: Record<CodeLang, string> = { java: 'Java', c: 'C' };
 
 const KEYWORDS =
   'void|int|char|float|double|boolean|for|if|else|while|return|new|length|break|continue|struct|typedef|malloc|free|class|public|static|throws|throw|true|false|null|String|System|Scanner|RuntimeException';
@@ -51,6 +52,8 @@ interface Props {
   activeLine: number;
   lang: CodeLang;
   onLangChange: (lang: CodeLang) => void;
+  /** Languages available for this lesson. Defaults to Java and C. */
+  languages?: CodeLang[];
   /** Optional implementation picker (iterative / recursive). */
   approach?: CodeApproach;
   onApproachChange?: (approach: CodeApproach) => void;
@@ -61,12 +64,14 @@ export function CodePanel({
   activeLine,
   lang,
   onLangChange,
+  languages = ['java', 'c'],
   approach,
   onApproachChange,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const activeRef = useRef<HTMLDivElement | null>(null);
   const showApproach = approach !== undefined && onApproachChange !== undefined;
+  const showLanguage = languages.length > 1;
 
   // Keep the highlighted line visible inside the code box without scrolling the page.
   useEffect(() => {
@@ -108,23 +113,29 @@ export function CodePanel({
               ]}
             />
           ) : null}
-          <SegmentedControl
-            size="xs"
-            value={lang}
-            onChange={(value) => onLangChange(value as CodeLang)}
-            aria-label="linguagem"
-            data={[
-              { label: 'java', value: 'java' },
-              { label: 'c', value: 'c' },
-            ]}
-          />
+          {showLanguage ? (
+            <SegmentedControl
+              size="xs"
+              value={lang}
+              onChange={(value) => onLangChange(value as CodeLang)}
+              aria-label="linguagem"
+              data={languages.map((language) => ({
+                label: LABELS[language],
+                value: language,
+              }))}
+            />
+          ) : (
+            <Text ff="monospace" fz={font.micro} c="dimmed" lh={1} aria-label="linguagem">
+              {ARIA[lang]}
+            </Text>
+          )}
         </Group>
       }
     >
       <Box
         ref={scrollRef}
         role="region"
-        aria-label={`Código ${lang === 'java' ? 'Java' : 'C'}`}
+        aria-label={`Código ${ARIA[lang]}`}
         mah={520}
         py="sm"
         ff="monospace"

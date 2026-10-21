@@ -18,6 +18,7 @@ export const lesson: Lesson = {
     'tem aritmética de ponteiros.',
   view: 'cells',
   panelLabel: 'vetor',
+  languages: ['c'],
   initial: [2, 4, 6, 8, 10],
 
   complexity: {
@@ -28,10 +29,6 @@ export const lesson: Lesson = {
   },
 
   code: {
-    java: lines(`
-// Aviso: Java não tem aritmética de ponteiros.
-// Não existem p++, p-- nem p += k sobre endereços.
-// A mesma caminhada usaria índices: i++, i += 2, i-- e v[i].`),
     c: lines(`
 void altera(int *p){
 	*p += 5;

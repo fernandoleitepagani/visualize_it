@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Box, Button, Group, Paper, Tabs, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
-import type { CodeApproach, Lesson, Step } from '@/engine/types';
+import type { CodeApproach, CodeLang, Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import { usePlayback } from '@/engine/usePlayback';
@@ -12,7 +12,6 @@ import { palette, font, radius, vizVar } from '@/theme';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
-import type { CodeLang } from './CodePanel';
 import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
 import { NodesView } from './NodesView';
@@ -44,10 +43,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     };
   });
 
+  const languages = lesson.languages?.length ? lesson.languages : (['java', 'c'] as CodeLang[]);
   const [input, setInput] = useState<number[]>(initial.input);
   const [inputValue, setInputValue] = useState(() => initial.input.join(', '));
   const [error, setError] = useState('');
-  const [lang, setLang] = useState<CodeLang>('java');
+  const [lang, setLang] = useState<CodeLang>(languages[0]);
+  const activeLang = languages.includes(lang) ? lang : languages[0];
   const [approach, setApproach] = useState<CodeApproach>('iterativo');
   const [quiz, setQuiz] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
@@ -241,9 +242,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   const codePanel = (
     <CodePanel
-      code={listing[lang]}
+      code={listing[activeLang] ?? []}
       activeLine={step?.line ?? 0}
-      lang={lang}
+      lang={activeLang}
+      languages={languages}
       onLangChange={setLang}
       approach={hasApproaches ? approach : undefined}
       onApproachChange={hasApproaches ? changeApproach : undefined}
