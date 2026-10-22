@@ -123,6 +123,10 @@ Na `PointersView`, leitura (`compare`) usa violeta e escrita/atividade usa âmba
 desenhada a partir do `targetId` da caixa; alvos ausentes não geram seta. Cadeias com várias setas,
 como `pp → p → x`, usam pistas (`data-lane`) separadas para não se sobrepor.
 
+Na `CallStackView`, o quadro ativo usa âmbar, os que aguardam usam cinza (`--viz-dim`) e o retorno
+usa violeta. O topo aparece primeiro, cada quadro separa parâmetros de locais e o estado também
+está escrito no cabeçalho do quadro. Ao receber um retorno, o chamador mostra `recebeu X` em texto.
+
 Não codifique estado apenas por cor: use também legenda, rótulos e a descrição do passo.
 
 ---
@@ -241,6 +245,7 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `MatrixView` | Grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos; usada por vetores/matrizes. |
 | `StringsView` | Fileiras de caracteres para lições de string: índices, ponteiros, terminador `\0`, setas de cópia/concatenação e resultado. |
 | `PointersView` | Caixas de memória para lições de ponteiro: tipo, nome, endereço, valor, setas por `targetId` e estados de leitura/escrita. |
+| `CallStackView` | Pilha de chamadas para funções/recursão: quadros com parâmetros, locais, estado, valor de retorno e valor recebido da chamada interna; topo primeiro. |
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |
 | `CodePanel` | Código Java/C com linha ativa, highlighter e rodapé. |
@@ -413,7 +418,7 @@ npm run build
 - Novos padrões de página: teste comportamento observável, não animação/tempo.
 - Comparação: teste `countRunMetrics` e a página `/comparar`; insights: valide as chaves contra o
   registro de lições; código C-only: valide `step.line` contra a listagem declarada.
-- QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`), teoria, playground e 404;
+- QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `callstack`), teoria, playground e 404;
   larguras 390, 768, 1024 e 1440; temas claro e escuro.
 
 ---

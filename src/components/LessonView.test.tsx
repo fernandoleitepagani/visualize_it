@@ -2,6 +2,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { LessonView } from '@/components/LessonView';
 import { getLesson } from '@/content/lessons';
+import { lesson as funcoesLesson } from '@/content/lessons/funcoes';
 import { renderWithProviders } from '@/test/render';
 
 const lesson = getLesson('selecao');
@@ -48,6 +49,20 @@ describe('LessonView code languages', () => {
     renderWithProviders(<LessonView lesson={lesson} />, '/algoritmos/selecao?lang=c');
     fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
     expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+  });
+});
+
+describe('LessonView call stack', () => {
+  it('renders the call stack without an input toolbar and with C only', () => {
+    renderWithProviders(<LessonView lesson={funcoesLesson} />, '/algoritmos/funcoes?lang=java');
+
+    expect(screen.getByTestId('call-stack')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /main ativo.*x = 3/i })).toBeInTheDocument();
+    expect(screen.queryByLabelText('valores')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Código Java' })).not.toBeInTheDocument();
   });
 });
 

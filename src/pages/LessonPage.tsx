@@ -21,6 +21,7 @@ const viewLabels: Record<ViewKind, string> = {
   strings: 'strings',
   matrix: 'matriz',
   pointers: 'ponteiros',
+  callstack: 'pilha de chamadas',
 };
 
 export function LessonPage() {

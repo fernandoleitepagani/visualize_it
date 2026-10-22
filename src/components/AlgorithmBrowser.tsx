@@ -27,6 +27,7 @@ const viewLabels: Record<ViewKind, string> = {
   strings: 'Strings',
   matrix: 'Matriz',
   pointers: 'Ponteiros',
+  callstack: 'Pilha de chamadas',
 };
 
 interface Props {

@@ -58,6 +58,19 @@ describe('subjects catalog', () => {
     expect(slugs).toEqual(['ponteiros-basico', 'aritmetica', 'ponteiros-duplos']);
   });
 
+  it('places functions and recursion in order inside their own group', () => {
+    const functions = getEntryLocation('funcoes');
+    const recursion = getEntryLocation('recursao');
+
+    expect(functions?.subject.id).toBe('aeds-i');
+    expect(functions?.group.id).toBe('funcoes-recursao');
+    expect(recursion?.subject.id).toBe('aeds-i');
+    expect(recursion?.group.id).toBe('funcoes-recursao');
+
+    const slugs = functions!.group.entries.map((entry) => entry.slug);
+    expect(slugs).toEqual(['funcoes', 'recursao']);
+  });
+
   it('builds the routes used by the lesson and theory pages', () => {
     expect(getEntryPath(getEntryLocation('selecao')!.entry)).toBe('/algoritmos/selecao');
     expect(getEntryPath(getEntryLocation('complexidade')!.entry)).toBe('/teoria/complexidade');

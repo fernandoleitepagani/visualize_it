@@ -84,6 +84,32 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'callstack') {
+    return (
+      <Flex
+        data-testid="view-preview-callstack"
+        direction="column"
+        gap={2}
+        justify="center"
+        h={30}
+        aria-hidden
+      >
+        {[0, 1, 2].map((i) => (
+          <Box
+            key={i}
+            w={26}
+            h={7}
+            style={{
+              border: `1px solid ${i === 0 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line2}`,
+              borderRadius: 2,
+              background: i === 0 ? `color-mix(in srgb, ${accent} 12%, transparent)` : vizVar.surface2,
+            }}
+          />
+        ))}
+      </Flex>
+    );
+  }
+
   if (view === 'pointers') {
     return (
       <Flex

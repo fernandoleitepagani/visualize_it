@@ -6,7 +6,15 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers';
+export type ViewKind =
+  | 'bars'
+  | 'cells'
+  | 'nodes'
+  | 'plot'
+  | 'matrix'
+  | 'strings'
+  | 'pointers'
+  | 'callstack';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -105,6 +113,41 @@ export interface PointerState {
   result?: { label: string; value: string };
 }
 
+export type FrameVarKind = 'param' | 'local';
+export type FrameStateName = 'active' | 'waiting' | 'returning' | 'done';
+
+/** One variable living inside a call frame. */
+export interface FrameVar {
+  name: string;
+  value: string | number;
+  /** Parameters are copies; locals are created inside the frame. */
+  kind?: FrameVarKind;
+  /** Only meaningful changes get a visible label, never color alone. */
+  state?: 'changed' | 'read';
+}
+
+/** One function call on the `callstack` view. */
+export interface CallFrame {
+  /** Stable id while the frame exists, for example `main` or `fatorial-4`. */
+  id: string;
+  /** Function name shown in the frame header. */
+  fn: string;
+  /** Optional call-site label, for example `fatorial(4)`. */
+  call?: string;
+  vars: FrameVar[];
+  state?: FrameStateName;
+  /** Value or pending expression shown while the frame returns. */
+  returns?: string;
+  /** Value that just came back from the call this frame was waiting for. */
+  received?: string;
+}
+
+/** Payload for the `callstack` view. Frames go from the base to the top. */
+export interface CallStackState {
+  frames: CallFrame[];
+  result?: { label: string; value: string };
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -132,6 +175,8 @@ export interface Step {
   strings?: StringState;
   /** pointers view */
   pointers?: PointerState;
+  /** callstack view */
+  callstack?: CallStackState;
 }
 
 export interface Complexity {
