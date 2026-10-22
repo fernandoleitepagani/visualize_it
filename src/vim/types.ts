@@ -43,6 +43,18 @@ export interface VimState {
   lastChange: string[] | null;
   lastFind: VimFind | null;
   showNumbers: boolean;
+  relativeNumbers: boolean;
+  ignoreCase: boolean;
+  marks: Record<string, VimCursor>;
+  macros: Record<string, string[]>;
+  recording: string | null;
+  macroDepth: number;
+  lastMacro: string | null;
+  lastPosition: VimCursor | null;
+  jumpBack: VimCursor[];
+  jumpForward: VimCursor[];
+  overwrite: boolean;
+  lastVisual: { anchor: VimCursor; cursor: VimCursor } | null;
   /** Keys typed during the current insert session (for `.`). */
   insertKeys: string[];
   /** Operator keys that opened the current insert session (`ciw`, `S`, …). */

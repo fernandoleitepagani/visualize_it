@@ -23,6 +23,13 @@ describe('keymap: movement', () => {
     expect(run(['a', 'b', 'c'], ['G', 'g', 'g']).cursor.line).toBe(0);
   });
 
+  it('matches brackets and moves by paragraph', () => {
+    expect(run(['(a)'], ['%']).cursor).toEqual({ line: 0, col: 2 });
+    expect(run(['if (a) {', '  b();', '}'], ['%']).cursor).toEqual({ line: 0, col: 5 });
+    expect(run(['a', 'b', '', 'c'], ['}']).cursor.line).toBe(2);
+    expect(run(['a', 'b', '', 'c'], ['G', '{']).cursor.line).toBe(2);
+  });
+
   it('finds a character and repeats it with ; and ,', () => {
     const state = run(['a-b-c-d'], ['f', '-', ';']);
     expect(state.cursor.col).toBe(3);
@@ -59,6 +66,12 @@ describe('keymap: editing', () => {
     expect(applyKeys(opened, ['u']).lines).toEqual(['a']);
   });
 
+  it('changes a word like ce, keeping the trailing space', () => {
+    const state = run(['foo bar'], ['c', 'w']);
+    expect(state.mode).toBe('insert');
+    expect(state.lines).toEqual([' bar']);
+  });
+
   it('changes a word and enters insert', () => {
     const state = run(['foo bar'], ['c', 'i', 'w']);
     expect(state.mode).toBe('insert');
@@ -87,6 +100,63 @@ describe('keymap: editing', () => {
   it('replaces and toggles case', () => {
     expect(run(['let x = 1;'], ['l', 'l', 'l', 'l', 'r', 'y']).lines).toEqual(['let y = 1;']);
     expect(run(['abc'], ['~']).lines).toEqual(['Abc']);
+  });
+
+  it('records and replays macros', () => {
+    const recorded = run(['abcd'], ['q', 'a', 'x', 'q']);
+    expect(recorded.macros.a).toEqual(['x']);
+    expect(recorded.recording).toBeNull();
+
+    const replayed = applyKeys(recorded, ['@', 'a']);
+    expect(replayed.lines).toEqual(['cd']);
+    expect(applyKeys(replayed, ['@', '@']).lines).toEqual(['d']);
+  });
+
+  it('sets marks and jumps back to them', () => {
+    const marked = run(['a', 'b', 'c'], ['G', 'm', 'a']);
+    expect(marked.marks.a).toEqual({ line: 2, col: 0 });
+
+    const lineJump = applyKeys(marked, ['g', 'g', "'", 'a']);
+    expect(lineJump.cursor.line).toBe(2);
+
+    const exactJump = applyKeys(marked, ['g', 'g', '`', 'a']);
+    expect(exactJump.cursor.line).toBe(2);
+    expect(applyKeys(exactJump, ["'", "'"]).cursor.line).toBe(0);
+  });
+
+  it('deletes words and lines from insert mode', () => {
+    expect(run(['foo bar'], ['A', 'C-w', 'Escape']).lines).toEqual(['foo ']);
+    expect(run(['foo bar'], ['A', 'C-u', 'Escape']).lines).toEqual(['']);
+    expect(run(['foo'], ['A', 'C-t', 'Escape']).lines).toEqual(['  foo']);
+  });
+
+  it('overwrites in replace mode', () => {
+    expect(run(['abc'], ['R', 'X', 'Y', 'Escape']).lines).toEqual(['XYc']);
+  });
+
+  it('joins without spaces with gJ', () => {
+    expect(run(['a', 'b'], ['g', 'J']).lines).toEqual(['ab']);
+  });
+
+  it('indents and dedents lines', () => {
+    expect(run(['a', 'b'], ['>', '>']).lines).toEqual(['  a', 'b']);
+    expect(run(['a', 'b'], ['2', '>', '>']).lines).toEqual(['  a', '  b']);
+    expect(run(['a', 'b'], ['>', 'j']).lines).toEqual(['  a', '  b']);
+    expect(run(['  a'], ['<', '<']).lines).toEqual(['a']);
+    expect(run(['\ta'], ['<', '<']).lines).toEqual(['a']);
+  });
+
+  it('deletes, changes and yanks to the end of the line', () => {
+    expect(run(['abcdef'], ['l', 'l', 'D']).lines).toEqual(['ab']);
+    expect(run(['abcdef'], ['l', 'l', 'C', 'x', 'Escape']).lines).toEqual(['abx']);
+    expect(run(['abcdef'], ['l', 'l', 'Y']).register).toBe('cdef');
+    expect(run(['abcdef'], ['l', 'l', 'Y']).lines).toEqual(['abcdef']);
+  });
+
+  it('increments and decrements numbers', () => {
+    expect(run(['x = 41'], ['C-a']).lines).toEqual(['x = 42']);
+    expect(run(['x = 41'], ['C-x']).lines).toEqual(['x = 40']);
+    expect(run(['sem numero'], ['C-a']).message).toContain('nenhum número');
   });
 
   it('joins lines with J', () => {
@@ -150,6 +220,40 @@ describe('keymap: search', () => {
 });
 
 describe('keymap: commands', () => {
+  it('substitutes text on a line and in the buffer', () => {
+    expect(run(['a a'], [':', 's', '/', 'a', '/', 'b', '/', 'g', 'Enter']).lines).toEqual([
+      'b b',
+    ]);
+    expect(
+      run(['a', 'a'], [':', '%', 's', '/', 'a', '/', 'b', '/', 'g', 'Enter']).lines,
+    ).toEqual(['b', 'b']);
+  });
+
+  it('sorts lines and toggles options', () => {
+    expect(run(['b', 'a'], [':', 's', 'o', 'r', 't', 'Enter']).lines).toEqual(['a', 'b']);
+
+    const relative = run(['a'], [':', 's', 'e', 't', ' ', 'r', 'n', 'u', 'Enter']);
+    expect(relative.showNumbers).toBe(true);
+    expect(relative.relativeNumbers).toBe(true);
+
+    const ignore = run(['a'], [':', 's', 'e', 't', ' ', 'i', 'c', 'Enter']);
+    expect(ignore.ignoreCase).toBe(true);
+  });
+
+  it('lists registers and marks', () => {
+    const state = run(['a'], ['m', 'a', 'q', 'b', 'x', 'q', ':', 'r', 'e', 'g', 'Enter']);
+    expect(state.message).toContain('@b');
+
+    const marks = applyKeys(state, [':', 'm', 'a', 'r', 'k', 's', 'Enter']);
+    expect(marks.message).toContain('a');
+  });
+
+  it('searches case-insensitively after set ignorecase', () => {
+    expect(run(['Foo'], [':', 's', 'e', 't', ' ', 'i', 'c', 'Enter', '/', 'f', 'o', 'o', 'Enter']).cursor.col).toBe(0);
+    expect(run(['Foo'], ['/', 'f', 'o', 'o', 'Enter']).message).toContain('E486');
+  });
+
+
   it('clears dirty after :w and blocks :q', () => {
     const dirty = run(['abc'], ['x', ':', 'w', 'Enter']);
     expect(dirty.dirty).toBe(false);
@@ -185,6 +289,30 @@ describe('keymap: visual mode', () => {
     expect(run(['a', 'b', 'c'], ['V', 'j', 'd']).lines).toEqual(['c']);
   });
 
+  it('changes case and pastes over a visual selection', () => {
+    expect(run(['abcd'], ['v', 'l', 'U']).lines).toEqual(['ABcd']);
+    expect(run(['ABCD'], ['v', 'l', 'u']).lines).toEqual(['abCD']);
+
+    const pasted = run(['a', 'b'], ['y', 'y', 'j', 'V', 'p']);
+    expect(pasted.lines).toEqual(['a', 'a']);
+  });
+
+  it('restores the last visual selection with gv', () => {
+    const state = run(['abcd'], ['v', 'l', 'Escape', 'g', 'v']);
+    expect(state.mode).toBe('visual');
+    expect(state.anchor).toEqual({ line: 0, col: 0 });
+    expect(state.cursor).toEqual({ line: 0, col: 1 });
+  });
+
+  it('indents a visual line selection', () => {
+    expect(run(['a', 'b'], ['V', 'j', '>']).lines).toEqual(['  a', '  b']);
+  });
+
+  it('deletes inside backticks and paragraphs', () => {
+    expect(run(['x `abc` y'], ['f', '`', 'l', 'd', 'i', '`']).lines).toEqual(['x `` y']);
+    expect(run(['a', 'b', '', 'c'], ['d', 'i', 'p']).lines).toEqual(['', 'c']);
+  });
+
   it('swaps the anchor with o', () => {
     const state = run(['abcd'], ['v', 'l', 'l', 'o', 'd']);
     expect(state.lines).toEqual(['d']);
@@ -200,6 +328,10 @@ describe('keymap: misc', () => {
   it('normalizes keyboard events', () => {
     expect(normalizeKey({ key: 'ArrowLeft' })).toBe('ArrowLeft');
     expect(normalizeKey({ key: 'r', ctrlKey: true })).toBe('C-r');
+    expect(normalizeKey({ key: '[', ctrlKey: true })).toBe('Escape');
+    expect(normalizeKey({ key: '_' })).toBe('_');
+    expect(normalizeKey({ key: 'a', ctrlKey: true })).toBe('C-a');
+    expect(normalizeKey({ key: 'x', ctrlKey: true })).toBe('C-x');
     expect(normalizeKey({ key: 'k', metaKey: true })).toBeNull();
     expect(normalizeKey({ key: 'Tab' })).toBeNull();
     expect(normalizeKey({ key: 'a' })).toBe('a');

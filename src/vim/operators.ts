@@ -97,6 +97,7 @@ const PAIRS: Record<string, [string, string]> = {
   ']': ['[', ']'],
   '"': ['"', '"'],
   "'": ["'", "'"],
+  '`': ['`', '`'],
 };
 
 function delimiterObject(
@@ -144,6 +145,27 @@ function delimiterObject(
   };
 }
 
+function paragraphObject(
+  lines: string[],
+  cursor: VimCursor,
+  around: boolean,
+): TextRange | null {
+  let start = cursor.line;
+  while (start > 0 && lineAt(lines, start - 1).trim() !== '') start -= 1;
+
+  let end = cursor.line;
+  while (end < lines.length - 1 && lineAt(lines, end + 1).trim() !== '') end += 1;
+
+  if (around && end + 1 < lines.length && lineAt(lines, end + 1).trim() === '') end += 1;
+
+  return {
+    start: { line: start, col: 0 },
+    end: { line: end, col: 0 },
+    linewise: true,
+    inclusive: true,
+  };
+}
+
 /** `iw`, `aw`, `i"`, `a"`, `i(`, `a(`, … */
 export function textObjectRange(
   lines: string[],
@@ -153,6 +175,7 @@ export function textObjectRange(
 ): TextRange | null {
   if (object === 'w') return wordObject(lines, cursor, around);
   if (object === 'W') return wordObject(lines, cursor, around);
+  if (object === 'p') return paragraphObject(lines, cursor, around);
   return delimiterObject(lines, cursor, object, around);
 }
 
@@ -268,6 +291,37 @@ export function paste(
     ...lines.slice(cursor.line + 1),
   ];
   return { lines: next, cursor: { line: cursor.line, col: at } };
+}
+
+/** `>>` / `<<`: shifts whole lines by two spaces. */
+export function shiftLines(
+  lines: string[],
+  first: number,
+  last: number,
+  delta: 1 | -1,
+): { lines: string[]; cursor: VimCursor } {
+  const start = clamp(first, 0, lines.length - 1);
+  const end = clamp(last, start, lines.length - 1);
+  const next = lines.slice();
+
+  for (let index = start; index <= end; index += 1) {
+    if (delta > 0) {
+      next[index] = `  ${next[index]}`;
+      continue;
+    }
+    if (next[index].startsWith('\t')) {
+      next[index] = next[index].slice(1);
+      continue;
+    }
+    let remove = 0;
+    while (remove < 2 && next[index][remove] === ' ') remove += 1;
+    next[index] = next[index].slice(remove);
+  }
+
+  return {
+    lines: next,
+    cursor: { line: start, col: firstNonBlank(next[start]) },
+  };
 }
 
 export function clampToBuffer(lines: string[], cursor: VimCursor): VimCursor {

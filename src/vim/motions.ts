@@ -136,6 +136,142 @@ function wordEnd(lines: string[], from: VimCursor, bigWord: boolean): VimCursor 
   return cursor;
 }
 
+function lastNonBlank(line: string): number {
+  const cells = chars(line);
+  let index = cells.length - 1;
+  while (index > 0 && /\s/.test(cells[index])) index -= 1;
+  return Math.max(0, index);
+}
+
+function sentenceForward(lines: string[], from: VimCursor, count: number): VimCursor {
+  let cursor = { ...from };
+  for (let step = 0; step < Math.max(1, count); step += 1) {
+    const cells = chars(lineAt(lines, cursor.line));
+    let found = -1;
+    for (let index = cursor.col; index < cells.length; index += 1) {
+      if (/[.!?]/.test(cells[index])) {
+        found = index;
+        break;
+      }
+    }
+    if (found >= 0) {
+      let next = found + 1;
+      while (next < cells.length && /\s/.test(cells[next])) next += 1;
+      cursor = { line: cursor.line, col: Math.min(next, Math.max(0, cells.length - 1)) };
+      continue;
+    }
+    if (cursor.line < lines.length - 1) {
+      cursor = { line: cursor.line + 1, col: firstNonBlank(lineAt(lines, cursor.line + 1)) };
+    }
+  }
+  return cursor;
+}
+
+function sentenceBackward(lines: string[], from: VimCursor, count: number): VimCursor {
+  let cursor = { ...from };
+  for (let step = 0; step < Math.max(1, count); step += 1) {
+    const cells = chars(lineAt(lines, cursor.line));
+    let found = -1;
+    for (let index = Math.min(cursor.col, cells.length - 1); index >= 0; index -= 1) {
+      if (/[.!?]/.test(cells[index])) {
+        found = index;
+        break;
+      }
+    }
+    if (found >= 0) {
+      let next = found + 1;
+      while (next < cells.length && /\s/.test(cells[next])) next += 1;
+      cursor = { line: cursor.line, col: Math.min(next, Math.max(0, cells.length - 1)) };
+      continue;
+    }
+    if (cursor.line > 0) {
+      cursor = {
+        line: cursor.line - 1,
+        col: firstNonBlank(lineAt(lines, cursor.line - 1)),
+      };
+    }
+  }
+  return cursor;
+}
+
+function previousWordEnd(lines: string[], from: VimCursor, bigWord: boolean): VimCursor {
+  const start = prevWordStart(lines, from, bigWord);
+  let cursor = stepLeft(lines, start);
+  while (cursor) {
+    const cells = chars(lineAt(lines, cursor.line));
+    if (!cells.length) {
+      cursor = stepLeft(lines, cursor);
+      continue;
+    }
+    if (classOf(cells[cursor.col], bigWord) === 'space') {
+      cursor = stepLeft(lines, cursor);
+      continue;
+    }
+    break;
+  }
+  return cursor ? wordEnd(lines, cursor, bigWord) : start;
+}
+
+function paragraphMove(
+  lines: string[],
+  cursor: VimCursor,
+  direction: 1 | -1,
+  count: number,
+): VimCursor {
+  let line = cursor.line;
+  for (let step = 0; step < Math.max(1, count); step += 1) {
+    let next = line + direction;
+    while (next >= 0 && next < lines.length && lineAt(lines, next).trim() !== '') {
+      next += direction;
+    }
+    line = Math.max(0, Math.min(lines.length - 1, next));
+  }
+  return { line, col: 0 };
+}
+
+const OPEN_BRACKETS = '([{';
+const CLOSE_BRACKETS = ')]}';
+
+/** `%`: matching bracket, scanning the whole buffer with nesting. */
+function matchingBracket(lines: string[], cursor: VimCursor): VimCursor | null {
+  const cells = chars(lineAt(lines, cursor.line));
+  let index = cursor.col;
+  while (
+    index < cells.length &&
+    !OPEN_BRACKETS.includes(cells[index]) &&
+    !CLOSE_BRACKETS.includes(cells[index])
+  ) {
+    index += 1;
+  }
+  if (index >= cells.length) return null;
+
+  const char = cells[index];
+  const direction = OPEN_BRACKETS.includes(char) ? 1 : -1;
+  const pair =
+    direction === 1
+      ? CLOSE_BRACKETS[OPEN_BRACKETS.indexOf(char)]
+      : OPEN_BRACKETS[CLOSE_BRACKETS.indexOf(char)];
+
+  const flat: Array<{ line: number; col: number; char: string }> = [];
+  lines.forEach((line, lineIndex) => {
+    chars(line).forEach((value, col) => flat.push({ line: lineIndex, col, char: value }));
+  });
+
+  const start = flat.findIndex((item) => item.line === cursor.line && item.col === index);
+  if (start < 0) return null;
+
+  let depth = 0;
+  for (let position = start + direction; position >= 0 && position < flat.length; position += direction) {
+    const value = flat[position].char;
+    if (value === char) depth += 1;
+    else if (value === pair) {
+      if (depth === 0) return { line: flat[position].line, col: flat[position].col };
+      depth -= 1;
+    }
+  }
+  return null;
+}
+
 function vertical(lines: string[], cursor: VimCursor, delta: number, desiredCol: number): VimCursor {
   const line = clamp(cursor.line + delta, 0, lines.length - 1);
   const length = lineLength(lineAt(lines, line));
@@ -173,6 +309,75 @@ export function applyMotion(
     case 'h':
       next = horizontal(lines, cursor, -times);
       break;
+    case '_': {
+      const line = clamp(cursor.line + times - 1, 0, lines.length - 1);
+      next = { line, col: firstNonBlank(lineAt(lines, line)) };
+      linewise = true;
+      break;
+    }
+    case '+': {
+      const line = clamp(cursor.line + times, 0, lines.length - 1);
+      next = { line, col: firstNonBlank(lineAt(lines, line)) };
+      linewise = true;
+      break;
+    }
+    case '-': {
+      const line = clamp(cursor.line - times, 0, lines.length - 1);
+      next = { line, col: firstNonBlank(lineAt(lines, line)) };
+      linewise = true;
+      break;
+    }
+    case '|':
+      next = {
+        line: cursor.line,
+        col: Math.min(times - 1, Math.max(0, lineLength(lineAt(lines, cursor.line)) - 1)),
+      };
+      break;
+    case 'H':
+      next = {
+        line: Math.min(times - 1, lines.length - 1),
+        col: firstNonBlank(lineAt(lines, Math.min(times - 1, lines.length - 1))),
+      };
+      linewise = true;
+      break;
+    case 'M': {
+      const line = Math.floor((lines.length - 1) / 2);
+      next = { line, col: firstNonBlank(lineAt(lines, line)) };
+      linewise = true;
+      break;
+    }
+    case 'L': {
+      const line = Math.max(0, lines.length - times);
+      next = { line, col: firstNonBlank(lineAt(lines, line)) };
+      linewise = true;
+      break;
+    }
+    case '(':
+      next = sentenceBackward(lines, cursor, times);
+      break;
+    case ')':
+      next = sentenceForward(lines, cursor, times);
+      break;
+    case 'g_':
+      next = { line: cursor.line, col: lastNonBlank(lineAt(lines, cursor.line)) };
+      break;
+    case 'g0':
+      next = { line: cursor.line, col: 0 };
+      break;
+    case 'gm':
+      next = {
+        line: cursor.line,
+        col: Math.floor(Math.max(0, lineLength(lineAt(lines, cursor.line)) - 1) / 2),
+      };
+      break;
+    case 'ge':
+    case 'gE': {
+      const big = key === 'gE';
+      for (let index = 0; index < times; index += 1) {
+        next = previousWordEnd(lines, next, big);
+      }
+      break;
+    }
     case 'l':
       next = horizontal(lines, cursor, times);
       break;
@@ -232,12 +437,35 @@ export function applyMotion(
       next.col = firstNonBlank(lineAt(lines, next.line));
       linewise = true;
       break;
+    case '%': {
+      const match = matchingBracket(lines, cursor);
+      if (!match) return null;
+      next = match;
+      inclusive = true;
+      break;
+    }
+    case '{':
+      next = paragraphMove(lines, cursor, -1, times);
+      linewise = true;
+      break;
+    case '}':
+      next = paragraphMove(lines, cursor, 1, times);
+      linewise = true;
+      break;
     case 'C-d':
       next = vertical(lines, cursor, 10, desiredCol);
       linewise = true;
       break;
     case 'C-u':
       next = vertical(lines, cursor, -10, desiredCol);
+      linewise = true;
+      break;
+    case 'C-f':
+      next = vertical(lines, cursor, 20, desiredCol);
+      linewise = true;
+      break;
+    case 'C-b':
+      next = vertical(lines, cursor, -20, desiredCol);
       linewise = true;
       break;
     default:
