@@ -1,8 +1,9 @@
-import type { Cell, Lesson, Step } from '@/engine/types';
+import type { Cell, Lesson, MatrixState, Step } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 const c = (val: Cell['val'], labels: string[], state = ''): Cell => ({ val, labels, state });
 const s = (line: number, desc: string, cells: Cell[]): Step => ({ line, desc, cells });
+const sm = (line: number, desc: string, matrix: MatrixState): Step => ({ line, desc, matrix });
 const lineOf = (code: string[], text: string): number => {
   const index = code.findIndex((line) => line.includes(text));
   if (index < 0) throw new Error(`Linha não encontrada: ${text}`);
@@ -208,15 +209,82 @@ export const lessonVetoresMatrizes: Lesson = {
   subtitle: 'Índices e dimensões',
   description:
     'Um vetor armazena elementos do mesmo tipo em posições consecutivas e usa um índice a partir de zero. Uma matriz é um vetor de vetores: usa linha e coluna, e operações como soma, transposição e traço percorrem essas dimensões. O tamanho é fixo na declaração, e o acesso fora dos limites é erro de programação.',
-  panelLabel: 'vetor',
+  view: 'matrix',
+  panelLabel: 'matriz',
   languages: ['c'],
   complexity: { time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' }, space: 'Θ(n)' },
   code: { c: vetoresCode },
   steps: () => [
-    s(lineOf(vetoresCode, 'int v[5]'), 'O vetor ocupa posições consecutivas.', [c(10, ['v[0]'], 'write'), c(20, ['v[1]'], 'write'), c(30, ['v[2]'], 'write')]),
-    s(lineOf(vetoresCode, 'int m[2][2]'), 'A matriz tem linhas e colunas.', [c(1, ['m[0][0]']), c(2, ['m[0][1]']), c(3, ['m[1][0]']), c(4, ['m[1][1]'])]),
-    s(lineOf(vetoresCode, 'soma += v[i]'), 'O laço percorre o vetor.', [c(150, ['soma'], 'write')]),
-    s(lineOf(vetoresCode, 'int traco'), 'O traço soma a diagonal principal.', [c(5, ['traço'], 'write')]),
+    sm(
+      lineOf(vetoresCode, 'int v[5]'),
+      'O vetor v[5] ocupa posições consecutivas na memória.',
+      {
+        rows: 1,
+        cols: 5,
+        rowLabels: ['v'],
+        colLabels: ['[0]', '[1]', '[2]', '[3]', '[4]'],
+        activeRow: 0,
+        grid: [
+          [
+            c(10, [], 'write'),
+            c(20, [], 'write'),
+            c(30, [], 'write'),
+            c(40, [], 'write'),
+            c(50, [], 'write'),
+          ],
+        ],
+      },
+    ),
+    sm(
+      lineOf(vetoresCode, 'int m[2][2]'),
+      'A matriz m[2][2] tem linhas e colunas organizadas em 2D.',
+      {
+        rows: 2,
+        cols: 2,
+        rowLabels: ['lin 0', 'lin 1'],
+        colLabels: ['col 0', 'col 1'],
+        grid: [
+          [c(1, ['m[0][0]']), c(2, ['m[0][1]'])],
+          [c(3, ['m[1][0]']), c(4, ['m[1][1]'])],
+        ],
+      },
+    ),
+    sm(
+      lineOf(vetoresCode, 'soma += v[i]'),
+      'O laço percorre o vetor somando seus elementos.',
+      {
+        rows: 1,
+        cols: 5,
+        rowLabels: ['v'],
+        colLabels: ['[0]', '[1]', '[2]', '[3]', '[4]'],
+        activeRow: 0,
+        grid: [
+          [
+            c(10, [], 'active'),
+            c(20, [], 'active'),
+            c(30, [], 'active'),
+            c(40, [], 'active'),
+            c(50, ['soma: 150'], 'write'),
+          ],
+        ],
+      },
+    ),
+    sm(
+      lineOf(vetoresCode, 'int traco'),
+      'O traço soma a diagonal principal m[0][0] + m[1][1].',
+      {
+        rows: 2,
+        cols: 2,
+        rowLabels: ['lin 0', 'lin 1'],
+        colLabels: ['col 0', 'col 1'],
+        activeRow: 1,
+        activeCol: 1,
+        grid: [
+          [c(1, ['diag'], 'active'), c(2, [])],
+          [c(3, []), c(4, ['diag', 'traço: 5'], 'write')],
+        ],
+      },
+    ),
   ],
 };
 
@@ -253,14 +321,71 @@ export const lessonClassesVetores: Lesson = {
   subtitle: 'Coleções dentro de objetos',
   description:
     'Uma classe define o formato do objeto; um vetor ou matriz define quantos objetos serão armazenados. `Vaga estacionamento[2][3]` cria seis instâncias, cada uma com seu próprio estado. O acesso combina índice e campo (`estacionamento[i][j].ocupada`), o que organiza coleções de objetos em linhas e colunas.',
-  panelLabel: 'turma',
+  view: 'matrix',
+  panelLabel: 'estacionamento',
   languages: ['cpp'],
   complexity: { time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' }, space: 'Θ(n)' },
   code: { cpp: classesVetoresCode },
   steps: () => [
-    s(lineOf(classesVetoresCode, 'class Vaga'), 'Cada Vaga tem seu próprio estado.', [c('Vaga', ['classe'])]),
-    s(lineOf(classesVetoresCode, 'Vaga estacionamento'), 'A matriz cria 2x3 objetos.', [c('2x3', ['dimensão'], 'write')]),
-    s(lineOf(classesVetoresCode, 'estacionamento[0][0]'), 'O índice e o ponto acessam o objeto.', [c('true', ['[0][0]'], 'write'), c('true', ['[1][2]'], 'write')]),
-    s(lineOf(classesVetoresCode, 'for (int i'), 'Laços percorrem linhas e colunas.', [c('i, j', ['índices'], 'active')]),
+    sm(
+      lineOf(classesVetoresCode, 'class Vaga'),
+      'Cada Vaga tem seu próprio estado (ocupada = false).',
+      {
+        rows: 2,
+        cols: 3,
+        rowLabels: ['vaga 0', 'vaga 1'],
+        colLabels: ['[0]', '[1]', '[2]'],
+        grid: [
+          [c('livre', []), c('livre', []), c('livre', [])],
+          [c('livre', []), c('livre', []), c('livre', [])],
+        ],
+      },
+    ),
+    sm(
+      lineOf(classesVetoresCode, 'Vaga estacionamento'),
+      'A matriz cria 2x3 objetos Vaga em grade.',
+      {
+        rows: 2,
+        cols: 3,
+        rowLabels: ['vaga 0', 'vaga 1'],
+        colLabels: ['[0]', '[1]', '[2]'],
+        grid: [
+          [c('false', [], 'write'), c('false', [], 'write'), c('false', [], 'write')],
+          [c('false', [], 'write'), c('false', [], 'write'), c('false', [], 'write')],
+        ],
+      },
+    ),
+    sm(
+      lineOf(classesVetoresCode, 'estacionamento[0][0]'),
+      'O acesso atribui true para [0][0] e [1][2].',
+      {
+        rows: 2,
+        cols: 3,
+        rowLabels: ['vaga 0', 'vaga 1'],
+        colLabels: ['[0]', '[1]', '[2]'],
+        activeRow: 0,
+        activeCol: 0,
+        grid: [
+          [c('true', ['[0][0]'], 'write'), c('false', []), c('false', [])],
+          [c('false', []), c('false', []), c('true', ['[1][2]'], 'write')],
+        ],
+      },
+    ),
+    sm(
+      lineOf(classesVetoresCode, 'for (int i'),
+      'Laços aninhados percorrem cada linha i e coluna j.',
+      {
+        rows: 2,
+        cols: 3,
+        rowLabels: ['i=0', 'i=1'],
+        colLabels: ['j=0', 'j=1', 'j=2'],
+        activeRow: 1,
+        activeCol: 2,
+        grid: [
+          [c('true', [], 'active'), c('false', [], 'active'), c('false', [], 'active')],
+          [c('false', [], 'active'), c('false', [], 'active'), c('true', ['atual'], 'active')],
+        ],
+      },
+    ),
   ],
 };

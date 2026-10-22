@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -48,6 +48,17 @@ export interface PlotState {
   total: number;
 }
 
+/** Payload for the `matrix` view (2D array/grid structures). */
+export interface MatrixState {
+  rows: number;
+  cols: number;
+  grid: Cell[][];
+  activeRow?: number;
+  activeCol?: number;
+  rowLabels?: string[];
+  colLabels?: string[];
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -69,6 +80,8 @@ export interface Step {
   nodes?: Node[];
   /** plot view */
   plot?: PlotState;
+  /** matrix view */
+  matrix?: MatrixState;
 }
 
 export interface Complexity {

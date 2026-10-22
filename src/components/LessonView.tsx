@@ -21,6 +21,7 @@ import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
 import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
+import { MatrixView } from './MatrixView';
 import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
@@ -33,6 +34,7 @@ import { BarsIcon, CheckIcon, GaugeIcon, InfoIcon, LightbulbIcon, ShuffleIcon, S
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
   if (lesson.view === 'cells') return <CellsView cells={step?.cells} />;
+  if (lesson.view === 'matrix') return <MatrixView matrix={step?.matrix} />;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
   if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
   return <BarsView state={step} ids={ids} />;
