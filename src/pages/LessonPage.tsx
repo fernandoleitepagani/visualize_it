@@ -22,6 +22,7 @@ const viewLabels: Record<ViewKind, string> = {
   matrix: 'matriz',
   pointers: 'ponteiros',
   object: 'objetos',
+  loop: 'laço',
 };
 
 export function LessonPage() {

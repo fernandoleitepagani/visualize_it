@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -176,6 +176,37 @@ export interface PointerState {
   result?: { label: string; value: string };
 }
 
+export interface LoopIteration {
+  current: number;
+  total?: number;
+  label?: string;
+}
+
+export interface LoopCondition {
+  expression: string;
+  evaluation?: string;
+  satisfied: boolean | null;
+  explanation?: string;
+}
+
+export interface LoopAccumulator {
+  label: string;
+  value: number | string;
+  previousValue?: number | string;
+  delta?: number | string;
+}
+
+export type LoopPhase = 'init' | 'check' | 'body' | 'update' | 'end';
+
+/** Payload for the `loop` view (loop tracker: iterations, conditional test, accumulator). */
+export interface LoopState {
+  phase?: LoopPhase;
+  iteration?: LoopIteration;
+  innerIteration?: LoopIteration;
+  condition?: LoopCondition;
+  accumulator?: LoopAccumulator;
+}
+
 /** A line index or language-specific line mapping (0-based). */
 export type StepLine = number | Partial<Record<CodeLang, number>>;
 
@@ -220,6 +251,8 @@ export interface Step {
   strings?: StringState;
   /** pointers view */
   pointers?: PointerState;
+  /** loop view */
+  loop?: LoopState;
 }
 
 export interface Complexity {
