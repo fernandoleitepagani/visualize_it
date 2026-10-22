@@ -97,6 +97,29 @@ export interface ComplexityAnalysis {
   movements?: string;
 }
 
+export type StructureType = 'vetor' | 'matriz';
+export type ArrayOperationType = 'preencher' | 'limpar' | 'buscar' | 'somar';
+
+export interface LessonOperationConfig {
+  id: ArrayOperationType;
+  label: string;
+  panelLabel?: string;
+  code: (input: number[] | number[][]) => CodeListing;
+  complexity?: Complexity;
+  steps: (input: number[] | number[][]) => Step[];
+}
+
+export interface LessonStructureConfig {
+  id: StructureType;
+  label: string;
+  defaultInput: number[] | number[][];
+  operations: LessonOperationConfig[];
+}
+
+export interface LessonOperationsGroup {
+  structures: LessonStructureConfig[];
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -128,6 +151,11 @@ export interface Lesson {
    * extra switch next to the language picker.
    */
   codeVariants?: Partial<Record<CodeApproach, CodeListing>>;
+  /**
+   * For lessons that offer multiple data structures and operations
+   * (e.g. vetor vs matriz with preencher, limpar, buscar, somar).
+   */
+  operationsGroup?: LessonOperationsGroup;
   /**
    * `approach` lets a lesson pick line numbers for the listing being shown.
    * Lessons without variants can ignore it.
