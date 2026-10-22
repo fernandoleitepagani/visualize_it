@@ -18,6 +18,7 @@ const viewLabels: Record<ViewKind, string> = {
   cells: 'células',
   nodes: 'nós',
   plot: 'gráfico',
+  strings: 'strings',
   matrix: 'matriz',
 };
 

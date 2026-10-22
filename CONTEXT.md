@@ -16,7 +16,7 @@
 O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de dados e análise de
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
-- uma estrutura animada (`bars`, `cells` ou `nodes`);
+- uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix` ou `strings`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -31,12 +31,12 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 39 (`src/content/lessons/index.ts`) |
-| Views | 5 (`bars`, `cells`, `nodes`, `plot`, `matrix`) |
+| Lições registradas | 45 (`src/content/lessons/index.ts`) |
+| Views | 6 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 358 testes em 38 arquivos, passando |
+| Testes | 405 testes em 40 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -44,11 +44,12 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (20):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`); depois
-  `structs`, `alocacao-memoria`, `strings`, `arquivos`, `vetores-matrizes`,
+- **AEDS I (26):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`); o grupo
+  **String** com `strings`, `strlen`, `strcpy`, `strcat`, `strcmp`, `busca-string`, `strtok`
+  (view `strings`); depois `structs`, `alocacao-memoria`, `arquivos`, `vetores-matrizes`,
   `classes-vetores-matrizes` (C) e, por último, `oop`, `abstracao`, `classes`, `construtores`,
   `encapsulamento`, `heranca`, `polimorfismo`, `metodos-acessores`, `excecoes` (C++).
-- **AEDS II (18):**
+- **AEDS II (19):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
     `heapsort`, `counting`, `bucket`, `radix`.
   - **Busca:** `busca-sequencial`, `busca-binaria`.
@@ -68,7 +69,7 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   painéis, deck de controles com ação primária destacada, toolbar de entrada compacta, grid 56/44 e
   correção do `ComplexityTable` para estabilidade indefinida;
 - quiz no player, URL compartilhável (`arr`/`step`), entrada persistida por lição, playground,
-  alternância de tema claro/escuro e view `plot`;
+  alternância de tema claro/escuro, view `plot` e view `strings` (grupo String em AEDS I);
 - view bidimensional `matrix` com realce cruzado de coordenadas $(i, j)$ e suporte a matrizes 2D reais
   em `vetores-matrizes` e `classes-vetores-matrizes` (Issue #49);
 - separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
@@ -119,7 +120,7 @@ export interface Lesson {
   title: string;
   subtitle?: string;
   description?: string;
-  view?: 'bars' | 'cells' | 'nodes'; // padrão: bars
+  view?: ViewKind;                   // bars | cells | nodes | plot | matrix | strings; padrão: bars
   linked?: 'singly' | 'doubly';      // só para nodes
   panelLabel?: string;
   initial?: number[];                // padrão: DEFAULT_INPUT
@@ -138,7 +139,10 @@ Cada `Step` contém:
 - `vars?`: variáveis nomeadas;
 - campos de `bars`: `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`;
 - `cells?`: células de estruturas em vetor;
-- `nodes?`: nós de estruturas encadeadas.
+- `nodes?`: nós de estruturas encadeadas;
+- `plot?`: pontos e total acumulado do somatório;
+- `matrix?`: grade 2D com coordenadas ativas e rótulos de linha/coluna;
+- `strings?`: fileiras de caracteres, ponteiros nas células, setas de cópia/concatenação e resultado.
 
 `steps()` não toca no DOM e pode ser testada sem navegador. O player só percorre a lista pronta.
 
@@ -151,7 +155,7 @@ LessonPage (breadcrumb + LessonPager)
        ├─ usePlayback(steps, { initialIndex })
        ├─ toolbar de entrada (valores, Aplicar, Sortear, presets)
        ├─ useMemo: assignElementIds(steps)  // só para bars
-       ├─ Canvas → BarsView | CellsView | NodesView | PlotView
+       ├─ Canvas → BarsView | CellsView | NodesView | PlotView | MatrixView | StringsView
        ├─ CodePanel (Java/C, iterativo/recursivo, linha ativa com rolagem automática)
        ├─ PlayerControls abaixo do grid (timeline de passos, transporte, progresso,
        │   velocidade, quiz, copiar link)
@@ -198,8 +202,14 @@ conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o te
 | `cells` | vetores, pilhas, filas, listas e laços | `cells: [{ val, labels, state }]` |
 | `nodes` | listas/pilhas/filas encadeadas | `nodes: [{ id, val, prev, next, labels, state }]` |
 | `plot` | somatório (`soma`) | `plot: { points, current, total }` |
+| `matrix` | vetores e matrizes 2D | `matrix: { rows, cols, grid, activeRow?, activeCol?, rowLabels?, colLabels? }` |
+| `strings` | funções de string em C | `strings: { rows: [{ label, cells }], links?, result? }` |
 
 As views são apresentacionais: não calculam o algoritmo, apenas desenham o `Step` atual.
+`MatrixView` desenha a grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos;
+`StringsView` desenha fileiras de caracteres com índices, ponteiros nas células, terminador `\0`
+destacado e setas SVG para cópia/concatenação; a legenda e a descrição do passo continuam sendo a
+fonte textual do estado.
 
 ### 4.4 Tema
 
@@ -366,7 +376,7 @@ npm run build
 1. Abra `/` e confira os três cards de matéria e os destaques.
 2. Abra `/materias/aeds-ii`, busque, filtre por grupo/view e confira o estado na URL.
 3. Abra uma lição de cada view: `selecao` (bars), `pilha-sequencial` (cells), `lista-encadeada`
-   (nodes).
+   (nodes), `soma` (plot), `vetores-matrizes` (matrix) e `strlen` (strings).
 4. Use “Executar”, “Pausar”, “Anterior”, “Próximo”, “Recomeçar”, o slider de passo e a velocidade.
 5. Alterne Java/C e confira o destaque da linha.
 6. Aplique uma entrada válida e uma inválida; teste também “Sortear” e os presets.
@@ -374,7 +384,7 @@ npm run build
 8. Abra `/teoria/complexidade` e `/teoria/inducao`.
 9. Use a busca do header e confira o agrupamento por matéria.
 10. Abra `/playground` e execute o sandbox.
-11. Alterne o tema claro/escuro e confira as três views (inclusive a lição `soma`, view `plot`).
+11. Alterne o tema claro/escuro e confira as seis views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, e `strlen`, view `strings`).
 12. Ative o quiz em uma lição de `bars` e responda uma pergunta.
 13. Abra uma URL inexistente e confira o 404.
 
@@ -409,6 +419,7 @@ npm run build
 | 2026-10-21 | AEDS I somente em C; `Lesson.languages`, listagens parciais e linhas recalibradas | Remover ambiguidade Java/C nas lições introdutórias e evitar código não utilizado |
 | 2026-10-21 | Comparação determinística em `/comparar`, dicas/curiosidades em `content/insights.ts`, copiar/baixar código, atalhos com modal e link de reportar problema | Aproveitar ideias do SortVision sem copiar a arquitetura imperativa nem métricas de tempo de animação |
 | 2026-10-21 | 15 novos módulos de AEDS I: OOP (C++) e dados/memória (C), com `inputless` e `languages` | Cobrir os tópicos das notas sem duplicar a toolbar de entrada e mantendo uma única linguagem por módulo |
+| 2026-10-21 | Grupo **String** com 7 páginas e view `strings` (fileiras, ponteiros, terminador e setas) | Ensinar as funções de `<string.h>` com o código em C e uma animação fiel à operação de cópia/concatenação |
 | 2026-10-22 | Separação interativa de vetores e matrizes em `vetores-matrizes` com entradas dinâmicas e 4 operações (preencher, limpar, buscar, somar) | Facilitar a compreensão de vetores 1D e matrizes 2D isoladamente com código C dedicado e dimensionamento flexível até 10x10 (Issue #51) |
 | 2026-10-22 | Seção `/vim` com motor puro, 12 desafios e cheatsheet essencial, fora do catálogo de matérias | Ensinar Vim com prática real mantendo o mesmo contrato testável das lições e sem dependências novas |
 

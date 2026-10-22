@@ -103,6 +103,19 @@ export const subjects: Subject[] = [
         ],
       },
       {
+        id: 'string',
+        title: 'String',
+        entries: [
+          { kind: 'lesson', slug: 'strings', blurb: 'texto como vetor de char terminado em \\0.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'strlen', blurb: 'conta os caracteres até o terminador.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'strcpy', blurb: 'copia com strcpy ou limita com strncpy.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'strcat', blurb: 'anexa texto ao fim da string.', tag: 'Θ(n + m)' },
+          { kind: 'lesson', slug: 'strcmp', blurb: 'compara conteúdo em ordem lexicográfica.', tag: 'Θ(n)' },
+          { kind: 'lesson', slug: 'busca-string', blurb: 'procura caracteres e substrings.', tag: 'Θ(n·m)' },
+          { kind: 'lesson', slug: 'strtok', blurb: 'separa a string em tokens com delimitadores.', tag: 'Θ(n)' },
+        ],
+      },
+      {
         id: 'matematica',
         title: 'Matemática',
         entries: [
@@ -120,7 +133,6 @@ export const subjects: Subject[] = [
         entries: [
           { kind: 'lesson', slug: 'structs', blurb: 'agrupa campos em um novo tipo de dado.', tag: 'conceito' },
           { kind: 'lesson', slug: 'alocacao-memoria', blurb: 'reserva e libera memória no heap com malloc e free.', tag: 'conceito' },
-          { kind: 'lesson', slug: 'strings', blurb: 'texto como vetor de char terminado em \0.', tag: 'Θ(n)' },
           { kind: 'lesson', slug: 'arquivos', blurb: 'abre, escreve e fecha arquivos com FILE.', tag: 'conceito' },
           { kind: 'lesson', slug: 'vetores-matrizes', blurb: 'índices, linhas e colunas em C.', tag: 'Θ(n)' },
           { kind: 'lesson', slug: 'classes-vetores-matrizes', blurb: 'coleções como atributos de uma classe.', tag: 'conceito' },

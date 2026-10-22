@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -59,6 +59,29 @@ export interface MatrixState {
   colLabels?: string[];
 }
 
+/** One row of characters in the `strings` view. */
+export interface StringRow {
+  /** Row label, for example "origem", "destino" or "s". */
+  label: string;
+  cells: Cell[];
+}
+
+/** Arrow between two character cells (copy/concat operations). */
+export interface StringLink {
+  fromRow: number;
+  fromIndex: number;
+  toRow: number;
+  toIndex: number;
+}
+
+/** Payload for the `strings` view. */
+export interface StringState {
+  rows: StringRow[];
+  links?: StringLink[];
+  /** Optional result chip shown under the rows. */
+  result?: { label: string; value: string };
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -82,6 +105,8 @@ export interface Step {
   plot?: PlotState;
   /** matrix view */
   matrix?: MatrixState;
+  /** strings view */
+  strings?: StringState;
 }
 
 export interface Complexity {

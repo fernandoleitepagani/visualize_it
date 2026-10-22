@@ -151,7 +151,8 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
 
 6. **As views compartilham o mesmo motor.**
    `BarsView` lê `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`; `CellsView` lê `cells`; `NodesView`
-   lê `nodes` e `linked`. Não crie um quarto caminho de renderização sem uma decisão explícita.
+   lê `nodes` e `linked`; `PlotView` lê `plot`; `MatrixView` lê `matrix`; `StringsView` lê `strings`.
+   Não crie um novo caminho de renderização sem uma decisão explícita.
 
 7. **Textos de UI e conteúdo didático em pt-BR.**
    Código, nomes de símbolos e comentários técnicos seguem o padrão do arquivo em que você está
@@ -217,7 +218,7 @@ O que merece teste:
 - igualdade entre lições registradas e cards do catálogo;
 - playback (`play`, `pause`, `next`, `prev`, `reset`, fim da lista);
 - validação da entrada (inteiros, faixa, quantidade);
-- views (`BarsView`, `CellsView`, `NodesView`) com estados vazios e estados ativos;
+- views (`BarsView`, `CellsView`, `NodesView`, `PlotView`, `MatrixView`, `StringsView`) com estados vazios e ativos;
 - timeline do player, estado vazio (`0 / 0`) e tokenizer de código;
 - métricas de comparação, insights, atalhos e link de reportar problema;
 - rotas e 404.
