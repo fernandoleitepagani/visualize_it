@@ -1,6 +1,5 @@
 import type {
   Cell,
-  Complexity,
   Lesson,
   LessonOperationsGroup,
   MatrixState,
