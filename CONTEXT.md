@@ -7,7 +7,7 @@
 > Este documento descreve o estado atual do projeto, a arquitetura, os bugs conhecidos, as dívidas
 > técnicas e o roadmap. Ele deve ser atualizado junto com o código quando o estado mudar.
 
-**Última atualização:** 2026-10-21
+**Última atualização:** 2026-10-22
 
 ---
 
@@ -33,8 +33,9 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 |---|---|
 | Lições registradas | 39 (`src/content/lessons/index.ts`) |
 | Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
+| Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
-| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
+| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
 | Testes | 213 testes em 26 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
@@ -221,7 +222,7 @@ O guia completo de uso (temas, variáveis, acentos por matéria, componentes e a
 
 ### 4.5 Rotas e catálogo
 
-- `src/app/App.tsx` define as rotas: home, matéria, lição, teoria e playground.
+- `src/app/App.tsx` define as rotas: home, matéria, lição, teoria, playground, comparar e Vim.
 - `src/content/subjects.ts` é a fonte única das matérias, grupos e entradas do catálogo.
 - `src/content/catalog.ts` é um re-export de compatibilidade de `subjects.ts`.
 - `src/content/lessons/index.ts` registra as lições por slug.
@@ -232,7 +233,19 @@ contagem e estado na URL (`q`, `grupo`, `view`). A home lista apenas as três ma
 destaques. A busca do header abre um painel agrupado por matéria. O título dos cards de lição vem do
 próprio `Lesson`; `subjects.ts` guarda apenas slug, descrição curta e tag de complexidade.
 
-### 4.6 Conteúdo e código
+### 4.6 Seção Vim
+
+`/vim` e `/vim/desafios/:slug` são uma seção própria, **fora** do catálogo de matérias. O desenho
+segue o mesmo princípio das lições: o motor em `src/vim/keymap.ts` é puro (`reduce(state, key)`), não
+toca o DOM e é coberto por testes de tabela. `buffer`, `motions`, `operators`, `history` e `commands`
+são módulos puros reutilizados pelo editor. `challenges.ts` guarda as 12 missões e suas soluções de
+referência (executadas no teste), `cheatsheet.ts` guarda os comandos essenciais e `progress.ts`
+persiste o progresso em `localStorage` (`visualize-it:vim-progress`). O editor (`VimEditor`) usa um
+`textarea` invisível para IME/mobile, mantém o foco no buffer, expõe `role="application"` e anuncia
+modo/cursor/mensagem em uma statusline `aria-live`. `Tab` sai do editor e `prefers-reduced-motion`
+desliga o cursor piscante.
+
+### 4.7 Conteúdo e código
 
 O código exibido é escrito em blocos template e passa por `lines()` (`src/lib/lines.ts`), que faz
 `trim()` e separa por `\n`. Isso significa que o índice 0 é a primeira linha **após** o `trim`.
@@ -387,6 +400,7 @@ npm run build
 | 2026-10-21 | AEDS I somente em C; `Lesson.languages`, listagens parciais e linhas recalibradas | Remover ambiguidade Java/C nas lições introdutórias e evitar código não utilizado |
 | 2026-10-21 | Comparação determinística em `/comparar`, dicas/curiosidades em `content/insights.ts`, copiar/baixar código, atalhos com modal e link de reportar problema | Aproveitar ideias do SortVision sem copiar a arquitetura imperativa nem métricas de tempo de animação |
 | 2026-10-21 | 15 novos módulos de AEDS I: OOP (C++) e dados/memória (C), com `inputless` e `languages` | Cobrir os tópicos das notas sem duplicar a toolbar de entrada e mantendo uma única linguagem por módulo |
+| 2026-10-22 | Seção `/vim` com motor puro, 12 desafios e cheatsheet essencial, fora do catálogo de matérias | Ensinar Vim com prática real mantendo o mesmo contrato testável das lições e sem dependências novas |
 
 ---
 

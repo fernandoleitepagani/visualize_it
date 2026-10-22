@@ -99,6 +99,7 @@ src/
 ├── test/                    # setup do Vitest + helpers de render
 ├── theme.ts                 # shim de re-exportação (migração em andamento)
 ├── theme/tokens.ts          # fonte única dos tokens visuais + cssVariablesResolver
+├── vim/                     # treinador Vim: motor puro (keymap), desafios, cheatsheet e editor
 └── main.tsx
 
 docs/
@@ -165,6 +166,11 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
    `CodePanel` esconde o seletor quando há uma só língua. Nunca selecione uma língua que a lição
    não declara, e mantenha `step.line` dentro da listagem de cada língua. Módulos conceituais usam
    `inputless: true`.
+
+10. **O motor do Vim é puro.** `src/vim/keymap.ts` não toca no DOM, não usa tempo nem aleatoriedade;
+    o editor apenas desenha `VimState` e encaminha teclas. A seção `/vim` não entra em
+    `subjects.ts` — é ferramenta, não matéria. Toda missão nova exige solução de referência coberta
+    por `challenges.test.ts`, e o cheatsheet só lista comandos realmente suportados.
 
 ---
 

@@ -433,7 +433,26 @@ npm run build
 
 ---
 
-## 14. Referência rápida
+## 14. Seção Vim
+
+A seção `/vim` usa a identidade global da home (âmbar, papel quadriculado, mono), sem acento de
+matéria próprio.
+
+| Elemento | Regra |
+|---|---|
+| Painel do buffer | `Panel` com `label="buffer"`, `footer` de statusline; fundo `--viz-code-bg` |
+| Cursor normal | bloco âmbar com texto `--viz-accent-ink` |
+| Cursor insert | barra de 2 px âmbar; pisca com `vim-blink`, desligada por `prefers-reduced-motion` |
+| Seleção visual | `color-mix` do âmbar a 26%; linha inteira a 14% |
+| Busca | `--viz-purple` a 24% |
+| Foco | anel interno `--viz-accent-line` via `:focus-within` |
+| Teclas tocáveis | `Button` `variant="default"`, mono, visíveis abaixo de 62em ou em ponteiro grosso |
+
+Não crie uma paleta paralela: qualquer estado novo da seção deve reutilizar `--viz-*`. O texto do
+buffer é mono; rótulos e instruções seguem a tipografia do site. O conteúdo é pt-BR, os comandos Vim
+ficam em inglês (`NORMAL`, `INSERT`, `:w`, `:q`).
+
+## 15. Referência rápida
 
 ```ts
 import {
