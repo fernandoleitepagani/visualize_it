@@ -37,6 +37,8 @@ import { lesson as listaSequencial } from './lista-sequencial';
 import { lesson as mergesort } from './mergesort';
 import { lesson as pilhaEncadeada } from './pilha-encadeada';
 import { lesson as pilhaSequencial } from './pilha-sequencial';
+import { lesson as ponteirosBasico } from './ponteiros-basico';
+import { lesson as ponteirosDuplos } from './ponteiros-duplos';
 import { lesson as quicksort } from './quicksort';
 import { lesson as radix } from './radix';
 import { lesson as selecao } from './selecao';
@@ -54,6 +56,8 @@ export const lessons = {
   for: forLoop,
   while: whileLoop,
   'do-while': doWhile,
+  'ponteiros-basico': ponteirosBasico,
+  'ponteiros-duplos': ponteirosDuplos,
   aritmetica,
   oop: lessonOop,
   abstracao: lessonAbstracao,

@@ -20,6 +20,7 @@ const viewLabels: Record<ViewKind, string> = {
   plot: 'gráfico',
   strings: 'strings',
   matrix: 'matriz',
+  pointers: 'ponteiros',
 };
 
 export function LessonPage() {

@@ -34,6 +34,7 @@ import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { ShortcutsModal } from './ShortcutsModal';
 import { PlotView } from './PlotView';
+import { PointersView } from './PointersView';
 import { QuizPanel } from './QuizPanel';
 import { StringsView } from './StringsView';
 import { VarsPanel } from './VarsPanel';
@@ -46,6 +47,7 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
   if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
   if (lesson.view === 'strings') return <StringsView state={step?.strings} />;
+  if (lesson.view === 'pointers') return <PointersView state={step?.pointers} />;
   return <BarsView state={step} ids={ids} />;
 }
 

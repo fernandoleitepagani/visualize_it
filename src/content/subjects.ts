@@ -96,9 +96,21 @@ export const subjects: Subject[] = [
         entries: [
           {
             kind: 'lesson',
+            slug: 'ponteiros-basico',
+            blurb: 'endereço, & e * em memória.',
+            tag: 'Θ(1)',
+          },
+          {
+            kind: 'lesson',
             slug: 'aritmetica',
             blurb: 'operações utilizando ponteiros.',
             tag: 'Θ(n)',
+          },
+          {
+            kind: 'lesson',
+            slug: 'ponteiros-duplos',
+            blurb: 'um ponteiro que aponta para outro ponteiro.',
+            tag: 'Θ(1)',
           },
         ],
       },
