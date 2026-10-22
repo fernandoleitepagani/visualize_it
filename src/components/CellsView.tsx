@@ -86,8 +86,8 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
             >
               <Flex
                 gap={space.xs}
-                wrap="nowrap"
-                h={20}
+                wrap="wrap"
+                mih={20}
                 w="100%"
                 align="center"
                 justify="center"

@@ -7,7 +7,7 @@
 > Este documento descreve o estado atual do projeto, a arquitetura, os bugs conhecidos, as dívidas
 > técnicas e o roadmap. Ele deve ser atualizado junto com o código quando o estado mudar.
 
-**Última atualização:** 2026-10-21
+**Última atualização:** 2026-10-22
 
 ---
 
@@ -16,7 +16,7 @@
 O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de dados e análise de
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
-- uma estrutura animada (`bars`, `cells`, `nodes`, `plot` ou `strings`);
+- uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix` ou `strings`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -31,11 +31,12 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 46 (`src/content/lessons/index.ts`) |
-| Views | 5 (`bars`, `cells`, `nodes`, `plot`, `strings`) |
+| Lições registradas | 45 (`src/content/lessons/index.ts`) |
+| Views | 6 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`) |
+| Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
-| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
-| Testes | 260 testes em 28 arquivos, passando |
+| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
+| Testes | 405 testes em 40 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -48,7 +49,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
   (view `strings`); depois `structs`, `alocacao-memoria`, `arquivos`, `vetores-matrizes`,
   `classes-vetores-matrizes` (C) e, por último, `oop`, `abstracao`, `classes`, `construtores`,
   `encapsulamento`, `heranca`, `polimorfismo`, `metodos-acessores`, `excecoes` (C++).
-- **AEDS II (18):**
+- **AEDS II (19):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
     `heapsort`, `counting`, `bucket`, `radix`.
   - **Busca:** `busca-sequencial`, `busca-binaria`.
@@ -68,7 +69,13 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   painéis, deck de controles com ação primária destacada, toolbar de entrada compacta, grid 56/44 e
   correção do `ComplexityTable` para estabilidade indefinida;
 - quiz no player, URL compartilhável (`arr`/`step`), entrada persistida por lição, playground,
-  alternância de tema claro/escuro, view `plot` e view `strings` (grupo String em AEDS I).
+  alternância de tema claro/escuro, view `plot` e view `strings` (grupo String em AEDS I);
+- view bidimensional `matrix` com realce cruzado de coordenadas $(i, j)$ e suporte a matrizes 2D reais
+  em `vetores-matrizes` e `classes-vetores-matrizes` (Issue #49);
+- separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
+  `Vetor (1D)` e `Matriz (2D)`, 4 operações (`preencher`, `limpar`, `buscar`, `somar`), entradas dinâmicas
+  (vetor proporcional à quantidade de valores; matriz com campos de linha empilhados até 10x10) e sincronização
+  completa com o código C e o `VarsPanel`.
 
 ---
 
@@ -113,7 +120,7 @@ export interface Lesson {
   title: string;
   subtitle?: string;
   description?: string;
-  view?: ViewKind;                   // bars | cells | nodes | plot | strings; padrão: bars
+  view?: ViewKind;                   // bars | cells | nodes | plot | matrix | strings; padrão: bars
   linked?: 'singly' | 'doubly';      // só para nodes
   panelLabel?: string;
   initial?: number[];                // padrão: DEFAULT_INPUT
@@ -134,6 +141,7 @@ Cada `Step` contém:
 - `cells?`: células de estruturas em vetor;
 - `nodes?`: nós de estruturas encadeadas;
 - `plot?`: pontos e total acumulado do somatório;
+- `matrix?`: grade 2D com coordenadas ativas e rótulos de linha/coluna;
 - `strings?`: fileiras de caracteres, ponteiros nas células, setas de cópia/concatenação e resultado.
 
 `steps()` não toca no DOM e pode ser testada sem navegador. O player só percorre a lista pronta.
@@ -147,7 +155,7 @@ LessonPage (breadcrumb + LessonPager)
        ├─ usePlayback(steps, { initialIndex })
        ├─ toolbar de entrada (valores, Aplicar, Sortear, presets)
        ├─ useMemo: assignElementIds(steps)  // só para bars
-       ├─ Canvas → BarsView | CellsView | NodesView | PlotView | StringsView
+       ├─ Canvas → BarsView | CellsView | NodesView | PlotView | MatrixView | StringsView
        ├─ CodePanel (Java/C, iterativo/recursivo, linha ativa com rolagem automática)
        ├─ PlayerControls abaixo do grid (timeline de passos, transporte, progresso,
        │   velocidade, quiz, copiar link)
@@ -194,9 +202,11 @@ conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o te
 | `cells` | vetores, pilhas, filas, listas e laços | `cells: [{ val, labels, state }]` |
 | `nodes` | listas/pilhas/filas encadeadas | `nodes: [{ id, val, prev, next, labels, state }]` |
 | `plot` | somatório (`soma`) | `plot: { points, current, total }` |
+| `matrix` | vetores e matrizes 2D | `matrix: { rows, cols, grid, activeRow?, activeCol?, rowLabels?, colLabels? }` |
 | `strings` | funções de string em C | `strings: { rows: [{ label, cells }], links?, result? }` |
 
 As views são apresentacionais: não calculam o algoritmo, apenas desenham o `Step` atual.
+`MatrixView` desenha a grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos;
 `StringsView` desenha fileiras de caracteres com índices, ponteiros nas células, terminador `\0`
 destacado e setas SVG para cópia/concatenação; a legenda e a descrição do passo continuam sendo a
 fonte textual do estado.
@@ -228,18 +238,33 @@ O guia completo de uso (temas, variáveis, acentos por matéria, componentes e a
 
 ### 4.5 Rotas e catálogo
 
-- `src/app/App.tsx` define as rotas: home, matéria, lição, teoria e playground.
+- `src/app/App.tsx` define as rotas: home, matéria, lição, teoria, playground, comparar e Vim.
 - `src/content/subjects.ts` é a fonte única das matérias, grupos e entradas do catálogo.
 - `src/content/catalog.ts` é um re-export de compatibilidade de `subjects.ts`.
 - `src/content/lessons/index.ts` registra as lições por slug.
 - `src/content/theory/index.ts` registra os artigos de teoria.
 
 Cada matéria tem uma rota `/materias/:subjectId` com busca local, filtros por grupo e por view,
-contagem e estado na URL (`q`, `grupo`, `view`). A home lista apenas as três matérias e alguns
-destaques. A busca do header abre um painel agrupado por matéria. O título dos cards de lição vem do
+contagem e estado na URL (`q`, `grupo`, `view`). A home lista as três matérias, três frentes de
+aprendizado, destaques, um recorte de código e as duas ferramentas (Vim e Playground). A busca do
+header abre um painel agrupado por matéria. A navegação primária é `Início`, menu `Matérias`,
+`Vim` e `Playground`; no mobile, o drawer repete os mesmos grupos com rótulos e o acento de cada
+matéria. O título dos cards de lição vem do
 próprio `Lesson`; `subjects.ts` guarda apenas slug, descrição curta e tag de complexidade.
 
-### 4.6 Conteúdo e código
+### 4.6 Seção Vim
+
+`/vim` e `/vim/desafios/:slug` são uma seção própria, **fora** do catálogo de matérias. O desenho
+segue o mesmo princípio das lições: o motor em `src/vim/keymap.ts` é puro (`reduce(state, key)`), não
+toca o DOM e é coberto por testes de tabela. `buffer`, `motions`, `operators`, `history` e `commands`
+são módulos puros reutilizados pelo editor. `challenges.ts` guarda as 12 missões e suas soluções de
+referência (executadas no teste), `cheatsheet.ts` guarda os comandos essenciais e `progress.ts`
+persiste o progresso em `localStorage` (`visualize-it:vim-progress`). O editor (`VimEditor`) usa um
+`textarea` invisível para IME/mobile, mantém o foco no buffer, expõe `role="application"` e anuncia
+modo/cursor/mensagem em uma statusline `aria-live`. `Tab` sai do editor e `prefers-reduced-motion`
+desliga o cursor piscante.
+
+### 4.7 Conteúdo e código
 
 O código exibido é escrito em blocos template e passa por `lines()` (`src/lib/lines.ts`), que faz
 `trim()` e separa por `\n`. Isso significa que o índice 0 é a primeira linha **após** o `trim`.
@@ -351,7 +376,7 @@ npm run build
 1. Abra `/` e confira os três cards de matéria e os destaques.
 2. Abra `/materias/aeds-ii`, busque, filtre por grupo/view e confira o estado na URL.
 3. Abra uma lição de cada view: `selecao` (bars), `pilha-sequencial` (cells), `lista-encadeada`
-   (nodes), `soma` (plot) e `strlen` (strings).
+   (nodes), `soma` (plot), `vetores-matrizes` (matrix) e `strlen` (strings).
 4. Use “Executar”, “Pausar”, “Anterior”, “Próximo”, “Recomeçar”, o slider de passo e a velocidade.
 5. Alterne Java/C e confira o destaque da linha.
 6. Aplique uma entrada válida e uma inválida; teste também “Sortear” e os presets.
@@ -359,7 +384,7 @@ npm run build
 8. Abra `/teoria/complexidade` e `/teoria/inducao`.
 9. Use a busca do header e confira o agrupamento por matéria.
 10. Abra `/playground` e execute o sandbox.
-11. Alterne o tema claro/escuro e confira as cinco views (inclusive `soma`, view `plot`, e `strlen`, view `strings`).
+11. Alterne o tema claro/escuro e confira as seis views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, e `strlen`, view `strings`).
 12. Ative o quiz em uma lição de `bars` e responda uma pergunta.
 13. Abra uma URL inexistente e confira o 404.
 
@@ -395,6 +420,8 @@ npm run build
 | 2026-10-21 | Comparação determinística em `/comparar`, dicas/curiosidades em `content/insights.ts`, copiar/baixar código, atalhos com modal e link de reportar problema | Aproveitar ideias do SortVision sem copiar a arquitetura imperativa nem métricas de tempo de animação |
 | 2026-10-21 | 15 novos módulos de AEDS I: OOP (C++) e dados/memória (C), com `inputless` e `languages` | Cobrir os tópicos das notas sem duplicar a toolbar de entrada e mantendo uma única linguagem por módulo |
 | 2026-10-21 | Grupo **String** com 7 páginas e view `strings` (fileiras, ponteiros, terminador e setas) | Ensinar as funções de `<string.h>` com o código em C e uma animação fiel à operação de cópia/concatenação |
+| 2026-10-22 | Separação interativa de vetores e matrizes em `vetores-matrizes` com entradas dinâmicas e 4 operações (preencher, limpar, buscar, somar) | Facilitar a compreensão de vetores 1D e matrizes 2D isoladamente com código C dedicado e dimensionamento flexível até 10x10 (Issue #51) |
+| 2026-10-22 | Seção `/vim` com motor puro, 12 desafios e cheatsheet essencial, fora do catálogo de matérias | Ensinar Vim com prática real mantendo o mesmo contrato testável das lições e sem dependências novas |
 
 ---
 

@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'strings';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -46,6 +46,17 @@ export interface PlotState {
   current: number;
   /** Accumulated total up to and including `current`. */
   total: number;
+}
+
+/** Payload for the `matrix` view (2D array/grid structures). */
+export interface MatrixState {
+  rows: number;
+  cols: number;
+  grid: Cell[][];
+  activeRow?: number;
+  activeCol?: number;
+  rowLabels?: string[];
+  colLabels?: string[];
 }
 
 /** One row of characters in the `strings` view. */
@@ -92,6 +103,8 @@ export interface Step {
   nodes?: Node[];
   /** plot view */
   plot?: PlotState;
+  /** matrix view */
+  matrix?: MatrixState;
   /** strings view */
   strings?: StringState;
 }
@@ -107,6 +120,29 @@ export interface Complexity {
 export interface ComplexityAnalysis {
   comparisons?: string;
   movements?: string;
+}
+
+export type StructureType = 'vetor' | 'matriz';
+export type ArrayOperationType = 'preencher' | 'limpar' | 'buscar' | 'somar';
+
+export interface LessonOperationConfig {
+  id: ArrayOperationType;
+  label: string;
+  panelLabel?: string;
+  code: (input: number[] | number[][]) => CodeListing;
+  complexity?: Complexity;
+  steps: (input: number[] | number[][]) => Step[];
+}
+
+export interface LessonStructureConfig {
+  id: StructureType;
+  label: string;
+  defaultInput: number[] | number[][];
+  operations: LessonOperationConfig[];
+}
+
+export interface LessonOperationsGroup {
+  structures: LessonStructureConfig[];
 }
 
 export interface Lesson {
@@ -140,6 +176,11 @@ export interface Lesson {
    * extra switch next to the language picker.
    */
   codeVariants?: Partial<Record<CodeApproach, CodeListing>>;
+  /**
+   * For lessons that offer multiple data structures and operations
+   * (e.g. vetor vs matriz with preencher, limpar, buscar, somar).
+   */
+  operationsGroup?: LessonOperationsGroup;
   /**
    * `approach` lets a lesson pick line numbers for the listing being shown.
    * Lessons without variants can ignore it.

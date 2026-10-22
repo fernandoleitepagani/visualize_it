@@ -51,6 +51,7 @@ Guia visual, temas, tokens e padrões de UI: **[docs/ui-guidelines.md](docs/ui-g
 │   ├── test/                    # helpers de render + setup do Vitest
 │   ├── theme/tokens.ts          # fonte única de tokens + resolver dos temas
 │   ├── theme.ts                 # shim de re-exportação de @/theme
+│   ├── vim/                     # treinador Vim: motor puro (keymap), desafios e editor
 │   └── main.tsx
 ├── docs/ui-guidelines.md        # guia de UI, temas e tokens
 ├── index.html
@@ -246,6 +247,11 @@ com o mesmo player. O código roda em um **Web Worker isolado** (sem acesso ao D
 **Comparar** — em `/comparar` você usa a mesma entrada em vários algoritmos de ordenação e compara
 passos, eventos de comparação e trocas. A contagem vem de `Step[]`; não é tempo de animação. Bucket
 Sort fica de fora porque usa valores em `[0, 1)`.
+
+**Vim** — em `/vim` você pratica em um buffer real: modos normal/insert/visual, movimentos,
+operadores, busca e comandos `:`. São 12 desafios com solução de referência testada e um cheatsheet
+essencial filtrável. O motor é puro (`src/vim/keymap.ts`), sem dependências novas, e o progresso fica
+em `localStorage`. Cada desafio também tem URL própria (`/vim/desafios/<slug>`).
 
 **Código e atalhos** — o painel de código permite copiar e baixar a listagem atual; `lang` e
 `approach` entram na URL compartilhável. Os módulos de AEDS I usam uma única linguagem: C ou C++,

@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Group, Paper, Stack, Tabs, Text, TextInput } from '@mantine/core';
+import { Box, Button, Group, Paper, SegmentedControl, Stack, Tabs, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
-import type { CodeApproach, CodeLang, Lesson, Step } from '@/engine/types';
+import type {
+  ArrayOperationType,
+  CodeApproach,
+  CodeLang,
+  Lesson,
+  Step,
+  StructureType,
+} from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import {
@@ -21,6 +28,7 @@ import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
 import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
+import { MatrixView } from './MatrixView';
 import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
@@ -34,10 +42,26 @@ import { BarsIcon, CheckIcon, GaugeIcon, InfoIcon, LightbulbIcon, ShuffleIcon, S
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
   if (lesson.view === 'cells') return <CellsView cells={step?.cells} />;
+  if (lesson.view === 'matrix') return <MatrixView matrix={step?.matrix} />;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
   if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
   if (lesson.view === 'strings') return <StringsView state={step?.strings} />;
   return <BarsView state={step} ids={ids} />;
+}
+
+function parseMatrizParam(raw: string | null): number[][] | null {
+  if (!raw) return null;
+  const rows = raw
+    .split(';')
+    .map((r) => parseInput(r))
+    .filter((r): r is number[] => r !== null && r.length > 0);
+  if (rows.length === 0) return null;
+  const maxCols = Math.min(10, Math.max(...rows.map((r) => r.length)));
+  return rows.slice(0, 10).map((r) => {
+    const pad = [...r];
+    while (pad.length < maxCols) pad.push(0);
+    return pad.slice(0, maxCols);
+  });
 }
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
@@ -54,6 +78,49 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const requestedLang = searchParams.get('lang') as CodeLang | null;
   const initialLang: CodeLang =
     requestedLang && languages.includes(requestedLang) ? requestedLang : languages[0];
+
+  // Operations group support (vetores e matrizes)
+  const isOperationsLesson = Boolean(lesson.operationsGroup);
+  const structures = useMemo(
+    () => lesson.operationsGroup?.structures ?? [],
+    [lesson.operationsGroup],
+  );
+  const initialStructureId: StructureType =
+    (searchParams.get('estrutura') as StructureType) === 'matriz' ? 'matriz' : 'vetor';
+  const initialOperationId: ArrayOperationType =
+    (searchParams.get('operacao') as ArrayOperationType) || 'preencher';
+
+  const [selectedStructure, setSelectedStructure] = useState<StructureType>(initialStructureId);
+  const [selectedOperation, setSelectedOperation] = useState<ArrayOperationType>(initialOperationId);
+
+  const currentStructure =
+    structures.find((s) => s.id === selectedStructure) ?? structures[0];
+  const currentOperation =
+    currentStructure?.operations.find((op) => op.id === selectedOperation) ??
+    currentStructure?.operations[0];
+
+  // Vetor input state for operationsGroup
+  const [vetorInput, setVetorInput] = useState<number[]>(() => {
+    const fromUrl = parseInput(searchParams.get('arr') ?? '');
+    return fromUrl ?? (currentStructure?.defaultInput as number[]) ?? [10, 20, 30, 40, 50];
+  });
+  const [vetorInputValue, setVetorInputValue] = useState(() => vetorInput.join(', '));
+  const [vetorError, setVetorError] = useState('');
+
+  // Matriz input state for operationsGroup
+  const [matrizInput, setMatrizInput] = useState<number[][]>(() => {
+    const fromUrl = parseMatrizParam(searchParams.get('matriz'));
+    return (
+      fromUrl ?? [
+        [1, 2, 3],
+        [4, 5, 6],
+      ]
+    );
+  });
+  const [matrizRows, setMatrizRows] = useState<string[]>(() =>
+    matrizInput.map((row) => row.join(', ')),
+  );
+  const [matrizError, setMatrizError] = useState('');
 
   // Read the URL once: it wins over stored/local state on first load.
   const [initial] = useState(() => {
@@ -84,7 +151,55 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   // The ordering presets are integer-only; unit-interval lessons rely on "Sortear".
   const canPreset = !singleValue && inputFormat === 'integers';
 
-  const steps = useMemo(() => lesson.steps(input, approach), [lesson, input, approach]);
+  const steps = useMemo(() => {
+    if (isOperationsLesson && currentOperation) {
+      if (selectedStructure === 'matriz') {
+        return currentOperation.steps(matrizInput);
+      }
+      return currentOperation.steps(vetorInput);
+    }
+    return lesson.steps(input, approach);
+  }, [
+    isOperationsLesson,
+    currentOperation,
+    selectedStructure,
+    matrizInput,
+    vetorInput,
+    lesson,
+    input,
+    approach,
+  ]);
+
+  const currentCode = useMemo(() => {
+    if (isOperationsLesson && currentOperation) {
+      const listing =
+        selectedStructure === 'matriz'
+          ? currentOperation.code(matrizInput)
+          : currentOperation.code(vetorInput);
+      return listing[lang] ?? [];
+    }
+    return getLessonCode(lesson, lang, approach);
+  }, [
+    isOperationsLesson,
+    currentOperation,
+    selectedStructure,
+    matrizInput,
+    vetorInput,
+    lesson,
+    lang,
+    approach,
+  ]);
+
+  const currentComplexity =
+    isOperationsLesson && currentOperation?.complexity
+      ? currentOperation.complexity
+      : lesson.complexity;
+
+  const panelLabel =
+    isOperationsLesson && currentOperation?.panelLabel
+      ? currentOperation.panelLabel
+      : lesson.panelLabel;
+
   const quizSupported = (lesson.view ?? 'bars') === 'bars';
   const playback = usePlayback(steps, { initialIndex: initial.index });
   const step = playback.step ?? steps[0];
@@ -102,7 +217,19 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     setSearchParams(
       (previous) => {
         const next = new URLSearchParams(previous);
-        next.set('arr', input.join(','));
+        if (isOperationsLesson) {
+          next.set('estrutura', selectedStructure);
+          next.set('operacao', selectedOperation);
+          if (selectedStructure === 'vetor') {
+            next.set('arr', vetorInput.join(','));
+            next.delete('matriz');
+          } else {
+            next.set('matriz', matrizInput.map((r) => r.join(',')).join(';'));
+            next.delete('arr');
+          }
+        } else {
+          next.set('arr', input.join(','));
+        }
         next.set('step', String(playback.index + 1));
         next.set('lang', lang);
         if (hasApproaches) next.set('approach', approach);
@@ -111,7 +238,96 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       },
       { replace: true },
     );
-  }, [approach, hasApproaches, input, lang, playback.index, setSearchParams]);
+  }, [
+    approach,
+    hasApproaches,
+    input,
+    isOperationsLesson,
+    lang,
+    matrizInput,
+    playback.index,
+    selectedOperation,
+    selectedStructure,
+    setSearchParams,
+    vetorInput,
+  ]);
+
+  const applyVetor = useCallback(() => {
+    const parsed = parseInput(vetorInputValue);
+    if (!parsed || parsed.length < 1 || parsed.length > 10) {
+      setVetorError('Use entre 1 e 10 números inteiros separados por vírgula.');
+      return;
+    }
+    if (parsed.some((val) => !Number.isInteger(val))) {
+      setVetorError('Use apenas números inteiros.');
+      return;
+    }
+    setVetorError('');
+    setVetorInput(parsed);
+    setVetorInputValue(parsed.join(', '));
+    storeInput(`${lesson.id}-vetor`, parsed);
+    goTo(0);
+  }, [goTo, lesson.id, vetorInputValue]);
+
+  const randomizeVetor = useCallback(() => {
+    const len = 3 + Math.floor(Math.random() * 5); // 3 to 7
+    const vals = Array.from({ length: len }, () => 1 + Math.floor(Math.random() * 60));
+    setVetorError('');
+    setVetorInput(vals);
+    setVetorInputValue(vals.join(', '));
+    storeInput(`${lesson.id}-vetor`, vals);
+    goTo(0);
+  }, [goTo, lesson.id]);
+
+  const applyMatriz = useCallback(() => {
+    if (matrizRows.length < 1 || matrizRows.length > 10) {
+      setMatrizError('A matriz deve ter entre 1 e 10 linhas.');
+      return;
+    }
+    const parsedRows = matrizRows.map((r) => parseInput(r));
+    if (parsedRows.some((r) => !r || r.length === 0)) {
+      setMatrizError('Todas as linhas devem conter números inteiros separados por vírgula.');
+      return;
+    }
+    const valid = parsedRows as number[][];
+    if (valid.some((r) => r.length > 10)) {
+      setMatrizError('Cada linha pode ter no máximo 10 colunas.');
+      return;
+    }
+    if (valid.some((r) => r.some((v) => !Number.isInteger(v)))) {
+      setMatrizError('Use apenas números inteiros.');
+      return;
+    }
+    const maxCols = Math.min(10, Math.max(...valid.map((r) => r.length)));
+    const normalized = valid.map((r) => {
+      const pad = [...r];
+      while (pad.length < maxCols) pad.push(0);
+      return pad.slice(0, maxCols);
+    });
+
+    setMatrizError('');
+    setMatrizInput(normalized);
+    setMatrizRows(normalized.map((r) => r.join(', ')));
+    goTo(0);
+  }, [goTo, matrizRows]);
+
+  const randomizeMatriz = useCallback(() => {
+    const numRows = 2 + Math.floor(Math.random() * 2); // 2 or 3
+    const numCols = 2 + Math.floor(Math.random() * 2); // 2 or 3
+    let nextVal = 1;
+    const nextMat: number[][] = [];
+    for (let r = 0; r < numRows; r++) {
+      const row: number[] = [];
+      for (let c = 0; c < numCols; c++) {
+        row.push(nextVal++);
+      }
+      nextMat.push(row);
+    }
+    setMatrizError('');
+    setMatrizInput(nextMat);
+    setMatrizRows(nextMat.map((r) => r.join(', ')));
+    goTo(0);
+  }, [goTo]);
 
   const setValues = useCallback(
     (values: number[]) => {
@@ -211,7 +427,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         goTo(total - 1);
       } else if (event.key === 'n' || event.key === 'N') {
         event.preventDefault();
-        randomize();
+        if (isOperationsLesson) {
+          if (selectedStructure === 'vetor') randomizeVetor();
+          else randomizeMatriz();
+        } else {
+          randomize();
+        }
       } else if (event.key === '+' || event.key === '=') {
         event.preventDefault();
         setSpeedMs(nextSpeed(speedMs));
@@ -225,11 +446,27 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [next, prev, toggle, reset, pause, goTo, total, randomize, setSpeedMs, speedMs, helpOpen]);
+  }, [
+    next,
+    prev,
+    toggle,
+    reset,
+    pause,
+    goTo,
+    total,
+    randomize,
+    setSpeedMs,
+    speedMs,
+    helpOpen,
+    isOperationsLesson,
+    selectedStructure,
+    randomizeVetor,
+    randomizeMatriz,
+  ]);
 
   const vizPanel = (
     <Panel
-      label={lesson.panelLabel ?? 'visualização'}
+      label={panelLabel ?? 'visualização'}
       icon={<BarsIcon size={13} />}
       aside={
         <Group gap={6} wrap="nowrap" align="center" h={22}>
@@ -303,7 +540,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   const codePanel = (
     <CodePanel
-      code={getLessonCode(lesson, lang, approach)}
+      code={currentCode}
       activeLine={step?.line ?? 0}
       lang={lang}
       languages={languages}
@@ -362,7 +599,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       </Panel>
       <Panel label="complexidade" icon={<GaugeIcon size={13} />}>
         <Box p="md" style={{ overflowX: 'auto' }}>
-          <ComplexityTable complexity={lesson.complexity} />
+          <ComplexityTable complexity={currentComplexity} />
         </Box>
       </Panel>
     </Box>
@@ -391,87 +628,276 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   return (
     <>
-      {!lesson.inputless ? (
-      <Paper
-        withBorder
-        radius="xl"
-        px="md"
-        py={10}
-        mt="sm"
-        style={{
-          borderColor: vizVar.line,
-          background: 'color-mix(in srgb, var(--viz-panel) 78%, transparent)',
-        }}
-      >
-        <Box
-          component="form"
-          className="lesson-toolbar-row"
-          onSubmit={(event) => {
-            event.preventDefault();
-            apply();
+      {isOperationsLesson ? (
+        <Paper
+          withBorder
+          radius="xl"
+          px="md"
+          py="md"
+          mt="sm"
+          style={{
+            borderColor: vizVar.line,
+            background: 'color-mix(in srgb, var(--viz-panel) 78%, transparent)',
           }}
         >
-          <TextInput
-            aria-label={singleValue ? 'valor de n' : 'valores'}
-            placeholder={singleValue ? 'ex: 5' : 'ex: 45, 12, 85, 32'}
-            leftSection={
-              <Text fz={font.micro} fw={600} c="dimmed">
-                {singleValue ? 'n =' : 'vetor'}
-              </Text>
-            }
-            leftSectionWidth={singleValue ? 42 : 54}
-            value={inputValue}
-            onChange={(event) => setInputValue(event.currentTarget.value)}
-            error={error || undefined}
-            size="sm"
-            className="lesson-input"
-            style={{ flex: '1 1 220px', maxWidth: 320 }}
-          />
-          <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
-            Aplicar
-          </Button>
-          <Button
-            type="button"
-            variant="subtle"
-            size="sm"
-            onClick={randomize}
-            aria-keyshortcuts="N"
-            leftSection={<ShuffleIcon size={14} />}
-          >
-            Sortear
-          </Button>
-          {canPreset ? (
-            <Group className="lesson-presets" gap={6} wrap="wrap">
-              <Text
-                visibleFrom="sm"
-                fz={font.micro}
-                fw={600}
-                tt="uppercase"
-                c="dimmed"
-                style={{ letterSpacing: '0.1em' }}
-              >
-                presets
-              </Text>
-              {[
-                ['ordered', 'Ordenado'],
-                ['reversed', 'Invertido'],
-                ['repeated', 'Repetido'],
-              ].map(([kind, label]) => (
-                <Button
-                  key={kind}
-                  type="button"
-                  variant="default"
-                  size="compact-sm"
-                  radius="pill"
-                  onClick={() => applyPreset(kind as 'ordered' | 'reversed' | 'repeated')}
-                >
-                  {label}
-                </Button>
-              ))}
+          <Stack gap="md">
+            <Group justify="space-between" align="center" wrap="wrap" gap="md">
+              <Group gap="xs" align="center">
+                <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+                  Estrutura
+                </Text>
+                <SegmentedControl
+                  size="sm"
+                  radius="md"
+                  value={selectedStructure}
+                  onChange={(val) => {
+                    setSelectedStructure(val as StructureType);
+                    goTo(0);
+                  }}
+                  data={[
+                    { label: 'Vetor (1D)', value: 'vetor' },
+                    { label: 'Matriz (2D)', value: 'matriz' },
+                  ]}
+                />
+              </Group>
+
+              <Group gap="xs" align="center">
+                <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+                  Operação
+                </Text>
+                <SegmentedControl
+                  size="sm"
+                  radius="md"
+                  value={selectedOperation}
+                  onChange={(val) => {
+                    setSelectedOperation(val as ArrayOperationType);
+                    goTo(0);
+                  }}
+                  data={[
+                    { label: 'Preencher', value: 'preencher' },
+                    { label: 'Limpar', value: 'limpar' },
+                    { label: 'Buscar', value: 'buscar' },
+                    { label: 'Somar', value: 'somar' },
+                  ]}
+                />
+              </Group>
             </Group>
-          ) : null}
-        </Box>
-      </Paper>
+
+            {selectedStructure === 'vetor' ? (
+              <Box
+                component="form"
+                className="lesson-toolbar-row"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  applyVetor();
+                }}
+              >
+                <TextInput
+                  aria-label="valores do vetor"
+                  placeholder="ex: 10, 20, 30, 40, 50 (máx 10)"
+                  leftSection={
+                    <Text fz={font.micro} fw={600} c="dimmed">
+                      vetor =
+                    </Text>
+                  }
+                  leftSectionWidth={60}
+                  value={vetorInputValue}
+                  onChange={(event) => setVetorInputValue(event.currentTarget.value)}
+                  error={vetorError || undefined}
+                  size="sm"
+                  className="lesson-input"
+                  style={{ flex: '1 1 240px', maxWidth: 360 }}
+                />
+                <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
+                  Aplicar
+                </Button>
+                <Button
+                  type="button"
+                  variant="subtle"
+                  size="sm"
+                  onClick={randomizeVetor}
+                  aria-keyshortcuts="N"
+                  leftSection={<ShuffleIcon size={14} />}
+                >
+                  Sortear
+                </Button>
+                <Text fz={font.micro} c="dimmed">
+                  {vetorInput.length} {vetorInput.length === 1 ? 'elemento' : 'elementos'} (máx 10)
+                </Text>
+              </Box>
+            ) : (
+              <Box
+                component="form"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  applyMatriz();
+                }}
+              >
+                <Stack gap="xs">
+                  <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+                    Linhas da matriz (máx 10x10)
+                  </Text>
+                  {matrizRows.map((rowStr, rIdx) => (
+                    <TextInput
+                      key={rIdx}
+                      aria-label={`valores da linha ${rIdx}`}
+                      placeholder="ex: 1, 2, 3"
+                      leftSection={
+                        <Text fz={font.micro} fw={600} c="dimmed">
+                          Linha {rIdx} =
+                        </Text>
+                      }
+                      leftSectionWidth={76}
+                      value={rowStr}
+                      onChange={(event) => {
+                        const next = [...matrizRows];
+                        next[rIdx] = event.currentTarget.value;
+                        setMatrizRows(next);
+                      }}
+                      size="sm"
+                      style={{ maxWidth: 360 }}
+                    />
+                  ))}
+
+                  {matrizError ? (
+                    <Text fz="xs" c="red">
+                      {matrizError}
+                    </Text>
+                  ) : null}
+
+                  <Group gap="xs" mt={4} wrap="wrap">
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="xs"
+                      disabled={matrizRows.length >= 10}
+                      onClick={() => {
+                        if (matrizRows.length < 10) {
+                          const numCols = parseInput(matrizRows[0] ?? '')?.length || 3;
+                          const nextVal = matrizRows.length * numCols + 1;
+                          const newRow = Array.from({ length: numCols }, (_, i) => nextVal + i).join(', ');
+                          setMatrizRows([...matrizRows, newRow]);
+                        }
+                      }}
+                    >
+                      + Linha
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="xs"
+                      disabled={matrizRows.length <= 1}
+                      onClick={() => {
+                        if (matrizRows.length > 1) {
+                          setMatrizRows(matrizRows.slice(0, -1));
+                        }
+                      }}
+                    >
+                      - Linha
+                    </Button>
+                    <Button type="submit" variant="default" size="xs" leftSection={<CheckIcon size={13} />}>
+                      Aplicar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="subtle"
+                      size="xs"
+                      onClick={randomizeMatriz}
+                      aria-keyshortcuts="N"
+                      leftSection={<ShuffleIcon size={13} />}
+                    >
+                      Sortear
+                    </Button>
+                    <Text fz={font.micro} c="dimmed">
+                      {matrizInput.length}x{matrizInput[0]?.length ?? 0} ({matrizInput.length * (matrizInput[0]?.length ?? 0)} elementos)
+                    </Text>
+                  </Group>
+                </Stack>
+              </Box>
+            )}
+          </Stack>
+        </Paper>
+      ) : !lesson.inputless ? (
+        <Paper
+          withBorder
+          radius="xl"
+          px="md"
+          py={10}
+          mt="sm"
+          style={{
+            borderColor: vizVar.line,
+            background: 'color-mix(in srgb, var(--viz-panel) 78%, transparent)',
+          }}
+        >
+          <Box
+            component="form"
+            className="lesson-toolbar-row"
+            onSubmit={(event) => {
+              event.preventDefault();
+              apply();
+            }}
+          >
+            <TextInput
+              aria-label={singleValue ? 'valor de n' : 'valores'}
+              placeholder={singleValue ? 'ex: 5' : 'ex: 45, 12, 85, 32'}
+              leftSection={
+                <Text fz={font.micro} fw={600} c="dimmed">
+                  {singleValue ? 'n =' : 'vetor'}
+                </Text>
+              }
+              leftSectionWidth={singleValue ? 42 : 54}
+              value={inputValue}
+              onChange={(event) => setInputValue(event.currentTarget.value)}
+              error={error || undefined}
+              size="sm"
+              className="lesson-input"
+              style={{ flex: '1 1 220px', maxWidth: 320 }}
+            />
+            <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
+              Aplicar
+            </Button>
+            <Button
+              type="button"
+              variant="subtle"
+              size="sm"
+              onClick={randomize}
+              aria-keyshortcuts="N"
+              leftSection={<ShuffleIcon size={14} />}
+            >
+              Sortear
+            </Button>
+            {canPreset ? (
+              <Group className="lesson-presets" gap={6} wrap="wrap">
+                <Text
+                  visibleFrom="sm"
+                  fz={font.micro}
+                  fw={600}
+                  tt="uppercase"
+                  c="dimmed"
+                  style={{ letterSpacing: '0.1em' }}
+                >
+                  presets
+                </Text>
+                {[
+                  ['ordered', 'Ordenado'],
+                  ['reversed', 'Invertido'],
+                  ['repeated', 'Repetido'],
+                ].map(([kind, label]) => (
+                  <Button
+                    key={kind}
+                    type="button"
+                    variant="default"
+                    size="compact-sm"
+                    radius="pill"
+                    onClick={() => applyPreset(kind as 'ordered' | 'reversed' | 'repeated')}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </Group>
+            ) : null}
+          </Box>
+        </Paper>
       ) : null}
 
       {isDesktop ? (

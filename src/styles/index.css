@@ -146,6 +146,13 @@ body::before {
   width: 12px;
 }
 
+.nav-menu-trigger {
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .mantine-Drawer-body .nav-link {
   width: 100%;
   justify-content: flex-start;
@@ -899,5 +906,335 @@ body::before {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Vim trainer ------------------------------------------------------------- */
+
+.vim-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.86fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 62em) {
+  .vim-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.vim-editor {
+  position: relative;
+  flex: 1;
+  min-height: 320px;
+}
+
+.vim-editor:focus-within {
+  box-shadow: inset 0 0 0 1px var(--viz-accent-line);
+}
+
+.vim-editor[data-mode='insert']:focus-within {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--viz-purple) 55%, transparent);
+}
+
+.vim-surface {
+  overflow: auto;
+  padding: 14px 16px;
+  min-height: 320px;
+  max-height: 440px;
+  background: var(--viz-code-bg);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--viz-code-ink);
+}
+
+.vim-line {
+  display: flex;
+  white-space: pre;
+  min-height: 1.65em;
+  border-radius: 4px;
+  scroll-margin-block: 24px;
+}
+
+.vim-line-selected {
+  background: color-mix(in srgb, var(--viz-accent) 14%, transparent);
+}
+
+.vim-gutter {
+  flex: 0 0 auto;
+  margin-right: 14px;
+  text-align: right;
+  color: var(--viz-dim);
+  user-select: none;
+}
+
+.vim-text {
+  display: inline-block;
+  min-width: 1ch;
+}
+
+.vim-char {
+  position: relative;
+}
+
+.vim-cursor {
+  background: var(--viz-accent);
+  color: var(--viz-accent-ink);
+  border-radius: 2px;
+}
+
+/* Keep the block cursor readable when it also sits inside a selection. */
+.vim-char.vim-cursor {
+  background: var(--viz-accent);
+  color: var(--viz-accent-ink);
+}
+
+.vim-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.25em;
+  margin: 0 -1px;
+  vertical-align: -0.22em;
+  background: var(--viz-purple);
+  animation: vim-blink 1.1s steps(1) infinite;
+}
+
+.vim-selection {
+  background: color-mix(in srgb, var(--viz-accent) 26%, transparent);
+}
+
+.vim-match {
+  background: color-mix(in srgb, var(--viz-purple) 24%, transparent);
+  border-radius: 2px;
+}
+
+.vim-commandline {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--viz-line);
+  color: var(--viz-ink);
+  min-height: 1.4em;
+}
+
+.vim-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  z-index: 2;
+}
+
+.vim-focus-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--viz-canvas) 42%, transparent);
+  -webkit-backdrop-filter: blur(5px) saturate(0.85);
+  backdrop-filter: blur(5px) saturate(0.85);
+  animation: vim-fade 160ms ease-out;
+}
+
+.vim-focus-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 24px;
+  border: 1px solid var(--viz-line-2);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--viz-panel) 88%, transparent);
+  box-shadow: var(--viz-shadow-panel);
+  color: var(--viz-ink);
+}
+
+.vim-focus-card svg {
+  color: var(--viz-accent);
+}
+
+.vim-focus-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.vim-focus-sub {
+  color: var(--viz-dim);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vim-shortcuts {
+  border-top: 1px solid var(--viz-line);
+}
+
+@media (max-width: 62em) {
+  .vim-shortcuts {
+    display: none;
+  }
+}
+
+.vim-touch {
+  border-top: 1px solid var(--viz-line);
+  background: color-mix(in srgb, var(--viz-panel) 94%, transparent);
+}
+
+@media (max-width: 62em) {
+  .vim-touch {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+}
+
+@media (min-width: 62.01em) and (pointer: fine) {
+  .vim-touch {
+    display: none;
+  }
+}
+
+/* Cheatsheet ------------------------------------------------------------- */
+
+.vim-cheat-group {
+  padding: 12px 14px;
+  border: 1px solid var(--viz-line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--viz-surface-2) 28%, transparent);
+}
+
+.vim-cheat-list {
+  margin: 0;
+}
+
+.vim-cheat-row {
+  display: grid;
+  grid-template-columns: minmax(72px, auto) 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--viz-line);
+}
+
+.vim-cheat-row:last-child {
+  border-bottom: 0;
+}
+
+.vim-cheat-row dt {
+  margin: 0;
+}
+
+.vim-cheat-row dd {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  color: var(--viz-ink-2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.vim-cheat-dot {
+  flex: 0 0 auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--viz-accent);
+}
+
+@media (max-width: 36em) {
+  .vim-cheat-row {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+}
+
+@media (max-width: 48em) {
+  .vim-cheat-controls {
+    position: sticky;
+    top: 64px;
+    z-index: 2;
+    padding-block: 6px;
+    background: color-mix(in srgb, var(--viz-panel) 92%, transparent);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Challenge rail --------------------------------------------------------- */
+
+.vim-rail-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  border: 1px solid var(--viz-line);
+  border-radius: 8px;
+  color: var(--viz-muted);
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.vim-rail-chip:hover {
+  border-color: var(--viz-line-3);
+  color: var(--viz-ink);
+}
+
+.vim-rail-chip[data-done='true'] {
+  color: var(--viz-accent);
+}
+
+.vim-rail-chip[data-active='true'] {
+  border-color: var(--viz-accent-line);
+  background: var(--viz-accent-soft);
+  color: var(--viz-accent);
+}
+
+.vim-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes vim-blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes vim-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

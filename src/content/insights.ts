@@ -92,6 +92,10 @@ export const insights: Record<string, LessonInsight> = {
     tip: 'Cada passada ordena por um dígito; a ordem relativa dos dígitos anteriores é preservada.',
     funFact: 'É estável e não comparativo, mas depende da base e da quantidade de dígitos.',
   },
+  'vetores-matrizes': {
+    tip: 'Vetores organizam dados em 1 dimensão contígua; matrizes usam linha e coluna com laços aninhados em ordem row-major em C.',
+    funFact: 'Em C, uma matriz m[L][C] é armazenada na memória física como um vetor contínuo de L * C elementos.',
+  },
 };
 
 export function getInsight(slug: string): LessonInsight | undefined {

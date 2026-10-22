@@ -25,6 +25,7 @@ const viewLabels: Record<ViewKind, string> = {
   nodes: 'Nós',
   plot: 'Gráfico',
   strings: 'Strings',
+  matrix: 'Matriz',
 };
 
 interface Props {

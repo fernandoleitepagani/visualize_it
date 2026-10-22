@@ -9,6 +9,8 @@ import { NotFound } from '@/pages/NotFound';
 import { PlaygroundPage } from '@/pages/PlaygroundPage';
 import { SubjectPage } from '@/pages/SubjectPage';
 import { TheoryPage } from '@/pages/TheoryPage';
+import { VimChallengePage } from '@/vim/pages/VimChallengePage';
+import { VimPage } from '@/vim/pages/VimPage';
 
 /** Route changes start at the top and get a short, reduced-motion-aware entry. */
 function RouteFrame() {
@@ -27,6 +29,8 @@ function RouteFrame() {
         <Route path="/algoritmos/:slug" element={<LessonPage />} />
         <Route path="/teoria/:slug" element={<TheoryPage />} />
         <Route path="/playground" element={<PlaygroundPage />} />
+        <Route path="/vim" element={<VimPage />} />
+        <Route path="/vim/desafios/:slug" element={<VimChallengePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Box>
