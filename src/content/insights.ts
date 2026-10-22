@@ -20,6 +20,14 @@ export const insights: Record<string, LessonInsight> = {
     tip: 'O teste acontece depois do corpo, então o bloco executa pelo menos uma vez.',
     funFact: 'É útil quando a primeira leitura ou execução precisa acontecer antes da validação.',
   },
+  'ponteiros-basico': {
+    tip: '&x devolve o endereço de x; *p acessa o valor guardado nesse endereço. p e *p são coisas diferentes.',
+    funFact: 'O tipo do ponteiro diz ao compilador como interpretar o valor apontado; por isso int * e char * não são intercambiáveis.',
+  },
+  'ponteiros-duplos': {
+    tip: '*pp não é o valor final; é o ponteiro p. Para chegar ao int, use **pp.',
+    funFact: 'Funções que precisam trocar o ponteiro do chamador recebem int **; elas alteram *param, não apenas o parâmetro local.',
+  },
   aritmetica: {
     tip: 'p++ avança uma posição; p += 2 avança duas; p-- volta uma. O tipo do ponteiro define o tamanho do passo.',
     funFact: 'Em C, a aritmética de ponteiros é medida em elementos, não em bytes.',

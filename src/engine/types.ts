@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -82,6 +82,29 @@ export interface StringState {
   result?: { label: string; value: string };
 }
 
+export type PointerStateName = 'active' | 'compare' | 'write' | 'empty';
+
+/** One box of memory in the `pointers` view. */
+export interface PointerBox {
+  id: string;
+  name: string;
+  type: string;
+  address: string;
+  value: string | number;
+  /** Target box id; absent when the value is not a pointer. */
+  targetId?: string;
+  /** Expression chips such as `*p` or `**pp`. */
+  labels?: string[];
+  state?: PointerStateName;
+}
+
+/** Payload for the `pointers` view. */
+export interface PointerState {
+  boxes: PointerBox[];
+  /** printf output for the current step. */
+  result?: { label: string; value: string };
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -107,6 +130,8 @@ export interface Step {
   matrix?: MatrixState;
   /** strings view */
   strings?: StringState;
+  /** pointers view */
+  pointers?: PointerState;
 }
 
 export interface Complexity {

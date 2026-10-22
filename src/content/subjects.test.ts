@@ -46,6 +46,18 @@ describe('subjects catalog', () => {
     expect(getEntryLocation('inexistente')).toBeUndefined();
   });
 
+  it('places the pointers lessons in order inside the pointers group', () => {
+    const basic = getEntryLocation('ponteiros-basico');
+    const double = getEntryLocation('ponteiros-duplos');
+    expect(basic?.subject.id).toBe('aeds-i');
+    expect(basic?.group.id).toBe('ponteiros');
+    expect(double?.subject.id).toBe('aeds-i');
+    expect(double?.group.id).toBe('ponteiros');
+
+    const slugs = basic!.group.entries.map((entry) => entry.slug);
+    expect(slugs).toEqual(['ponteiros-basico', 'aritmetica', 'ponteiros-duplos']);
+  });
+
   it('builds the routes used by the lesson and theory pages', () => {
     expect(getEntryPath(getEntryLocation('selecao')!.entry)).toBe('/algoritmos/selecao');
     expect(getEntryPath(getEntryLocation('complexidade')!.entry)).toBe('/teoria/complexidade');

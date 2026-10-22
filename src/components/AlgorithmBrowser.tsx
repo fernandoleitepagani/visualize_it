@@ -26,6 +26,7 @@ const viewLabels: Record<ViewKind, string> = {
   plot: 'Gráfico',
   strings: 'Strings',
   matrix: 'Matriz',
+  pointers: 'Ponteiros',
 };
 
 interface Props {

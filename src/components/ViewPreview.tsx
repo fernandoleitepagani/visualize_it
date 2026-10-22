@@ -84,6 +84,38 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'pointers') {
+    return (
+      <Flex
+        data-testid="view-preview-pointers"
+        gap={3}
+        align="center"
+        h={30}
+        aria-hidden
+      >
+        {[0, 1, 2].map((i) => (
+          <Fragment key={i}>
+            {i === 1 ? (
+              <Text fz={font.micro} c="dimmed">
+                →
+              </Text>
+            ) : null}
+            <Box
+              w={13}
+              h={20}
+              style={{
+                border: `1px solid ${i === 1 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line2}`,
+                borderRadius: 4,
+                background:
+                  i === 1 ? `color-mix(in srgb, ${accent} 12%, transparent)` : vizVar.surface2,
+              }}
+            />
+          </Fragment>
+        ))}
+      </Flex>
+    );
+  }
+
   if (view === 'nodes') {
     return (
       <Flex gap={2} align="center" h={30} aria-hidden>
