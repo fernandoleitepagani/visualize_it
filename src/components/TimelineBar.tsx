@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box, Flex, Group, Text } from '@mantine/core';
 import type { Step } from '@/engine/types';
+import { resolveStepLine } from '@/engine/types';
 import { font, vizVar } from '@/theme';
 
 interface Props {
@@ -75,7 +76,13 @@ export function TimelineBar({ steps, currentIndex, onSeek }: Props) {
               flexShrink: 0,
             }}
           >
-            #{inspectIndex + 1}/{total} · L{(inspectedStep?.line ?? 0) + 1} ({getKindLabel(inspectedKind)})
+            #{inspectIndex + 1}/{total} · L{
+              (typeof inspectedStep?.line === 'number'
+                ? inspectedStep.line
+                : resolveStepLine(inspectedStep?.line, 'c') ??
+                  resolveStepLine(inspectedStep?.line, 'java') ??
+                  0) + 1
+            } ({getKindLabel(inspectedKind)})
           </Text>
           <Text
             fz={font.tiny}
