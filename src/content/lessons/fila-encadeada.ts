@@ -1,4 +1,4 @@
-import type { Lesson, Step, Node } from '@/engine/types';
+import type { Lesson, Step, Node, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
@@ -75,7 +75,7 @@ int dequeue() {
       desc: string,
       states: Record<string, string> = {},
       labels: Record<string, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       const list: RawNode[] = [];
       let cur: string | null = pri;
@@ -103,33 +103,33 @@ int dequeue() {
       });
     };
 
-    snap(`Início: pri → ult.`);
+    snap(`Início: pri → ult.`, {}, {}, { java: 1, c: 1 });
 
     function enqueue(x: number) {
       const nd = { id: 'n' + ++idc, val: x, prox: null };
       nodes[nd.id] = nd;
       if (!pri) {
         pri = ult = nd.id;
-        snap(`Fila vazia: pri = ult = ${x}.`, {}, {}, 4);
+        snap(`Fila vazia: pri = ult = ${x}.`, {}, {}, { java: 4, c: 5 });
         return;
       }
-      snap(`enqueue(${x}): cria nó.`, {}, { [nd.id]: ['novo'] }, 3);
+      snap(`enqueue(${x}): cria nó.`, {}, { [nd.id]: ['novo'] }, { java: 3, c: 3 });
       nodes[ult!].prox = nd.id;
-      snap(`ult.prox = novo.`, {}, { [nd.id]: ['novo'] }, 5);
+      snap(`ult.prox = novo.`, {}, { [nd.id]: ['novo'] }, { java: 5, c: 6 });
       ult = nd.id;
-      snap(`ult = ${x}.`, {}, {}, 6);
+      snap(`ult = ${x}.`, {}, {}, { java: 5, c: 6 });
     }
 
     function dequeue() {
       if (!pri) {
-        snap('Fila vazia.');
+        snap('Fila vazia.', {}, {}, { java: 8, c: 9 });
         return;
       }
       const r = nodes[pri].val;
-      snap(`dequeue() retorna ${r}.`, { [pri]: 'active' }, {}, 9);
+      snap(`dequeue() retorna ${r}.`, { [pri]: 'active' }, {}, { java: 9, c: 10 });
       pri = nodes[pri].prox;
       if (!pri) ult = null;
-      snap(`pri = ${pri ? nodes[pri].val : '∅'}.`, {}, {}, 10);
+      snap(`pri = ${pri ? nodes[pri].val : '∅'}.`, {}, {}, { java: 10, c: 11 });
     }
 
     enqueue(40);
@@ -137,7 +137,7 @@ int dequeue() {
     dequeue();
     enqueue(60);
     dequeue();
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 13, c: 14 });
     return out;
   },
 };

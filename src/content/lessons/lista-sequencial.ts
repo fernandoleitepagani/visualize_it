@@ -1,4 +1,4 @@
-import type { Lesson, Step } from '@/engine/types';
+import type { Lesson, Step, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
@@ -60,7 +60,7 @@ int remover(int pos) {
       desc: string,
       states: Record<number, string> = {},
       labels: Record<number, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       out.push({
         line,
@@ -73,47 +73,47 @@ int remover(int pos) {
       });
     };
 
-    snap(`Início: [${v.slice(0, n).join(', ')}], n = ${n}.`);
+    snap(`Início: [${v.slice(0, n).join(', ')}], n = ${n}.`, {}, {}, { java: 2, c: 1 });
 
     function inserir(pos: number, val: number) {
       if (n >= MAX) {
-        snap('Lista cheia.', {}, { [pos]: ['!'] });
+        snap('Lista cheia.', {}, { [pos]: ['!'] }, { java: 4, c: 3 });
         return;
       }
-      snap(`Inserir ${val} na posição ${pos}.`, { [pos]: 'active' }, { [pos]: ['pos'] }, 2);
+      snap(`Inserir ${val} na posição ${pos}.`, { [pos]: 'active' }, { [pos]: ['pos'] }, { java: 3, c: 2 });
       for (let i = n; i > pos; i--) {
         v[i] = v[i - 1];
         snap(
           `Desloca v[${i}] ← v[${i - 1}] = ${v[i]}.`,
           { [i]: 'write', [i - 1]: 'active' },
           {},
-          3,
+          { java: 5, c: 4 },
         );
       }
       v[pos] = val;
       n++;
-      snap(`v[${pos}] = ${val}, n = ${n}.`, { [pos]: 'write' }, {}, 4);
+      snap(`v[${pos}] = ${val}, n = ${n}.`, { [pos]: 'write' }, {}, { java: 6, c: 5 });
     }
 
     function remover(pos: number) {
       if (pos >= n) {
-        snap('Posição inválida.');
+        snap('Posição inválida.', {}, {}, { java: 8, c: 7 });
         return;
       }
       const r = v[pos];
-      snap(`Remover v[${pos}] = ${r}.`, { [pos]: 'active' }, {}, 7);
+      snap(`Remover v[${pos}] = ${r}.`, { [pos]: 'active' }, {}, { java: 9, c: 8 });
       for (let i = pos; i < n - 1; i++) {
         v[i] = v[i + 1];
         snap(
           `Desloca v[${i}] ← v[${i + 1}] = ${v[i]}.`,
           { [i]: 'write', [i + 1]: 'active' },
           {},
-          8,
+          { java: 10, c: 9 },
         );
       }
       v[n - 1] = null;
       n--;
-      snap(`Removido ${r}. n = ${n}.`, {}, {}, 8);
+      snap(`Removido ${r}. n = ${n}.`, {}, {}, { java: 11, c: 10 });
     }
 
     inserir(2, 15);
@@ -121,7 +121,7 @@ int remover(int pos) {
     inserir(n, 40);
     remover(1);
     remover(0);
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 13, c: 11 });
     return out;
   },
 };

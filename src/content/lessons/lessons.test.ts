@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { lessons } from '@/content/lessons';
-import { DEFAULT_INPUT } from '@/engine/types';
+import { DEFAULT_INPUT, resolveStepLine } from '@/engine/types';
 
 const sortedCopy = (xs: number[]) => [...xs].sort((a, b) => a - b);
 
@@ -11,9 +11,19 @@ describe('lessons — well-formed steps', () => {
       const steps = lesson.steps([...input]);
 
       expect(steps.length).toBeGreaterThan(0);
+      const languages = lesson.languages ?? ['java', 'c'];
+      for (const lang of languages) {
+        const code = lesson.code[lang];
+        if (!code) continue;
+        for (const step of steps) {
+          const resolved = resolveStepLine(step.line, lang);
+          expect(resolved, `Step.line in ${slug} for ${lang} is undefined`).toBeDefined();
+          expect(Number.isInteger(resolved), `Step.line in ${slug} for ${lang} is not an integer`).toBe(true);
+          expect(resolved!).toBeGreaterThanOrEqual(0);
+          expect(resolved!, `Step.line in ${slug} for ${lang} exceeds code length (${code.length})`).toBeLessThan(code.length);
+        }
+      }
       for (const step of steps) {
-        expect(Number.isInteger(step.line)).toBe(true);
-        expect(step.line).toBeGreaterThanOrEqual(0);
         expect(typeof step.desc).toBe('string');
         expect(step.desc.length).toBeGreaterThan(0);
       }
