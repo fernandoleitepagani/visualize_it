@@ -9,15 +9,17 @@ import { ReportIssueLink } from '@/components/ReportIssueLink';
 import { getLesson } from '@/content/lessons';
 import { getLessonLanguages } from '@/engine/code';
 import { getEntryLocation } from '@/content/subjects';
+import type { ViewKind } from '@/engine/types';
 import { subjectAccent, vizVar } from '@/theme';
 import { NotFound } from './NotFound';
 
-const viewLabels = {
+const viewLabels: Record<ViewKind, string> = {
   bars: 'barras',
   cells: 'células',
   nodes: 'nós',
   plot: 'gráfico',
-} as const;
+  matrix: 'matriz',
+};
 
 export function LessonPage() {
   const { slug } = useParams();
