@@ -30,6 +30,7 @@ import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
 import { MatrixView } from './MatrixView';
 import { NodesView } from './NodesView';
+import { ObjectView } from './ObjectView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { ShortcutsModal } from './ShortcutsModal';
@@ -48,6 +49,7 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
   if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
   if (lesson.view === 'strings') return <StringsView state={step?.strings} />;
   if (lesson.view === 'pointers') return <PointersView state={step?.pointers} />;
+  if (lesson.view === 'object') return <ObjectView state={step?.object} />;
   return <BarsView state={step} ids={ids} />;
 }
 
@@ -544,6 +546,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     <CodePanel
       code={currentCode}
       activeLine={step?.line ?? 0}
+      callerLine={step?.callerLine}
       lang={lang}
       languages={languages}
       fileBaseName={getCodeFileBaseName(lesson, hasApproaches ? approach : undefined)}

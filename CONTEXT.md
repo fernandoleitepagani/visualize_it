@@ -32,11 +32,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Item | Estado |
 |---|---|
 | Lições registradas | 47 (`src/content/lessons/index.ts`) |
-| Views | 7 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`) |
+| Views | 8 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 441 testes em 44 arquivos, passando |
+| Testes | 443+ testes em 44 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -79,7 +79,12 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 - separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
   `Vetor (1D)` e `Matriz (2D)`, 4 operações (`preencher`, `limpar`, `buscar`, `somar`), entradas dinâmicas
   (vetor proporcional à quantidade de valores; matriz com campos de linha empilhados até 10x10) e sincronização
-  completa com o código C e o `VarsPanel`.
+  completa com o código C e o `VarsPanel`;
+- nova view `object` (`ObjectView.tsx`) e reformulação completa das 9 lições de POO em C++ (Issue #53),
+  eliminando caixas indexadas de array e introduzindo moldes de classe (blueprints) com membros públicos/privados,
+  instâncias concretas na memória com realce de escrita em tempo real, hierarquias de herança com resolução
+  na classe base, despacho dinâmico polimórfico via ponteiro base com indicação de vtable, e fluxo interativo de
+  exceções (`try` -> `throw` -> `catch`).
 
 ---
 

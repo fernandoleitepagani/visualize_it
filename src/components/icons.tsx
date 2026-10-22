@@ -237,3 +237,41 @@ export function SparkIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function LockIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </Svg>
+  );
+}
+
+export function UnlockIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+    </Svg>
+  );
+}
+
+export function BoxIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+      <path d="m3.3 7 8.7 5 8.7-5" />
+      <path d="M12 22V12" />
+    </Svg>
+  );
+}
+
+export function AlertTriangleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <path d="M12 9v4" />
+      <path d="M12 17h.01" />
+    </Svg>
+  );
+}

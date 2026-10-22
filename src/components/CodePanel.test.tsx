@@ -96,4 +96,21 @@ describe('CodePanel', () => {
     expect(screen.getByText('C')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
   });
+
+  it('renders callerLine marker for secondary paused scope', () => {
+    renderWithProviders(
+      <CodePanel
+        code={['void foo() {', '  int x = 1;', '}', 'int main() {', '  foo();', '}']}
+        activeLine={1}
+        callerLine={4}
+        lang="cpp"
+        onLangChange={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('chamada em espera')).toBeInTheDocument();
+    expect(screen.getByText(/chamador: l\.5/)).toBeInTheDocument();
+    expect(screen.getByText('▶')).toBeInTheDocument();
+    expect(screen.getByText('⏸')).toBeInTheDocument();
+  });
 });
