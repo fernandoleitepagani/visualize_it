@@ -115,6 +115,8 @@ As views são didáticas e usam cores globais, independentes da matéria:
 | `active` / `write` | âmbar |
 | `pivot` | violeta (`--viz-purple`) |
 | `sorted` | âmbar escuro (`--viz-accent-dim`) |
+| `terminator` | `\0` com borda tracejada (`--viz-line-3`) |
+| `diff` | vermelho de diferença (`--viz-danger`) |
 | `dim` | cinza (`--viz-dim`) |
 
 Não codifique estado apenas por cor: use também legenda, rótulos e a descrição do passo.
@@ -232,6 +234,7 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `MetaPill` | Tag mono. `tone="subject"` segue a matéria; `accent`, `purple`, `danger` são globais; `green` é alias do âmbar. |
 | `Breadcrumbs` | Navegação acessível com `aria-current="page"`. |
 | `ViewLegend` | Legenda compartilhada das views. |
+| `StringsView` | Fileiras de caracteres para lições de string: índices, ponteiros, terminador `\0`, setas de cópia/concatenação e resultado. |
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |
 | `CodePanel` | Código Java/C com linha ativa, highlighter e rodapé. |
@@ -404,7 +407,7 @@ npm run build
 - Novos padrões de página: teste comportamento observável, não animação/tempo.
 - Comparação: teste `countRunMetrics` e a página `/comparar`; insights: valide as chaves contra o
   registro de lições; código C-only: valide `step.line` contra a listagem declarada.
-- QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`), teoria, playground e 404;
+- QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`, `strings`), teoria, playground e 404;
   larguras 390, 768, 1024 e 1440; temas claro e escuro.
 
 ---

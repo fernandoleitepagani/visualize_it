@@ -17,6 +17,7 @@ const viewLabels = {
   cells: 'células',
   nodes: 'nós',
   plot: 'gráfico',
+  strings: 'strings',
 } as const;
 
 export function LessonPage() {
