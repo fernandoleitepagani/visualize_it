@@ -245,6 +245,8 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `MatrixView` | Grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos; usada por vetores/matrizes. |
 | `StringsView` | Fileiras de caracteres para lições de string: índices, ponteiros, terminador `\0`, setas de cópia/concatenação e resultado. |
 | `PointersView` | Caixas de memória para lições de ponteiro: tipo, nome, endereço, valor, setas por `targetId` e estados de leitura/escrita. |
+| `ObjectView` | Moldes de classe, instâncias, ponteiros, chamadas e exceções para lições de POO em C++. |
+| `LoopView` | Tracker de laço: iteração, condição e acumulador para `for`, `while` e `do-while`. |
 | `CallStackView` | Pilha de chamadas para funções/recursão: quadros com parâmetros, locais, estado, valor de retorno e valor recebido da chamada interna; topo primeiro. |
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |

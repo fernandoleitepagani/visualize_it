@@ -1,4 +1,4 @@
-import type { Lesson, Step } from '@/engine/types';
+import type { Lesson, Step, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
@@ -63,7 +63,7 @@ int dequeue() {
       desc: string,
       states: Record<number, string> = {},
       labels: Record<number, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       out.push({
         line,
@@ -81,34 +81,40 @@ int dequeue() {
       });
     };
 
-    snap(`Início: pri=${pri}, ult=${ult}.`, {}, {}, 0);
+    snap(`Início: pri=${pri}, ult=${ult}.`, {}, {}, { java: 0, c: 0 });
 
     function enqueue(x: number) {
       if ((ult + 1) % MAX === pri) {
-        snap('Fila cheia.', {}, {}, 3);
+        snap('Fila cheia.', {}, {}, { java: 4, c: 3 });
         return;
       }
-      snap(`enqueue(${x}) → v[${ult}].`, {}, { [ult]: ['novo'] }, 3);
+      snap(`enqueue(${x}) → v[${ult}].`, {}, { [ult]: ['novo'] }, { java: 4, c: 3 });
       v[ult] = x;
+      snap(
+        `v[${ult}] = ${x}.`,
+        { [ult]: 'write' },
+        {},
+        { java: 5, c: 4 },
+      );
       ult = (ult + 1) % MAX;
       snap(
-        `v[${(ult - 1 + MAX) % MAX}] = ${x}; ult = ${ult}.`,
-        { [(ult - 1 + MAX) % MAX]: 'write' },
+        `ult = ${ult}.`,
         {},
-        5,
+        {},
+        { java: 6, c: 5 },
       );
     }
 
     function dequeue() {
       if (pri === ult) {
-        snap('Fila vazia.', {}, {}, 7);
+        snap('Fila vazia.', {}, {}, { java: 9, c: 8 });
         return;
       }
       const r = v[pri];
-      snap(`dequeue() retorna v[${pri}] = ${r}.`, { [pri]: 'active' }, {}, 7);
+      snap(`dequeue() retorna v[${pri}] = ${r}.`, { [pri]: 'active' }, {}, { java: 10, c: 9 });
       v[pri] = null;
       pri = (pri + 1) % MAX;
-      snap(`pri = ${pri}.`, {}, {}, 9);
+      snap(`pri = ${pri}.`, {}, {}, { java: 11, c: 10 });
     }
 
     enqueue(40);
@@ -116,7 +122,7 @@ int dequeue() {
     dequeue();
     enqueue(60); // dá a volta
     dequeue();
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 14, c: 12 });
     return out;
   },
 };

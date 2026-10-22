@@ -188,6 +188,100 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'matrix') {
+    return (
+      <Flex direction="column" gap={2} justify="center" h={30} aria-hidden>
+        <Flex gap={2}>
+          {[0, 1, 2].map((i) => (
+            <Box
+              key={i}
+              w={8}
+              h={9}
+              style={{
+                borderRadius: 2,
+                background: i === 1 ? accent : vizVar.surface2,
+                border: `1px solid ${i === 1 ? accent : vizVar.line2}`,
+              }}
+            />
+          ))}
+        </Flex>
+        <Flex gap={2}>
+          {[3, 4, 5].map((i) => (
+            <Box
+              key={i}
+              w={8}
+              h={9}
+              style={{
+                borderRadius: 2,
+                background: vizVar.surface2,
+                border: `1px solid ${vizVar.line2}`,
+              }}
+            />
+          ))}
+        </Flex>
+      </Flex>
+    );
+  }
+
+  if (view === 'object') {
+    return (
+      <Box
+        w={36}
+        h={24}
+        aria-hidden
+        style={{
+          border: `1px solid color-mix(in srgb, ${accent} 40%, ${vizVar.line2})`,
+          borderRadius: 4,
+          background: vizVar.surface2,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Box
+          h={7}
+          style={{
+            background: `color-mix(in srgb, ${accent} 25%, transparent)`,
+            borderBottom: `1px solid ${vizVar.line2}`,
+          }}
+        />
+        <Flex direction="column" gap={2} p={3} justify="center" style={{ flex: 1 }}>
+          <Box h={2} w={18} style={{ background: accent, borderRadius: 1 }} />
+          <Box h={2} w={12} style={{ background: vizVar.line3, borderRadius: 1 }} />
+        </Flex>
+      </Box>
+    );
+  }
+
+  if (view === 'loop') {
+    return (
+      <Flex gap={2} align="center" justify="center" h={30} aria-hidden>
+        <Box
+          w={20}
+          h={20}
+          style={{
+            borderRadius: radius.pill,
+            border: `2px solid color-mix(in srgb, ${accent} 70%, transparent)`,
+            borderTopColor: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: 'rotate(-45deg)',
+          }}
+        >
+          <Box
+            w={5}
+            h={5}
+            style={{
+              borderRadius: radius.pill,
+              background: accent,
+            }}
+          />
+        </Box>
+      </Flex>
+    );
+  }
+
   return (
     <Flex gap={3} align="flex-end" h={30} aria-hidden>
       {barHeights.map((height, i) => (

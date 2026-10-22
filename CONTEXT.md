@@ -16,8 +16,8 @@
 O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de dados e análise de
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
-- uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers` ou
-  `callstack`);
+- uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`,
+  `object`, `loop` ou `callstack`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -33,11 +33,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Item | Estado |
 |---|---|
 | Lições registradas | 49 (`src/content/lessons/index.ts`) |
-| Views | 8 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `callstack`) |
+| Views | 10 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 475 testes em 47 arquivos, passando |
+| Testes | 508 testes em 51 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -84,7 +84,12 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 - separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
   `Vetor (1D)` e `Matriz (2D)`, 4 operações (`preencher`, `limpar`, `buscar`, `somar`), entradas dinâmicas
   (vetor proporcional à quantidade de valores; matriz com campos de linha empilhados até 10x10) e sincronização
-  completa com o código C e o `VarsPanel`.
+  completa com o código C e o `VarsPanel`;
+- nova view `object` (`ObjectView.tsx`) e reformulação completa das 9 lições de POO em C++ (Issue #53),
+  eliminando caixas indexadas de array e introduzindo moldes de classe (blueprints) com membros públicos/privados,
+  instâncias concretas na memória com realce de escrita em tempo real, hierarquias de herança com resolução
+  na classe base, despacho dinâmico polimórfico via ponteiro base com indicação de vtable, e fluxo interativo de
+  exceções (`try` -> `throw` -> `catch`).
 
 ---
 
@@ -153,7 +158,9 @@ Cada `Step` contém:
 - `matrix?`: grade 2D com coordenadas ativas e rótulos de linha/coluna;
 - `strings?`: fileiras de caracteres, ponteiros nas células, setas de cópia/concatenação e resultado;
 - `pointers?`: caixas de memória com tipo, nome, endereço, valor, alvo e resultado;
-- `callstack?`: quadros de chamada da base ao topo, com parâmetros, locais e valor de retorno.
+- `object?`: moldes de classe, instâncias, ponteiros, chamadas e exceções;
+- `loop?`: fase do laço, iteração, condição e acumulador;
+- `callstack?`: quadros de chamada da base ao topo, com parâmetros, locais, valor de retorno e valor recebido.
 
 `steps()` não toca no DOM e pode ser testada sem navegador. O player só percorre a lista pronta.
 
@@ -167,6 +174,7 @@ LessonPage (breadcrumb + LessonPager)
        ├─ toolbar de entrada (valores, Aplicar, Sortear, presets)
        ├─ useMemo: assignElementIds(steps)  // só para bars
        ├─ Canvas → BarsView | CellsView | NodesView | PlotView | MatrixView | StringsView
+       │            | PointersView | ObjectView | LoopView | CallStackView
        ├─ CodePanel (Java/C, iterativo/recursivo, linha ativa com rolagem automática)
        ├─ PlayerControls abaixo do grid (timeline de passos, transporte, progresso,
        │   velocidade, quiz, copiar link)
@@ -216,6 +224,8 @@ conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o te
 | `matrix` | vetores e matrizes 2D | `matrix: { rows, cols, grid, activeRow?, activeCol?, rowLabels?, colLabels? }` |
 | `strings` | funções de string em C | `strings: { rows: [{ label, cells }], links?, result? }` |
 | `pointers` | endereços e ponteiros em C | `pointers: { boxes: [{ id, name, type, address, value, targetId?, labels?, state? }], result? }` |
+| `object` | lições de POO em C++ | `object: { blueprints?, instances?, pointer?, call?, exception?, explanationNote? }` |
+| `loop` | `for`, `while`, `do-while` | `loop: { phase?, iteration?, innerIteration?, condition?, accumulator? }` |
 | `callstack` | funções e recursão em C | `callstack: { frames: [{ id, fn, call?, vars: [{ name, value, kind?, state? }], state?, returns?, received? }], result? }` |
 
 As views são apresentacionais: não calculam o algoritmo, apenas desenham o `Step` atual.
@@ -223,6 +233,8 @@ As views são apresentacionais: não calculam o algoritmo, apenas desenham o `St
 `StringsView` desenha fileiras de caracteres com índices, ponteiros nas células, terminador `\0`
 destacado e setas SVG para cópia/concatenação; `PointersView` desenha caixas de memória com
 tipo/nome/endereço/valor, setas por `targetId` e estados separados de leitura e escrita;
+`ObjectView` desenha moldes de classe, instâncias, herança, ponteiro base e fluxo de exceções;
+`LoopView` combina tracker de iterações, condição e acumulador;
 `CallStackView` empilha quadros do topo para a base, separa parâmetros de locais, destaca o retorno
 antes de o quadro desaparecer e mostra `recebeu X` no quadro que aguardava a chamada; a legenda e a
 descrição do passo continuam sendo a fonte textual do estado.
@@ -295,10 +307,10 @@ polimento.
 
 | ID | Sev. | Achado | Evidência | Impacto | Correção sugerida |
 |---|---|---|---|---|---|
-| BUG-01 | Média | Destaque da linha ativa ainda compartilhado entre Java e C nas lições de AEDS II | AEDS I virou C-only e as linhas foram recalibradas; `mergesort.ts` e outras lições de AEDS II continuam com listagens Java/C de tamanhos diferentes | A aba C pode destacar a instrução errada em lições de AEDS II | Modelar `line` por linguagem (`{ java: number; c: number }`) ou usar âncoras nomeadas; testar cada linguagem declarada |
-| BUG-02 | Alta | `for.ts`: Java, C e simulação calculam resultados diferentes | Java: `i <= N-1` e `p <= N`; C: `i <= N` e `p <= N-1`; simulação: `i <= N` e `p <= N-1`. Para N=3, Java ≈ 3,7 e C/simulação = 1,0 | A lição ensina um código e anima outro; o resultado exibido não corresponde ao Java | Unificar a especificação, corrigir as três versões e adicionar teste do valor final |
+| BUG-01 | Resolvido | Destaque da linha ativa agora suporta mapeamento por linguagem em AEDS II | `StepLine` suporta `{ java: number, c: number }`; 10 lições com listagens desalinhadas foram calibradas e `lessons.test.ts` valida limites para todas as linguagens suportadas | — | Coberto por `lessons.test.ts` em todas as linguagens |
+| BUG-02 | Resolvido | Loop Tracker desacoplado de células e correção do somatório em `for.ts` | Issue #57 resolvida: `for`, `while` e `do-while` migrados para `LoopView` com alternância entre Quadrados de Iteração (1D e 2D triangular) e Dashboard analítico; variáveis locais no `VarsPanel`; código C de `for.ts` simplificado para somatório aninhado didático ($j \le i$) com exata correspondência | — | Coberto por `LoopView.test.tsx` e `lessons.test.ts` |
 | BUG-03 | Resolvido | Lista dupla mostrava `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` agora mapeia `prev: nd.ant` e `next: nd.prox`; `NodesView` resolve os ids para os valores e desenha conectores curvos | — | Coberto por `lessons.test.ts`; a view também exibe o terminal `∅` |
-| BUG-04 | Média | Entrada aceita negativos e valores enormes | `LessonView.tsx` agora exige inteiros e quantidade 1–12, mas não limita faixa; `counting.ts` faz `new Array(max + 1)` e indexa por valor; `radix.ts` e `counting.ts` convertem negativos para 0; `for`/`while` usam só o primeiro valor e fazem clamp | Valores como `1e9` podem estourar memória; negativos produzem uma visualização diferente do que foi digitado; lições de N único ignoram o resto silenciosamente | Validar faixa (ex.: 0–999) por lição; schema de entrada (`array`, `n`, `array + alvo`); mostrar erro em vez de clampar |
+| BUG-04 | Resolvido | Validação de entrada por schema e prevenção de estouro de memória | Módulo `inputValidation.ts` introduzido com `InputSchema` (`min`, `max`, `integerOnly`, `unit-interval`), limites estritos e mensagens claras em pt-BR; counting sort protegido em 0..30 | — | Coberto por `inputValidation.test.ts`, `LessonView.test.tsx` e `ComparePage.tsx` |
 | BUG-05 | Média | Busca sempre procura o elemento do meio | `busca-sequencial.ts` e `busca-binaria.ts` definem `target = v[Math.floor(v.length / 2)]` | Não dá para demonstrar melhor/pior caso nem o caminho “não encontrado”; a busca sequencial sempre percorre metade do vetor | Permitir alvo explícito na entrada; manter um padrão quando não informado |
 | BUG-06 | Resolvido | Refactor de tema incompleto e com armadilha de resolução | `src/theme/tokens.ts` está rastreado e é a fonte única; `src/theme.ts` permanece como shim que re-exporta tokens, `vizVar` e `tint`, com `viz` deprecated para compatibilidade | — | A migração foi concluída mantendo o shim; criar `src/theme/index.ts` e remover `viz` quando todos os imports migrarem |
 | BUG-07 | Resolvido | Tabela de complexidade mostrava “Estável: Não” quando o valor era indefinido | `ComplexityTable.tsx` agora distingue `stable === undefined` e exibe “—” | — | Coberto por `ComplexityTable.test.tsx` |
@@ -348,11 +360,12 @@ polimento.
 
 ### Curto prazo (próximas entregas)
 
-- Corrigir BUG-01 e BUG-02.
+- Alvo configurável nas lições de busca (Issue #56).
+- Visualização de chamada recursiva (Call Stack) em Quicksort e Mergesort (Issue #59).
+- Visualização de Árvore Binária para Heapsort (Issue #60).
+- FileView: disco vs RAM com cursor sequencial (Issue #54).
+- Operações interativas em listas encadeadas (Issue #58).
 - Remover o shim/alias `viz` depois de migrar os imports restantes.
-- Validar entrada por lição (inteiros, faixa, quantidade, N único, alvo).
-- Adicionar testes de limites de linha e de igualdade entre Java e C.
-- Limpar `dump.txt` e `criar-issues.sh`.
 
 ### Médio prazo
 
@@ -394,7 +407,8 @@ npm run build
 2. Abra `/materias/aeds-ii`, busque, filtre por grupo/view e confira o estado na URL.
 3. Abra uma lição de cada view: `selecao` (bars), `pilha-sequencial` (cells), `lista-encadeada`
    (nodes), `soma` (plot), `vetores-matrizes` (matrix), `strlen` (strings), `ponteiros-basico` e
-   `ponteiros-duplos` (pointers), `funcoes` e `recursao` (callstack).
+   `ponteiros-duplos` (pointers), `oop` (object), `while` (loop), `funcoes` e `recursao`
+   (callstack).
 4. Use “Executar”, “Pausar”, “Anterior”, “Próximo”, “Recomeçar”, o slider de passo e a velocidade.
 5. Alterne Java/C e confira o destaque da linha.
 6. Aplique uma entrada válida e uma inválida; teste também “Sortear” e os presets.
@@ -402,7 +416,7 @@ npm run build
 8. Abra `/teoria/complexidade` e `/teoria/inducao`.
 9. Use a busca do header e confira o agrupamento por matéria.
 10. Abra `/playground` e execute o sandbox.
-11. Alterne o tema claro/escuro e confira as oito views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, `strlen`, view `strings`, `ponteiros-basico`/`ponteiros-duplos`, view `pointers`, e `funcoes`/`recursao`, view `callstack`).
+11. Alterne o tema claro/escuro e confira as dez views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, `strlen`, view `strings`, `ponteiros-basico`/`ponteiros-duplos`, view `pointers`, `oop`, view `object`, `while`, view `loop`, e `funcoes`/`recursao`, view `callstack`).
 12. Ative o quiz em uma lição de `bars` e responda uma pergunta.
 13. Abra uma URL inexistente e confira o 404.
 

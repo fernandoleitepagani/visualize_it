@@ -1,4 +1,4 @@
-import type { Lesson, Step, Node } from '@/engine/types';
+import type { Lesson, Step, Node, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
@@ -68,7 +68,7 @@ int pop() {
       desc: string,
       states: Record<string, string> = {},
       labels: Record<string, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       const list: RawNode[] = [];
       let cur: string | null = topo;
@@ -91,25 +91,25 @@ int pop() {
       });
     };
 
-    snap(`Início: topo → ${topo ? nodes[topo].val : '∅'}.`);
+    snap(`Início: topo → ${topo ? nodes[topo].val : '∅'}.`, {}, {}, { java: 1, c: 1 });
 
     function push(x: number) {
       const nd = { id: 'n' + ++idc, val: x, prox: topo };
       nodes[nd.id] = nd;
-      snap(`push(${x}): novo.prox = topo.`, {}, { [nd.id]: ['novo'] }, 3);
+      snap(`push(${x}): novo.prox = topo.`, {}, { [nd.id]: ['novo'] }, { java: 4, c: 5 });
       topo = nd.id;
-      snap(`topo = ${x}.`, {}, {}, 4);
+      snap(`topo = ${x}.`, {}, {}, { java: 5, c: 6 });
     }
 
     function pop() {
       if (!topo) {
-        snap('Pilha vazia.');
+        snap('Pilha vazia.', {}, {}, { java: 8, c: 9 });
         return;
       }
       const r = nodes[topo].val;
-      snap(`pop() retorna ${r}.`, { [topo]: 'active' }, {}, 8);
+      snap(`pop() retorna ${r}.`, { [topo]: 'active' }, {}, { java: 9, c: 10 });
       topo = nodes[topo].prox;
-      snap(`topo = ${topo ? nodes[topo].val : '∅'}.`, {}, {}, 9);
+      snap(`topo = ${topo ? nodes[topo].val : '∅'}.`, {}, {}, { java: 10, c: 11 });
     }
 
     push(40);
@@ -118,7 +118,7 @@ int pop() {
     push(60);
     pop();
     pop();
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 12, c: 13 });
     return out;
   },
 };

@@ -6,15 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind =
-  | 'bars'
-  | 'cells'
-  | 'nodes'
-  | 'plot'
-  | 'matrix'
-  | 'strings'
-  | 'pointers'
-  | 'callstack';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -65,6 +57,77 @@ export interface MatrixState {
   activeCol?: number;
   rowLabels?: string[];
   colLabels?: string[];
+}
+
+export type ObjectVisibility = 'public' | 'private' | 'protected';
+export type ObjectItemState = 'default' | 'active' | 'write' | 'read';
+
+export interface ObjectAttribute {
+  name: string;
+  type?: string;
+  value?: string | number | boolean | null;
+  visibility?: ObjectVisibility;
+  state?: ObjectItemState;
+  sourceValue?: string;
+}
+
+export interface ObjectMethod {
+  name: string;
+  returnType?: string;
+  params?: string;
+  visibility?: ObjectVisibility;
+  isVirtual?: boolean;
+  isOverride?: boolean;
+  state?: ObjectItemState;
+}
+
+export interface ObjectClassBlueprint {
+  name: string;
+  baseClass?: string;
+  attributes?: ObjectAttribute[];
+  methods?: ObjectMethod[];
+  state?: ObjectItemState;
+}
+
+export interface ObjectInstance {
+  id: string;
+  label: string;
+  className: string;
+  attributes: ObjectAttribute[];
+  state?: ObjectItemState;
+}
+
+export interface ObjectPointer {
+  name: string;
+  type: string;
+  targetId: string | null;
+  targetLabel?: string;
+}
+
+export interface ObjectCallStack {
+  caller?: string;
+  target: string;
+  dispatchedTo?: string;
+  params?: Record<string, string | number>;
+  returned?: string | number;
+  effect?: string;
+}
+
+export interface ObjectExceptionState {
+  stage: 'try' | 'throw' | 'catch' | 'handled';
+  errorType?: string;
+  message?: string;
+  bypassed?: boolean;
+}
+
+/** Payload for the `object` view (OOP classes, instances, polymorphism, exceptions). */
+export interface ObjectState {
+  blueprints?: ObjectClassBlueprint[];
+  instances?: ObjectInstance[];
+  pointer?: ObjectPointer;
+  call?: ObjectCallStack;
+  exception?: ObjectExceptionState;
+  explanationNote?: string;
 }
 
 /** One row of characters in the `strings` view. */
@@ -148,10 +211,56 @@ export interface CallStackState {
   result?: { label: string; value: string };
 }
 
+export interface LoopIteration {
+  current: number;
+  total?: number;
+  label?: string;
+}
+
+export interface LoopCondition {
+  expression: string;
+  evaluation?: string;
+  satisfied: boolean | null;
+  explanation?: string;
+}
+
+export interface LoopAccumulator {
+  label: string;
+  value: number | string;
+  previousValue?: number | string;
+  delta?: number | string;
+}
+
+export type LoopPhase = 'init' | 'check' | 'body' | 'update' | 'end';
+
+/** Payload for the `loop` view (loop tracker: iterations, conditional test, accumulator). */
+export interface LoopState {
+  phase?: LoopPhase;
+  iteration?: LoopIteration;
+  innerIteration?: LoopIteration;
+  condition?: LoopCondition;
+  accumulator?: LoopAccumulator;
+}
+
+/** A line index or language-specific line mapping (0-based). */
+export type StepLine = number | Partial<Record<CodeLang, number>>;
+
+/**
+ * Resolves the 0-based line index for a given language, falling back to a plain
+ * number if specified.
+ */
+export function resolveStepLine(line: StepLine | undefined, lang: CodeLang): number | undefined {
+  if (line === undefined) return undefined;
+  if (typeof line === 'number') return line;
+  return line[lang];
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
-  /** Index into the lesson's source-code listing (0-based). */
-  line: number;
+  /** Index into the lesson's source-code listing (0-based) or mapping per language. */
+  line: StepLine;
+  /** Optional index of the caller / paused scope instruction (0-based). */
+  callerLine?: StepLine;
   /** Human-readable description of what just happened. */
   desc: string;
   /** Optional named variables surfaced next to the visualization. */
@@ -171,12 +280,16 @@ export interface Step {
   plot?: PlotState;
   /** matrix view */
   matrix?: MatrixState;
+  /** object view */
+  object?: ObjectState;
   /** strings view */
   strings?: StringState;
   /** pointers view */
   pointers?: PointerState;
   /** callstack view */
   callstack?: CallStackState;
+  /** loop view */
+  loop?: LoopState;
 }
 
 export interface Complexity {
@@ -215,6 +328,17 @@ export interface LessonOperationsGroup {
   structures: LessonStructureConfig[];
 }
 
+/** Declarative constraints for lesson input validation. */
+export interface InputSchema {
+  min?: number;
+  max?: number;
+  minLength?: number;
+  maxLength?: number;
+  integerOnly?: boolean;
+  format?: 'integers' | 'unit-interval';
+  helperText?: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -232,6 +356,8 @@ export interface Lesson {
   randomInput?: () => number[];
   /** Accepted values in the input bar. Defaults to `integers`. */
   inputFormat?: 'integers' | 'unit-interval';
+  /** Declarative validation schema for custom ranges, lengths and type checks. */
+  inputSchema?: InputSchema;
   /** Concept modules hide the input toolbar. */
   inputless?: boolean;
   complexity: Complexity;

@@ -27,6 +27,8 @@ const viewLabels: Record<ViewKind, string> = {
   strings: 'Strings',
   matrix: 'Matriz',
   pointers: 'Ponteiros',
+  object: 'Objetos',
+  loop: 'Laços',
   callstack: 'Pilha de chamadas',
 };
 
