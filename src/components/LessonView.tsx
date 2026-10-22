@@ -10,7 +10,7 @@ import type {
   Step,
   StructureType,
 } from '@/engine/types';
-import { DEFAULT_INPUT } from '@/engine/types';
+import { DEFAULT_INPUT, resolveStepLine } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
 import {
   getCodeFileBaseName,
@@ -18,6 +18,7 @@ import {
   getLessonLanguages,
 } from '@/engine/code';
 import { usePlayback } from '@/engine/usePlayback';
+import { getEffectiveInputSchema, validateLessonInput } from '@/lib/inputValidation';
 import { parseInput } from '@/lib/parseInput';
 import { nextSpeed, previousSpeed } from '@/lib/speeds';
 import { readStoredInput, storeInput } from '@/lib/persistedInput';
@@ -128,7 +129,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   // Read the URL once: it wins over stored/local state on first load.
   const [initial] = useState(() => {
-    const fromUrl = parseInput(searchParams.get('arr') ?? '');
+    const rawArr = searchParams.get('arr');
+    const schema = getEffectiveInputSchema(lesson);
+    const validated = rawArr ? validateLessonInput(rawArr, schema) : null;
+    const fromUrl = validated?.valid ? validated.values : null;
     const step = Number(searchParams.get('step'));
     return {
       input: fromUrl ?? readStoredInput(lesson.id) ?? lesson.initial ?? DEFAULT_INPUT,
@@ -149,9 +153,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const isDesktop = useMediaQuery('(min-width: 62em)');
 
   const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
-  const inputFormat = lesson.inputFormat ?? 'integers';
+  const effectiveSchema = useMemo(() => getEffectiveInputSchema(lesson), [lesson]);
+  const inputFormat = effectiveSchema.format ?? lesson.inputFormat ?? 'integers';
   // Single-number lessons (for/while/do-while) do not benefit from ordering presets.
-  const singleValue = initialInput.length === 1;
+  const singleValue = effectiveSchema.minLength === 1 && effectiveSchema.maxLength === 1;
   // The ordering presets are integer-only; unit-interval lessons rely on "Sortear".
   const canPreset = !singleValue && inputFormat === 'integers';
 
@@ -345,27 +350,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   );
 
   const apply = useCallback(() => {
-    const parsed = parseInput(inputValue);
-    if (!parsed) {
-      setError('Use entre 1 e 12 números separados por vírgula.');
+    const res = validateLessonInput(inputValue, effectiveSchema);
+    if (!res.valid) {
+      setError(res.error);
       return;
     }
-    if (inputFormat === 'integers' && parsed.some((value) => !Number.isInteger(value))) {
-      setError('Use entre 1 e 12 números inteiros separados por vírgula.');
-      return;
-    }
-    if (inputFormat === 'unit-interval' && parsed.some((value) => value < 0 || value >= 1)) {
-      setError('Use valores entre 0 (inclusive) e 1 (exclusive), como 0.25 ou 0.70.');
-      return;
-    }
-    if (singleValue && parsed.length !== 1) {
-      setError(
-        inputFormat === 'integers' ? 'Use um único inteiro para n.' : 'Use um único valor para n.',
-      );
-      return;
-    }
-    setValues(parsed);
-  }, [inputFormat, inputValue, setValues, singleValue]);
+    setValues(res.values);
+  }, [effectiveSchema, inputValue, setValues]);
 
   const randomize = useCallback(() => {
     const values =
@@ -545,8 +536,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const codePanel = (
     <CodePanel
       code={currentCode}
-      activeLine={step?.line ?? 0}
-      callerLine={step?.callerLine}
+      activeLine={resolveStepLine(step?.line, lang) ?? 0}
+      callerLine={resolveStepLine(step?.callerLine, lang)}
       lang={lang}
       languages={languages}
       fileBaseName={getCodeFileBaseName(lesson, hasApproaches ? approach : undefined)}
