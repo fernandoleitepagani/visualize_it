@@ -30,6 +30,7 @@ import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
 import { MatrixView } from './MatrixView';
 import { NodesView } from './NodesView';
+import { ObjectView } from './ObjectView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { ShortcutsModal } from './ShortcutsModal';
@@ -44,6 +45,7 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
   if (lesson.view === 'matrix') return <MatrixView matrix={step?.matrix} />;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
   if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
+  if (lesson.view === 'object') return <ObjectView state={step?.object} />;
   return <BarsView state={step} ids={ids} />;
 }
 

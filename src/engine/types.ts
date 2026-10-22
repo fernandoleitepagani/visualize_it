@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'object';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -59,6 +59,75 @@ export interface MatrixState {
   colLabels?: string[];
 }
 
+export type ObjectVisibility = 'public' | 'private' | 'protected';
+export type ObjectItemState = 'default' | 'active' | 'write' | 'read';
+
+export interface ObjectAttribute {
+  name: string;
+  type?: string;
+  value?: string | number | boolean | null;
+  visibility?: ObjectVisibility;
+  state?: ObjectItemState;
+}
+
+export interface ObjectMethod {
+  name: string;
+  returnType?: string;
+  params?: string;
+  visibility?: ObjectVisibility;
+  isVirtual?: boolean;
+  isOverride?: boolean;
+  state?: ObjectItemState;
+}
+
+export interface ObjectClassBlueprint {
+  name: string;
+  baseClass?: string;
+  attributes?: ObjectAttribute[];
+  methods?: ObjectMethod[];
+  state?: ObjectItemState;
+}
+
+export interface ObjectInstance {
+  id: string;
+  label: string;
+  className: string;
+  attributes: ObjectAttribute[];
+  state?: ObjectItemState;
+}
+
+export interface ObjectPointer {
+  name: string;
+  type: string;
+  targetId: string | null;
+  targetLabel?: string;
+}
+
+export interface ObjectCallStack {
+  caller?: string;
+  target: string;
+  dispatchedTo?: string;
+  params?: Record<string, string | number>;
+  returned?: string | number;
+}
+
+export interface ObjectExceptionState {
+  stage: 'try' | 'throw' | 'catch' | 'handled';
+  errorType?: string;
+  message?: string;
+  bypassed?: boolean;
+}
+
+/** Payload for the `object` view (OOP classes, instances, polymorphism, exceptions). */
+export interface ObjectState {
+  blueprints?: ObjectClassBlueprint[];
+  instances?: ObjectInstance[];
+  pointer?: ObjectPointer;
+  call?: ObjectCallStack;
+  exception?: ObjectExceptionState;
+  explanationNote?: string;
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
@@ -82,6 +151,8 @@ export interface Step {
   plot?: PlotState;
   /** matrix view */
   matrix?: MatrixState;
+  /** object view */
+  object?: ObjectState;
 }
 
 export interface Complexity {

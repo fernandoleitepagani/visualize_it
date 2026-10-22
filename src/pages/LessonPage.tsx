@@ -19,6 +19,7 @@ const viewLabels: Record<ViewKind, string> = {
   nodes: 'nós',
   plot: 'gráfico',
   matrix: 'matriz',
+  object: 'objetos',
 };
 
 export function LessonPage() {
