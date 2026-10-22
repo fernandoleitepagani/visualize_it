@@ -32,10 +32,10 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Item | Estado |
 |---|---|
 | Lições registradas | 39 (`src/content/lessons/index.ts`) |
-| Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
+| Views | 5 (`bars`, `cells`, `nodes`, `plot`, `matrix`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
-| Testes | 213 testes em 26 arquivos, passando |
+| Testes | 218 testes em 28 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -67,7 +67,9 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   painéis, deck de controles com ação primária destacada, toolbar de entrada compacta, grid 56/44 e
   correção do `ComplexityTable` para estabilidade indefinida;
 - quiz no player, URL compartilhável (`arr`/`step`), entrada persistida por lição, playground,
-  alternância de tema claro/escuro e view `plot`.
+  alternância de tema claro/escuro e view `plot`;
+- view bidimensional `matrix` com realce cruzado de coordenadas $(i, j)$ e suporte a matrizes 2D reais
+  em `vetores-matrizes` e `classes-vetores-matrizes` (Issue #49).
 
 ---
 
