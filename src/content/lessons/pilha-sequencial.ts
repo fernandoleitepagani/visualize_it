@@ -1,4 +1,4 @@
-import type { Lesson, Step } from '@/engine/types';
+import type { Lesson, Step, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
@@ -55,7 +55,7 @@ int pop() {
       desc: string,
       states: Record<number, string> = {},
       labels: Record<number, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       out.push({
         line,
@@ -72,29 +72,29 @@ int pop() {
       });
     };
 
-    snap(`Início: [${v.slice(0, topo + 1).join(', ')}], topo = ${topo}.`);
+    snap(`Início: [${v.slice(0, topo + 1).join(', ')}], topo = ${topo}.`, {}, {}, { java: 2, c: 1 });
 
     function push(x: number) {
       if (topo + 1 >= MAX) {
-        snap('Pilha cheia (overflow).', { [topo]: 'write' }, {}, 2);
+        snap('Pilha cheia (overflow).', { [topo]: 'write' }, {}, { java: 4, c: 3 });
         return;
       }
-      snap(`push(${x})`, {}, { [topo + 1]: ['novo'] }, 2);
+      snap(`push(${x})`, {}, { [topo + 1]: ['novo'] }, { java: 3, c: 2 });
       v[topo + 1] = x;
       topo++;
-      snap(`v[${topo}] = ${x}; topo = ${topo}.`, { [topo]: 'write' }, {}, 3);
+      snap(`v[${topo}] = ${x}; topo = ${topo}.`, { [topo]: 'write' }, {}, { java: 5, c: 4 });
     }
 
     function pop() {
       if (topo === -1) {
-        snap('Pilha vazia (underflow).', {}, {}, 5);
+        snap('Pilha vazia (underflow).', {}, {}, { java: 8, c: 7 });
         return;
       }
       const r = v[topo];
-      snap(`pop() retorna v[${topo}] = ${r}.`, { [topo]: 'active' }, {}, 6);
+      snap(`pop() retorna v[${topo}] = ${r}.`, { [topo]: 'active' }, {}, { java: 9, c: 8 });
       v[topo] = null;
       topo--;
-      snap(`topo = ${topo}.`, {}, {}, 6);
+      snap(`topo = ${topo}.`, {}, {}, { java: 9, c: 8 });
     }
 
     push(40);
@@ -103,7 +103,7 @@ int pop() {
     push(60);
     pop();
     pop();
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 11, c: 9 });
     return out;
   },
 };

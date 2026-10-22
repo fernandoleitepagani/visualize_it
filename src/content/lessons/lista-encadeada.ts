@@ -1,4 +1,4 @@
-import type { Lesson, Step, Node } from '@/engine/types';
+import type { Lesson, Step, Node, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
@@ -70,7 +70,7 @@ void remover(int x) {
       desc: string,
       states: Record<string, string> = {},
       labels: Record<string, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       // traverse from head
       const list: RawNode[] = [];
@@ -94,43 +94,43 @@ void remover(int x) {
       });
     };
 
-    snap(`Início: head → ${head ? nodes[head].val : '∅'}.`, {}, {}, 0);
+    snap(`Início: head → ${head ? nodes[head].val : '∅'}.`, {}, {}, { java: 1, c: 1 });
 
     function inserirInicio(x: number) {
       const nd = makeNode(x);
-      snap(`inserirInicio(${x}): cria nó.`, {}, { [nd.id]: ['novo'] }, 2);
+      snap(`inserirInicio(${x}): cria nó.`, {}, { [nd.id]: ['novo'] }, { java: 3, c: 3 });
       nd.prox = head;
       nodes[nd.id] = nd;
-      snap(`novo.prox = head (${head ? nodes[head].val : '∅'}).`, {}, { [nd.id]: ['novo'] }, 3);
+      snap(`novo.prox = head (${head ? nodes[head].val : '∅'}).`, {}, { [nd.id]: ['novo'] }, { java: 4, c: 5 });
       head = nd.id;
-      snap(`head = novo (${x}).`, {}, {}, 4);
+      snap(`head = novo (${x}).`, {}, {}, { java: 5, c: 6 });
     }
 
     function remover(x: number) {
-      snap(`remover(${x}): percorre a lista.`, {}, {}, 7);
+      snap(`remover(${x}): percorre a lista.`, {}, {}, { java: 8, c: 9 });
       let ant: string | null = null,
         at: string | null = head;
       while (at && nodes[at].val !== x) {
-        snap(`v[${nodes[at].val}] ≠ ${x} → avança.`, { [at]: 'compare' }, {}, 8);
+        snap(`v[${nodes[at].val}] ≠ ${x} → avança.`, { [at]: 'compare' }, {}, { java: 9, c: 10 });
         ant = at;
         at = nodes[at].prox;
       }
       if (!at) {
-        snap(`Valor ${x} não encontrado.`, {}, {}, 8);
+        snap(`Valor ${x} não encontrado.`, {}, {}, { java: 10, c: 11 });
         return;
       }
-      snap(`Encontrado nó ${nodes[at].val}.`, { [at]: 'active' }, {}, 8);
+      snap(`Encontrado nó ${nodes[at].val}.`, { [at]: 'active' }, {}, { java: 9, c: 10 });
       if (ant === null) head = nodes[at].prox;
       else nodes[ant].prox = nodes[at].prox;
       delete nodes[at];
-      snap(`Removido ${x}.`, {}, {}, 11);
+      snap(`Removido ${x}.`, {}, {}, { java: 11, c: 12 });
     }
 
     inserirInicio(5);
     inserirInicio(3);
     remover(10);
     inserirInicio(1);
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 13, c: 14 });
     return out;
   },
 };

@@ -10,7 +10,7 @@ import { GaugeIcon, ShuffleIcon } from '@/components/icons';
 import { getSubject, getSubjectEntries } from '@/content/subjects';
 import { getLesson } from '@/content/lessons';
 import { countRunMetrics } from '@/engine/runMetrics';
-import { parseInput } from '@/lib/parseInput';
+import { validateLessonInput } from '@/lib/inputValidation';
 import { font, radius, subjectAccent, vizVar } from '@/theme';
 
 const DEFAULT_INPUT = [7, 3, 9, 1, 5, 8, 2];
@@ -49,13 +49,19 @@ export function ComparePage() {
   );
 
   const apply = useCallback(() => {
-    const parsed = parseInput(inputValue);
-    if (!parsed || parsed.some((value) => !Number.isInteger(value)) || parsed.length === 0) {
-      setError('Use entre 1 e 12 números inteiros separados por vírgula.');
+    const res = validateLessonInput(inputValue, {
+      min: 0,
+      max: 99,
+      integerOnly: true,
+      minLength: 1,
+      maxLength: 12,
+    });
+    if (!res.valid) {
+      setError(res.error);
       return;
     }
     setError('');
-    setInput(parsed);
+    setInput(res.values);
   }, [inputValue]);
 
   const randomize = useCallback(() => {

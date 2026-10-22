@@ -36,7 +36,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 443+ testes em 44 arquivos, passando |
+| Testes | 468 testes em 47 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -291,10 +291,10 @@ polimento.
 
 | ID | Sev. | Achado | Evidência | Impacto | Correção sugerida |
 |---|---|---|---|---|---|
-| BUG-01 | Média | Destaque da linha ativa ainda compartilhado entre Java e C nas lições de AEDS II | AEDS I virou C-only e as linhas foram recalibradas; `mergesort.ts` e outras lições de AEDS II continuam com listagens Java/C de tamanhos diferentes | A aba C pode destacar a instrução errada em lições de AEDS II | Modelar `line` por linguagem (`{ java: number; c: number }`) ou usar âncoras nomeadas; testar cada linguagem declarada |
+| BUG-01 | Resolvido | Destaque da linha ativa agora suporta mapeamento por linguagem em AEDS II | `StepLine` suporta `{ java: number, c: number }`; 10 lições com listagens desalinhadas foram calibradas e `lessons.test.ts` valida limites para todas as linguagens suportadas | — | Coberto por `lessons.test.ts` em todas as linguagens |
 | BUG-02 | Alta | `for.ts`: Java, C e simulação calculam resultados diferentes | Java: `i <= N-1` e `p <= N`; C: `i <= N` e `p <= N-1`; simulação: `i <= N` e `p <= N-1`. Para N=3, Java ≈ 3,7 e C/simulação = 1,0 | A lição ensina um código e anima outro; o resultado exibido não corresponde ao Java | Unificar a especificação, corrigir as três versões e adicionar teste do valor final |
 | BUG-03 | Resolvido | Lista dupla mostrava `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` agora mapeia `prev: nd.ant` e `next: nd.prox`; `NodesView` resolve os ids para os valores e desenha conectores curvos | — | Coberto por `lessons.test.ts`; a view também exibe o terminal `∅` |
-| BUG-04 | Média | Entrada aceita negativos e valores enormes | `LessonView.tsx` agora exige inteiros e quantidade 1–12, mas não limita faixa; `counting.ts` faz `new Array(max + 1)` e indexa por valor; `radix.ts` e `counting.ts` convertem negativos para 0; `for`/`while` usam só o primeiro valor e fazem clamp | Valores como `1e9` podem estourar memória; negativos produzem uma visualização diferente do que foi digitado; lições de N único ignoram o resto silenciosamente | Validar faixa (ex.: 0–999) por lição; schema de entrada (`array`, `n`, `array + alvo`); mostrar erro em vez de clampar |
+| BUG-04 | Resolvido | Validação de entrada por schema e prevenção de estouro de memória | Módulo `inputValidation.ts` introduzido com `InputSchema` (`min`, `max`, `integerOnly`, `unit-interval`), limites estritos e mensagens claras em pt-BR; counting sort protegido em 0..30 | — | Coberto por `inputValidation.test.ts`, `LessonView.test.tsx` e `ComparePage.tsx` |
 | BUG-05 | Média | Busca sempre procura o elemento do meio | `busca-sequencial.ts` e `busca-binaria.ts` definem `target = v[Math.floor(v.length / 2)]` | Não dá para demonstrar melhor/pior caso nem o caminho “não encontrado”; a busca sequencial sempre percorre metade do vetor | Permitir alvo explícito na entrada; manter um padrão quando não informado |
 | BUG-06 | Resolvido | Refactor de tema incompleto e com armadilha de resolução | `src/theme/tokens.ts` está rastreado e é a fonte única; `src/theme.ts` permanece como shim que re-exporta tokens, `vizVar` e `tint`, com `viz` deprecated para compatibilidade | — | A migração foi concluída mantendo o shim; criar `src/theme/index.ts` e remover `viz` quando todos os imports migrarem |
 | BUG-07 | Resolvido | Tabela de complexidade mostrava “Estável: Não” quando o valor era indefinido | `ComplexityTable.tsx` agora distingue `stable === undefined` e exibe “—” | — | Coberto por `ComplexityTable.test.tsx` |

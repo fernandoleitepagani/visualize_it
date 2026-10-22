@@ -1,4 +1,4 @@
-import type { Lesson, Step } from '@/engine/types';
+import type { Lesson, Step, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
@@ -58,10 +58,10 @@ void countingByDigit(int v[], int n, int exp) {
     const n = v.length,
       max = Math.max(...v, 0);
     const out: Step[] = [];
-    const push = (line: number, desc: string, extra: Partial<Step> = {}) =>
+    const push = (line: StepLine, desc: string, extra: Partial<Step> = {}) =>
       out.push({ line, desc, arr: v.slice(), ...extra });
 
-    push(0, `Início: ${n} elementos, maior = ${max}.`);
+    push({ java: 0, c: 0 }, `Início: ${n} elementos, maior = ${max}.`);
     for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
       const nome =
         exp === 1
@@ -71,7 +71,7 @@ void countingByDigit(int v[], int n, int exp) {
             : exp === 100
               ? 'centenas'
               : `10^${Math.round(Math.log10(exp))}`;
-      push(2, `Passada pelas ${nome} (exp = ${exp}).`);
+      push({ java: 2, c: 3 }, `Passada pelas ${nome} (exp = ${exp}).`);
       const count = new Array(10).fill(0);
       for (let i = 0; i < n; i++) count[Math.floor(v[i] / exp) % 10]++;
       for (let i = 1; i < 10; i++) count[i] += count[i - 1];
@@ -81,14 +81,14 @@ void countingByDigit(int v[], int n, int exp) {
         const pos = count[d] - 1;
         aux[pos] = v[i];
         count[d]--;
-        push(12, `v[${i}] = ${v[i]} → dígito ${d} → posição ${pos}.`, {
+        push({ java: 12, c: 13 }, `v[${i}] = ${v[i]} → dígito ${d} → posição ${pos}.`, {
           cmp: [i],
         });
       }
       for (let i = 0; i < n; i++) v[i] = aux[i];
-      push(16, `Fim da passada: [${v.join(', ')}].`);
+      push({ java: 15, c: 16 }, `Fim da passada: [${v.join(', ')}].`);
     }
-    push(4, 'Vetor ordenado.');
+    push({ java: 4, c: 5 }, 'Vetor ordenado.');
     return out;
   },
 };

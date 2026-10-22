@@ -1,4 +1,4 @@
-import type { Lesson, Step } from '@/engine/types';
+import type { Lesson, Step, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 export const lesson: Lesson = {
@@ -55,48 +55,48 @@ void heapify(int v[], int n, int i) {
       n = v.length,
       out: Step[] = [];
     const done = new Set<number>();
-    const push = (line: number, desc: string, extra: Partial<Step> = {}) =>
+    const push = (line: StepLine, desc: string, extra: Partial<Step> = {}) =>
       out.push({ line, desc, arr: v.slice(), sorted: [...done], ...extra });
 
-    push(0, `Início: ${n} elementos.`);
+    push({ java: 0, c: 0 }, `Início: ${n} elementos.`);
 
     function heapify(size: number, i: number) {
       let largest = i;
       const l = 2 * i + 1,
         r = 2 * i + 2;
-      push(10, `heapify i=${i}.`, { pivot: [i] });
+      push({ java: 9, c: 8 }, `heapify i=${i}.`, { pivot: [i] });
       if (l < size) {
-        push(12, `v[${i}] = ${v[i]} vs filho esq v[${l}] = ${v[l]}.`, {
+        push({ java: 10, c: 9 }, `v[${i}] = ${v[i]} vs filho esq v[${l}] = ${v[l]}.`, {
           cmp: [i, l],
         });
         if (v[l] > v[largest]) largest = l;
       }
       if (r < size) {
-        push(13, `vs filho dir v[${r}] = ${v[r]}.`, { cmp: [largest, r] });
+        push({ java: 11, c: 10 }, `vs filho dir v[${r}] = ${v[r]}.`, { cmp: [largest, r] });
         if (v[r] > v[largest]) largest = r;
       }
       if (largest !== i) {
         [v[i], v[largest]] = [v[largest], v[i]];
-        push(15, `Troca v[${i}] ↔ v[${largest}].`, { swap: [i, largest] });
+        push({ java: 13, c: 12 }, `Troca v[${i}] ↔ v[${largest}].`, { swap: [i, largest] });
         heapify(size, largest);
       }
     }
 
-    push(2, 'Fase 1: construir o heap.');
+    push({ java: 2, c: 1 }, 'Fase 1: construir o heap.');
     for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
-      push(3, `heapify da raiz ${i}.`);
+      push({ java: 2, c: 1 }, `heapify da raiz ${i}.`);
       heapify(n, i);
     }
-    push(4, 'Fase 2: extrair o máximo.');
+    push({ java: 3, c: 2 }, 'Fase 2: extrair o máximo.');
     for (let i = n - 1; i > 0; i--) {
       [v[0], v[i]] = [v[i], v[0]];
-      push(5, `Troca v[0] ↔ v[${i}].`, { swap: [0, i] });
+      push({ java: 4, c: 3 }, `Troca v[0] ↔ v[${i}].`, { swap: [0, i] });
       done.add(i);
-      push(6, `Posição ${i} fechada.`);
+      push({ java: 5, c: 4 }, `Posição ${i} fechada.`);
       heapify(i, 0);
     }
     done.add(0);
-    push(7, 'Vetor ordenado.');
+    push({ java: 7, c: 6 }, 'Vetor ordenado.');
     return out;
   },
 };

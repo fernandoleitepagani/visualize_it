@@ -1,4 +1,4 @@
-import type { Lesson, Step, Node } from '@/engine/types';
+import type { Lesson, Step, Node, StepLine } from '@/engine/types';
 import { lines } from '@/lib/lines';
 
 interface RawNode extends Node {
@@ -75,7 +75,7 @@ void removerFim() {
       desc: string,
       states: Record<string, string> = {},
       labels: Record<string, string[]> = {},
-      line: number = 0,
+      line: StepLine = 0,
     ) => {
       const list: RawNode[] = [];
       let cur: string | null = head;
@@ -104,42 +104,42 @@ void removerFim() {
       });
     };
 
-    snap(`Início: head → tail.`, {}, {}, 0);
+    snap(`Início: head → tail.`, {}, {}, { java: 1, c: 1 });
 
     function inserirFim(x: number) {
       const nd = makeNode(x);
       nodes[nd.id] = nd;
       if (!tail) {
         head = tail = nd.id;
-        snap(`Primeiro nó: head = tail = ${x}.`, {}, {}, 3);
+        snap(`Primeiro nó: head = tail = ${x}.`, {}, {}, { java: 4, c: 5 });
         return;
       }
       nd.ant = tail;
-      snap(`inserirFim(${x}): novo.ant = tail (${nodes[tail].val}).`, {}, { [nd.id]: ['novo'] }, 5);
+      snap(`inserirFim(${x}): novo.ant = tail (${nodes[tail].val}).`, {}, { [nd.id]: ['novo'] }, { java: 5, c: 6 });
       nodes[tail].prox = nd.id;
-      snap(`tail.prox = novo.`, {}, { [nd.id]: ['novo'] }, 6);
+      snap(`tail.prox = novo.`, {}, { [nd.id]: ['novo'] }, { java: 6, c: 6 });
       tail = nd.id;
-      snap(`tail = ${x}.`, {}, {}, 7);
+      snap(`tail = ${x}.`, {}, {}, { java: 7, c: 6 });
     }
 
     function removerFim() {
       if (!tail) {
-        snap('Lista vazia.');
+        snap('Lista vazia.', {}, {}, { java: 10, c: 9 });
         return;
       }
       const r = nodes[tail].val;
-      snap(`removerFim(): remove ${r} — O(1) graças ao ant.`, { [tail]: 'active' }, {}, 10);
+      snap(`removerFim(): remove ${r} — O(1) graças ao ant.`, { [tail]: 'active' }, {}, { java: 10, c: 9 });
       tail = nodes[tail].ant;
       if (tail) nodes[tail].prox = null;
       else head = null;
-      snap(`tail = ${tail ? nodes[tail].val : '∅'}.`, {}, {}, 13);
+      snap(`tail = ${tail ? nodes[tail].val : '∅'}.`, {}, {}, { java: 11, c: 10 });
     }
 
     inserirFim(30);
     inserirFim(40);
     removerFim();
     removerFim();
-    snap('Fim.');
+    snap('Fim.', {}, {}, { java: 14, c: 13 });
     return out;
   },
 };

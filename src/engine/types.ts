@@ -176,12 +176,25 @@ export interface PointerState {
   result?: { label: string; value: string };
 }
 
+/** A line index or language-specific line mapping (0-based). */
+export type StepLine = number | Partial<Record<CodeLang, number>>;
+
+/**
+ * Resolves the 0-based line index for a given language, falling back to a plain
+ * number if specified.
+ */
+export function resolveStepLine(line: StepLine | undefined, lang: CodeLang): number | undefined {
+  if (line === undefined) return undefined;
+  if (typeof line === 'number') return line;
+  return line[lang];
+}
+
 /** One frame of playback. Fields are grouped by the view that reads them. */
 export interface Step {
-  /** Index into the lesson's source-code listing (0-based). */
-  line: number;
+  /** Index into the lesson's source-code listing (0-based) or mapping per language. */
+  line: StepLine;
   /** Optional index of the caller / paused scope instruction (0-based). */
-  callerLine?: number;
+  callerLine?: StepLine;
   /** Human-readable description of what just happened. */
   desc: string;
   /** Optional named variables surfaced next to the visualization. */
@@ -245,6 +258,17 @@ export interface LessonOperationsGroup {
   structures: LessonStructureConfig[];
 }
 
+/** Declarative constraints for lesson input validation. */
+export interface InputSchema {
+  min?: number;
+  max?: number;
+  minLength?: number;
+  maxLength?: number;
+  integerOnly?: boolean;
+  format?: 'integers' | 'unit-interval';
+  helperText?: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -262,6 +286,8 @@ export interface Lesson {
   randomInput?: () => number[];
   /** Accepted values in the input bar. Defaults to `integers`. */
   inputFormat?: 'integers' | 'unit-interval';
+  /** Declarative validation schema for custom ranges, lengths and type checks. */
+  inputSchema?: InputSchema;
   /** Concept modules hide the input toolbar. */
   inputless?: boolean;
   complexity: Complexity;
