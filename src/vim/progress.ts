@@ -36,6 +36,15 @@ export function saveProgress(progress: VimProgress): void {
   }
 }
 
+export function clearProgress(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    // Storage can be unavailable (private mode); nothing to clear.
+  }
+}
+
 export function recordSolved(progress: VimProgress, slug: string, strokes: number): VimProgress {
   const previous = progress.best[slug];
   return {

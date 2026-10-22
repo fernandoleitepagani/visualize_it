@@ -32,6 +32,41 @@ describe('VimPage', () => {
 
     expect(screen.getByText('Desafio concluído')).toBeInTheDocument();
     expect(window.localStorage.getItem('visualize-it:vim-progress')).toContain('hjkl');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Próximo desafio' }));
+    expect(screen.getByText('Contagem antes do movimento')).toBeInTheDocument();
+  });
+
+  it('types through the stable handlers', () => {
+    const { container } = renderWithProviders(<VimPage />, '/vim');
+    const area = input();
+
+    fireEvent.focus(area);
+    fireEvent.keyDown(area, { key: 'i' });
+    fireEvent.change(area, { target: { value: 'x' } });
+    fireEvent.change(area, { target: { value: 'y' } });
+
+    expect(container.textContent).toContain('xyprimeira linha');
+    expect(container.textContent).toContain('3 teclas');
+  });
+
+  it('restarts all challenges and erases the history', () => {
+    renderWithProviders(<VimPage />, '/vim');
+    const area = input();
+    fireEvent.focus(area);
+    for (const key of ['j', 'j', 'j', 'l', 'l', 'l']) {
+      fireEvent.keyDown(area, { key });
+    }
+    expect(window.localStorage.getItem('visualize-it:vim-progress')).toContain('hjkl');
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Reiniciar desafios e apagar histórico' }),
+    );
+    expect(screen.getByText('Reiniciar desafios?')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Reiniciar tudo' }));
+
+    expect(window.localStorage.getItem('visualize-it:vim-progress')).toBeNull();
+    expect(screen.getAllByText('0 concluídos').length).toBeGreaterThan(0);
   });
 
   it('switches challenges and resets the buffer', () => {
@@ -49,10 +84,10 @@ describe('VimPage', () => {
     expect(container.textContent).toContain('mova o cursor buffer até a palavra alvo');
   });
 
-  it('stages a practice buffer from the cheatsheet', () => {
+  it('stages a practice buffer from a cheatsheet group', () => {
     renderWithProviders(<VimPage />, '/vim');
 
-    fireEvent.click(screen.getByLabelText('praticar inserir antes do cursor'));
+    fireEvent.click(screen.getByRole('button', { name: 'praticar Modos' }));
 
     expect(screen.getByText('modo prática')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Voltar ao desafio' }));
