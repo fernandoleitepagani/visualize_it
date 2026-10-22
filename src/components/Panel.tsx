@@ -36,6 +36,7 @@ export function Panel({ label, aside, icon, footer, children }: Props) {
         px="md"
         py={9}
         wrap="nowrap"
+        align="center"
         style={{
           borderBottom: `1px solid ${vizVar.line}`,
           background:

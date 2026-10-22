@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import {
+  ActionIcon,
   Box,
   Button,
   Flex,
@@ -13,9 +14,11 @@ import {
 import type { Playback } from '@/engine/usePlayback';
 import type { Step } from '@/engine/types';
 import { font, vizVar } from '@/theme';
+import { SPEEDS } from '@/lib/speeds';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  KeyboardIcon,
   PauseIcon,
   PlayIcon,
   ResetIcon,
@@ -23,18 +26,12 @@ import {
 } from './icons';
 import { TimelineBar } from './TimelineBar';
 
-const SPEEDS = [
-  { label: '0,5×', value: 1800 },
-  { label: '1×', value: 900 },
-  { label: '2×', value: 450 },
-  { label: '4×', value: 225 },
-];
-
 export function PlayerControls({
   playback,
   steps,
   quiz,
   onQuizChange,
+  onShowShortcuts,
 }: {
   playback: Playback;
   /** Step list used by the timeline; omitted in isolated tests. */
@@ -42,6 +39,8 @@ export function PlayerControls({
   /** Enables the quiz toggle; omit it on views that cannot quiz. */
   quiz?: boolean;
   onQuizChange?: (value: boolean) => void;
+  /** Opens the keyboard shortcut help. */
+  onShowShortcuts?: () => void;
 }) {
   const { isPlaying, atStart, atEnd, index, total, speedMs } = playback;
   const empty = total === 0;
@@ -85,7 +84,7 @@ export function PlayerControls({
             onClick={playback.reset}
             disabled={empty}
             aria-label="Voltar ao início"
-            aria-keyshortcuts="Home"
+            aria-keyshortcuts="Home R"
             leftSection={<ResetIcon size={15} />}
             className="player-action"
           >
@@ -178,6 +177,17 @@ export function PlayerControls({
               value: String(speed.value),
             }))}
           />
+          {onShowShortcuts ? (
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              aria-label="Atalhos de teclado"
+              aria-keyshortcuts="?"
+              onClick={onShowShortcuts}
+            >
+              <KeyboardIcon size={14} />
+            </ActionIcon>
+          ) : null}
           <Button
             variant="subtle"
             size="xs"

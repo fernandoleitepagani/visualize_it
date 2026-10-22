@@ -5,7 +5,9 @@ import { LessonPager, LessonRelated } from '@/components/LessonNav';
 import { LessonView } from '@/components/LessonView';
 import { MetaPill } from '@/components/MetaPill';
 import { PageHeader } from '@/components/PageHeader';
+import { ReportIssueLink } from '@/components/ReportIssueLink';
 import { getLesson } from '@/content/lessons';
+import { getLessonLanguages } from '@/engine/code';
 import { getEntryLocation } from '@/content/subjects';
 import { subjectAccent, vizVar } from '@/theme';
 import { NotFound } from './NotFound';
@@ -27,6 +29,7 @@ export function LessonPage() {
   const accent = location ? subjectAccent[location.subject.accent] : vizVar.accent;
   const time = lesson.complexity.time ?? {};
   const worst = time.worst ?? time.avg ?? time.best;
+  const languages = getLessonLanguages(lesson);
 
   return (
     <Box
@@ -58,12 +61,14 @@ export function LessonPage() {
             {worst ? <MetaPill tone="subject">{worst}</MetaPill> : null}
             {lesson.complexity.space ? <MetaPill>{lesson.complexity.space}</MetaPill> : null}
             <MetaPill>{viewLabels[lesson.view ?? 'bars']}</MetaPill>
+            <MetaPill>{languages.map((lang) => (lang === 'java' ? 'Java' : lang === 'cpp' ? 'C++' : 'C')).join(' · ')}</MetaPill>
           </>
         }
         actions={location ? <LessonPager location={location} /> : undefined}
       />
       <LessonView key={lesson.id} lesson={lesson} />
       {location ? <LessonRelated location={location} /> : null}
+      <ReportIssueLink lesson={lesson} />
     </Box>
   );
 }

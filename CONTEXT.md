@@ -31,11 +31,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 24 (`src/content/lessons/index.ts`) |
+| Lições registradas | 39 (`src/content/lessons/index.ts`) |
 | Views | 4 (`bars`, `cells`, `nodes`, `plot`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
-| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `*` (404) |
-| Testes | 164 testes em 19 arquivos, passando |
+| Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
+| Testes | 213 testes em 26 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -43,7 +43,10 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (5):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`).
+- **AEDS I (20):** `for`, `while`, `do-while`, `aritmetica`, `soma` (view `plot`); depois
+  `structs`, `alocacao-memoria`, `strings`, `arquivos`, `vetores-matrizes`,
+  `classes-vetores-matrizes` (C) e, por último, `oop`, `abstracao`, `classes`, `construtores`,
+  `encapsulamento`, `heranca`, `polimorfismo`, `metodos-acessores`, `excecoes` (C++).
 - **AEDS II (18):**
   - **Ordenação:** `selecao`, `insercao`, `bolha`, `shellsort`, `quicksort`, `mergesort`,
     `heapsort`, `counting`, `bucket`, `radix`.
@@ -244,7 +247,7 @@ polimento.
 
 | ID | Sev. | Achado | Evidência | Impacto | Correção sugerida |
 |---|---|---|---|---|---|
-| BUG-01 | Alta | Destaque da linha ativa desalinhado e compartilhado entre Java e C | `mergesort.ts` usa `push(16, ...)` com `code.java` de 16 linhas (índices 0–15); `for.ts` referencia as linhas 5/8/9/11/… mas o código Java está em 3/6/7/9/…; 12 lições têm listagens Java/C com tamanhos diferentes | A linha destacada às vezes não existe ou aponta para a instrução errada; a aba C fica pior | Modelar `line` por linguagem (`{ java: number; c: number }`) ou usar âncoras nomeadas; testar `0 <= line < code[lang].length` e igualdade semântica nas duas abas |
+| BUG-01 | Média | Destaque da linha ativa ainda compartilhado entre Java e C nas lições de AEDS II | AEDS I virou C-only e as linhas foram recalibradas; `mergesort.ts` e outras lições de AEDS II continuam com listagens Java/C de tamanhos diferentes | A aba C pode destacar a instrução errada em lições de AEDS II | Modelar `line` por linguagem (`{ java: number; c: number }`) ou usar âncoras nomeadas; testar cada linguagem declarada |
 | BUG-02 | Alta | `for.ts`: Java, C e simulação calculam resultados diferentes | Java: `i <= N-1` e `p <= N`; C: `i <= N` e `p <= N-1`; simulação: `i <= N` e `p <= N-1`. Para N=3, Java ≈ 3,7 e C/simulação = 1,0 | A lição ensina um código e anima outro; o resultado exibido não corresponde ao Java | Unificar a especificação, corrigir as três versões e adicionar teste do valor final |
 | BUG-03 | Resolvido | Lista dupla mostrava `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` agora mapeia `prev: nd.ant` e `next: nd.prox`; `NodesView` resolve os ids para os valores e desenha conectores curvos | — | Coberto por `lessons.test.ts`; a view também exibe o terminal `∅` |
 | BUG-04 | Média | Entrada aceita negativos e valores enormes | `LessonView.tsx` agora exige inteiros e quantidade 1–12, mas não limita faixa; `counting.ts` faz `new Array(max + 1)` e indexa por valor; `radix.ts` e `counting.ts` convertem negativos para 0; `for`/`while` usam só o primeiro valor e fazem clamp | Valores como `1e9` podem estourar memória; negativos produzem uma visualização diferente do que foi digitado; lições de N único ignoram o resto silenciosamente | Validar faixa (ex.: 0–999) por lição; schema de entrada (`array`, `n`, `array + alvo`); mostrar erro em vez de clampar |
@@ -381,6 +384,9 @@ npm run build
 | 2026-10-21 | `testTimeout` de 20s no Vitest | Renderizações do Mantine em jsdom passam dos 5s padrão em máquinas mais lentas |
 | 2026-10-21 | Remoção de `@fontsource`; UI e código usam pilhas do sistema (sans/mono), sem arquivos de fonte | Eliminar fontes customizadas/hardcoded e reduzir o bundle |
 | 2026-10-20 | Integração das lições `counting` e `bucket` com a linha principal (`main`) | Trazer as variantes iterativa/recursiva e a análise de complexidade; `inputFormat` permite valores em [0, 1) no formulário |
+| 2026-10-21 | AEDS I somente em C; `Lesson.languages`, listagens parciais e linhas recalibradas | Remover ambiguidade Java/C nas lições introdutórias e evitar código não utilizado |
+| 2026-10-21 | Comparação determinística em `/comparar`, dicas/curiosidades em `content/insights.ts`, copiar/baixar código, atalhos com modal e link de reportar problema | Aproveitar ideias do SortVision sem copiar a arquitetura imperativa nem métricas de tempo de animação |
+| 2026-10-21 | 15 novos módulos de AEDS I: OOP (C++) e dados/memória (C), com `inputless` e `languages` | Cobrir os tópicos das notas sem duplicar a toolbar de entrada e mantendo uma única linguagem por módulo |
 
 ---
 

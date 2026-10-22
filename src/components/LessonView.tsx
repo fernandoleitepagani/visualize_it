@@ -1,27 +1,34 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Group, Paper, Tabs, Text, TextInput } from '@mantine/core';
+import { Box, Button, Group, Paper, Stack, Tabs, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
-import type { CodeApproach, Lesson, Step } from '@/engine/types';
+import type { CodeApproach, CodeLang, Lesson, Step } from '@/engine/types';
 import { DEFAULT_INPUT } from '@/engine/types';
 import { assignElementIds } from '@/engine/elementIds';
+import {
+  getCodeFileBaseName,
+  getLessonCode,
+  getLessonLanguages,
+} from '@/engine/code';
 import { usePlayback } from '@/engine/usePlayback';
 import { parseInput } from '@/lib/parseInput';
+import { nextSpeed, previousSpeed } from '@/lib/speeds';
 import { readStoredInput, storeInput } from '@/lib/persistedInput';
+import { getInsight } from '@/content/insights';
 import { font, radius, vizVar } from '@/theme';
 import { BarsView } from './BarsView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
-import type { CodeLang } from './CodePanel';
 import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
 import { NodesView } from './NodesView';
 import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
+import { ShortcutsModal } from './ShortcutsModal';
 import { PlotView } from './PlotView';
 import { QuizPanel } from './QuizPanel';
 import { VarsPanel } from './VarsPanel';
-import { BarsIcon, CheckIcon, GaugeIcon, InfoIcon, ShuffleIcon } from './icons';
+import { BarsIcon, CheckIcon, GaugeIcon, InfoIcon, LightbulbIcon, ShuffleIcon, SparkIcon } from './icons';
 
 /** Picks the renderer for the lesson's view. */
 function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined; ids: string[] }) {
@@ -33,6 +40,18 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const languages = getLessonLanguages(lesson);
+  const hasApproaches = Boolean(
+    lesson.codeVariants?.iterativo && lesson.codeVariants?.recursivo,
+  );
+  const requestedApproach = searchParams.get('approach');
+  const initialApproach: CodeApproach =
+    requestedApproach === 'recursivo' && lesson.codeVariants?.recursivo
+      ? 'recursivo'
+      : 'iterativo';
+  const requestedLang = searchParams.get('lang') as CodeLang | null;
+  const initialLang: CodeLang =
+    requestedLang && languages.includes(requestedLang) ? requestedLang : languages[0];
 
   // Read the URL once: it wins over stored/local state on first load.
   const [initial] = useState(() => {
@@ -41,22 +60,20 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     return {
       input: fromUrl ?? readStoredInput(lesson.id) ?? lesson.initial ?? DEFAULT_INPUT,
       index: Number.isFinite(step) && step >= 1 ? Math.floor(step) - 1 : 0,
+      lang: initialLang,
+      approach: initialApproach,
     };
   });
 
   const [input, setInput] = useState<number[]>(initial.input);
   const [inputValue, setInputValue] = useState(() => initial.input.join(', '));
   const [error, setError] = useState('');
-  const [lang, setLang] = useState<CodeLang>('java');
-  const [approach, setApproach] = useState<CodeApproach>('iterativo');
+  const [lang, setLang] = useState<CodeLang>(initial.lang);
+  const [approach, setApproach] = useState<CodeApproach>(initial.approach);
   const [quiz, setQuiz] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const isDesktop = useMediaQuery('(min-width: 62em)');
-
-  const hasApproaches = Boolean(
-    lesson.codeVariants?.iterativo && lesson.codeVariants?.recursivo,
-  );
-  const listing = lesson.codeVariants?.[approach] ?? lesson.code;
 
   const initialInput = useMemo(() => lesson.initial ?? DEFAULT_INPUT, [lesson]);
   const inputFormat = lesson.inputFormat ?? 'integers';
@@ -70,7 +87,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const playback = usePlayback(steps, { initialIndex: initial.index });
   const step = playback.step ?? steps[0];
   const prevStep = playback.index > 0 ? steps[playback.index - 1] : undefined;
-  const { next, prev, toggle, reset, pause, goTo, total } = playback;
+  const { next, prev, toggle, reset, pause, goTo, total, speedMs, setSpeedMs } = playback;
 
   // Element identities let the bars view animate swaps (only the bars view uses them).
   const ids = useMemo(
@@ -85,11 +102,14 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         const next = new URLSearchParams(previous);
         next.set('arr', input.join(','));
         next.set('step', String(playback.index + 1));
+        next.set('lang', lang);
+        if (hasApproaches) next.set('approach', approach);
+        else next.delete('approach');
         return next;
       },
       { replace: true },
     );
-  }, [input, playback.index, setSearchParams]);
+  }, [approach, hasApproaches, input, lang, playback.index, setSearchParams]);
 
   const setValues = useCallback(
     (values: number[]) => {
@@ -160,6 +180,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   // Keyboard shortcuts: ← → move, space plays, Home restarts, End goes to the last step.
   useEffect(() => {
+    if (helpOpen) return;
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (
@@ -180,24 +201,36 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       } else if (event.key === ' ') {
         event.preventDefault();
         toggle();
-      } else if (event.key === 'Home') {
+      } else if (event.key === 'Home' || event.key === 'r' || event.key === 'R') {
         event.preventDefault();
         reset();
       } else if (event.key === 'End') {
         event.preventDefault();
         goTo(total - 1);
+      } else if (event.key === 'n' || event.key === 'N') {
+        event.preventDefault();
+        randomize();
+      } else if (event.key === '+' || event.key === '=') {
+        event.preventDefault();
+        setSpeedMs(nextSpeed(speedMs));
+      } else if (event.key === '-' || event.key === '_') {
+        event.preventDefault();
+        setSpeedMs(previousSpeed(speedMs));
+      } else if (event.key === '?') {
+        event.preventDefault();
+        setHelpOpen(true);
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [next, prev, toggle, reset, pause, goTo, total]);
+  }, [next, prev, toggle, reset, pause, goTo, total, randomize, setSpeedMs, speedMs, helpOpen]);
 
   const vizPanel = (
     <Panel
       label={lesson.panelLabel ?? 'visualização'}
       icon={<BarsIcon size={13} />}
       aside={
-        <Group gap={6} wrap="nowrap">
+        <Group gap={6} wrap="nowrap" align="center" h={22}>
           <Box
             aria-hidden
             w={6}
@@ -268,14 +301,19 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   const codePanel = (
     <CodePanel
-      code={listing[lang]}
+      code={getLessonCode(lesson, lang, approach)}
       activeLine={step?.line ?? 0}
       lang={lang}
+      languages={languages}
+      fileBaseName={getCodeFileBaseName(lesson, hasApproaches ? approach : undefined)}
       onLangChange={setLang}
       approach={hasApproaches ? approach : undefined}
       onApproachChange={hasApproaches ? changeApproach : undefined}
     />
   );
+
+  const insight = getInsight(lesson.id);
+  const hasInsight = Boolean(insight?.tip || insight?.funFact);
 
   const aboutPanel = (
     <Box className="lesson-about-grid">
@@ -284,6 +322,40 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           <Text c="dimmed" lh={1.7} fz={font.body} style={{ maxWidth: '68ch' }}>
             {lesson.description ?? 'Sem descrição disponível.'}
           </Text>
+          {hasInsight ? (
+            <Stack gap="sm" mt="md" pt="sm" style={{ borderTop: `1px solid ${vizVar.line}` }}>
+              {insight?.tip ? (
+                <Group align="flex-start" gap="sm" wrap="nowrap">
+                  <Box aria-hidden style={{ color: 'var(--subject-accent, var(--viz-accent))', flexShrink: 0 }}>
+                    <LightbulbIcon size={15} />
+                  </Box>
+                  <Box>
+                    <Text fz={font.micro} ff="monospace" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+                      dica
+                    </Text>
+                    <Text fz={font.small} c="dimmed" lh={1.6}>
+                      {insight.tip}
+                    </Text>
+                  </Box>
+                </Group>
+              ) : null}
+              {insight?.funFact ? (
+                <Group align="flex-start" gap="sm" wrap="nowrap">
+                  <Box aria-hidden style={{ color: 'var(--subject-accent, var(--viz-accent))', flexShrink: 0 }}>
+                    <SparkIcon size={15} />
+                  </Box>
+                  <Box>
+                    <Text fz={font.micro} ff="monospace" tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+                      curiosidade
+                    </Text>
+                    <Text fz={font.small} c="dimmed" lh={1.6}>
+                      {insight.funFact}
+                    </Text>
+                  </Box>
+                </Group>
+              ) : null}
+            </Stack>
+          ) : null}
         </Box>
       </Panel>
       <Panel label="complexidade" icon={<GaugeIcon size={13} />}>
@@ -317,6 +389,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
   return (
     <>
+      {!lesson.inputless ? (
       <Paper
         withBorder
         radius="xl"
@@ -360,6 +433,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             variant="subtle"
             size="sm"
             onClick={randomize}
+            aria-keyshortcuts="N"
             leftSection={<ShuffleIcon size={14} />}
           >
             Sortear
@@ -396,6 +470,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           ) : null}
         </Box>
       </Paper>
+      ) : null}
 
       {isDesktop ? (
         <>
@@ -409,6 +484,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               steps={steps}
               quiz={quizSupported ? quiz : undefined}
               onQuizChange={quizSupported ? setQuiz : undefined}
+              onShowShortcuts={() => setHelpOpen(true)}
             />
           </Box>
           {quizPanel}
@@ -440,11 +516,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               steps={steps}
               quiz={quizSupported ? quiz : undefined}
               onQuizChange={quizSupported ? setQuiz : undefined}
+              onShowShortcuts={() => setHelpOpen(true)}
             />
           </Box>
           {quizPanel}
         </>
       )}
+      <ShortcutsModal opened={helpOpen} onClose={() => setHelpOpen(false)} />
     </>
   );
 }

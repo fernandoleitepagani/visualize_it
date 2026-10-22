@@ -9,12 +9,10 @@
 export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
+export type CodeLang = 'java' | 'c' | 'cpp';
 
-/** One source listing per supported language. */
-export interface CodeListing {
-  java: string[];
-  c: string[];
-}
+/** One source listing per language available for a lesson. */
+export type CodeListing = Partial<Record<CodeLang, string[]>>;
 
 /** A cell in the `cells` view (array-backed structures: stacks, queues, lists). */
 export interface Cell {
@@ -103,10 +101,14 @@ export interface Lesson {
   randomInput?: () => number[];
   /** Accepted values in the input bar. Defaults to `integers`. */
   inputFormat?: 'integers' | 'unit-interval';
+  /** Concept modules hide the input toolbar. */
+  inputless?: boolean;
   complexity: Complexity;
   /** Shown as an extra card above "Sobre" (sorting lessons). */
   complexityAnalysis?: ComplexityAnalysis;
   code: CodeListing;
+  /** Languages shown in the UI. Default: ['java', 'c']. */
+  languages?: CodeLang[];
   /**
    * Alternative listings for lessons that offer more than one implementation
    * (for example iterative and recursive). When present, the player shows an

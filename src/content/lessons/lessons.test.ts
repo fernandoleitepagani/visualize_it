@@ -55,13 +55,18 @@ describe.each(['selecao', 'insercao', 'bolha', 'counting', 'bucket'] as const)(
     });
 
     it.each(approaches)('%s destaca apenas linhas existentes no código', (approach) => {
-      const listing = lessons[slug].codeVariants?.[approach] ?? lessons[slug].code;
-      const steps = lessons[slug].steps([...input], approach);
+      const lesson = lessons[slug];
+      const listing = lesson.codeVariants?.[approach] ?? lesson.code;
+      const steps = lesson.steps([...input], approach);
+      const languages = lesson.languages ?? (['java', 'c'] as const);
 
-      for (const step of steps) {
-        expect(step.line).toBeGreaterThanOrEqual(0);
-        expect(step.line).toBeLessThan(listing.java.length);
-        expect(step.line).toBeLessThan(listing.c.length);
+      for (const language of languages) {
+        const code = listing[language];
+        expect(code).toBeDefined();
+        for (const step of steps) {
+          expect(step.line).toBeGreaterThanOrEqual(0);
+          expect(step.line).toBeLessThan(code!.length);
+        }
       }
     });
 
@@ -135,5 +140,78 @@ describe('summation lesson', () => {
 
     expect(totals).toEqual([...totals].sort((a, b) => a - b));
     expect(totals[0]).toBe(0);
+  });
+});
+
+describe('aritmetica lesson — pointer arithmetic', () => {
+  const input = lessons.aritmetica.initial ?? [];
+  const steps = lessons.aritmetica.steps([...input]);
+  const cCode = lessons.aritmetica.code.c ?? [];
+
+  const stepAt = (line: number) => steps.find((step) => step.line === line);
+  const pointerIndex = (line: number) =>
+    stepAt(line)?.cells?.findIndex((cell) => cell.labels?.includes('▼ p')) ?? -1;
+  const writtenIndex = (line: number) =>
+    stepAt(line)?.cells?.findIndex((cell) => cell.state === 'write') ?? -1;
+
+  it('applies the pointer operations to the vector', () => {
+    const last = [...steps].reverse().find((step) => step.cells);
+
+    expect(last?.cells?.map((cell) => cell.val)).toEqual([2, 9, 6, 16, 6]);
+  });
+
+  it('uses the values typed by the user', () => {
+    const custom = lessons.aritmetica.steps([1, 2, 3, 4, 5]);
+    const last = [...custom].reverse().find((step) => step.cells);
+
+    expect(last?.cells?.map((cell) => cell.val)).toEqual([1, 7, 3, 8, 3]);
+  });
+
+  it('moves the pointer when p changes', () => {
+    expect(pointerIndex(11)).toBe(1);
+    expect(pointerIndex(2)).toBe(3);
+    expect(pointerIndex(4)).toBe(2);
+  });
+
+  it('shows the pointer address in the variables panel', () => {
+    expect(stepAt(2)?.vars?.p).toBe('0x100c');
+    expect(stepAt(2)?.vars?.['*p']).toBe(8);
+  });
+
+  it('highlights the cell written by each assignment', () => {
+    expect(writtenIndex(1)).toBe(1);
+    expect(writtenIndex(3)).toBe(3);
+    expect(writtenIndex(5)).toBe(4);
+  });
+
+  it('keeps every highlighted line inside the C listing', () => {
+    for (const step of steps) {
+      expect(step.line).toBeGreaterThanOrEqual(0);
+      expect(step.line).toBeLessThan(cCode.length);
+    }
+  });
+
+  it('points each step at the C command that performs the operation', () => {
+    const commands: Array<[number, RegExp]> = [
+      [9, /int v\[5\] = \{2, 4, 6, 8, 10\};/],
+      [11, /altera\(v \+ 1\);/],
+      [1, /\*p \+= 5;/],
+      [2, /p \+= 2;/],
+      [3, /\*p = \*\(p-1\) \+ \*\(p\+1\);/],
+      [4, /p--;/],
+      [5, /\*\(p\+2\) = \*p;/],
+      [13, /for\(int i = 0; i < 5; i\+\+\)\{/],
+      [14, /printf\("%d ", v\[i\]\);/],
+    ];
+
+    for (const [line, command] of commands) {
+      expect(cCode[line]).toMatch(command);
+    }
+  });
+
+  it('offers only C and warns that Java has no pointer arithmetic', () => {
+    expect(lessons.aritmetica.languages).toEqual(['c']);
+    expect(lessons.aritmetica.code.java).toBeUndefined();
+    expect(lessons.aritmetica.description).toMatch(/Java não tem aritmética de ponteiros/);
   });
 });
