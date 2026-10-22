@@ -32,10 +32,10 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Item | Estado |
 |---|---|
 | Lições registradas | 39 (`src/content/lessons/index.ts`) |
-| Views | 5 (`bars`, `cells`, `nodes`, `plot`, `matrix`) |
+| Views | 6 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `object`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
-| Testes | 232 testes em 29 arquivos, passando |
+| Testes | 243 testes em 31 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -73,7 +73,12 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 - separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
   `Vetor (1D)` e `Matriz (2D)`, 4 operações (`preencher`, `limpar`, `buscar`, `somar`), entradas dinâmicas
   (vetor proporcional à quantidade de valores; matriz com campos de linha empilhados até 10x10) e sincronização
-  completa com o código C e o `VarsPanel`.
+  completa com o código C e o `VarsPanel`;
+- nova view `object` (`ObjectView.tsx`) e reformulação completa das 9 lições de POO em C++ (Issue #53),
+  eliminando caixas indexadas de array e introduzindo moldes de classe (blueprints) com membros públicos/privados,
+  instâncias concretas na memória com realce de escrita em tempo real, hierarquias de herança com resolução
+  na classe base, despacho dinâmico polimórfico via ponteiro base com indicação de vtable, e fluxo interativo de
+  exceções (`try` -> `throw` -> `catch`).
 
 ---
 
