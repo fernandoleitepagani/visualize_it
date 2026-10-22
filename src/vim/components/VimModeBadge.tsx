@@ -11,9 +11,18 @@ const LABELS: Record<VimMode, string> = {
   search: 'BUSCA',
 };
 
-/** Small mode chip shown in the buffer panel header and statusline. */
+const COLORS: Record<VimMode, string> = {
+  normal: vizVar.accent,
+  insert: vizVar.purple,
+  visual: vizVar.accent,
+  'visual-line': vizVar.accent,
+  command: vizVar.purple,
+  search: vizVar.purple,
+};
+
+/** Small mode chip shown in the statusline. */
 export function VimModeBadge({ mode }: { mode: VimMode }) {
-  const color = mode === 'insert' ? vizVar.purple : vizVar.accent;
+  const color = COLORS[mode];
   return (
     <Text
       component="span"
@@ -28,6 +37,7 @@ export function VimModeBadge({ mode }: { mode: VimMode }) {
         borderRadius: 5,
         padding: '2px 7px',
         whiteSpace: 'nowrap',
+        transition: 'color 140ms ease, border-color 140ms ease, background-color 140ms ease',
       }}
     >
       {LABELS[mode]}

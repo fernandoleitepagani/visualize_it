@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Box } from '@mantine/core';
+import { KeyboardIcon } from '@/components/icons';
 import { lineLength } from '../buffer';
 import { isPrintable, normalizeKey } from '../keymap';
-import type { VimState } from '../types';
+import type { VimMode, VimState } from '../types';
 
 interface Span {
   start: number;
@@ -15,7 +16,11 @@ interface Props {
   onText: (text: string) => void;
 }
 
-function selectionFor(state: VimState, lineIndex: number, line: string): Span | 'line' | null {
+function selectionFor(
+  state: Pick<VimState, 'anchor' | 'cursor' | 'mode'>,
+  lineIndex: number,
+  line: string,
+): Span | 'line' | null {
   const { anchor, cursor, mode } = state;
   if (!anchor || (mode !== 'visual' && mode !== 'visual-line')) return null;
 
@@ -54,14 +59,97 @@ function searchSpans(line: string, needle: string): Span[] {
   return spans;
 }
 
+function renderLine(
+  line: string,
+  lineIndex: number,
+  selection: Span | 'line' | null,
+  matches: Span[],
+  cursor: VimState['cursor'],
+  mode: VimMode,
+): ReactNode {
+  const cells = Array.from(line);
+  const nodes: ReactNode[] = [];
+  const cursorHere = lineIndex === cursor.line;
+  let plain = '';
+
+  const flush = () => {
+    if (plain) {
+      nodes.push(plain);
+      plain = '';
+    }
+  };
+
+  if (cells.length === 0 && cursorHere && mode !== 'insert') {
+    nodes.push(
+      <span key="empty-cursor" className="vim-cursor">
+        &nbsp;
+      </span>,
+    );
+  }
+
+  cells.forEach((char, col) => {
+    const isCursor = cursorHere && col === cursor.col;
+
+    if (mode === 'insert' && isCursor) {
+      flush();
+      nodes.push(<span key={`caret-${col}`} className="vim-caret" />);
+    }
+
+    const selected =
+      selection !== null &&
+      selection !== 'line' &&
+      col >= selection.start &&
+      col <= selection.end;
+    const matched = matches.some((span) => col >= span.start && col <= span.end);
+
+    if (!selected && !matched && !(isCursor && mode !== 'insert')) {
+      plain += char;
+      return;
+    }
+
+    flush();
+    const classes = ['vim-char'];
+    if (selected) classes.push('vim-selection');
+    if (matched) classes.push('vim-match');
+    if (isCursor && mode !== 'insert') classes.push('vim-cursor');
+    nodes.push(
+      <span key={col} className={classes.join(' ')}>
+        {char}
+      </span>,
+    );
+  });
+
+  flush();
+
+  if (mode === 'insert' && cursorHere && cursor.col >= cells.length) {
+    nodes.push(<span key="caret-end" className="vim-caret" />);
+  }
+
+  return nodes;
+}
+
 /**
  * A small, dependency-free Vim surface. All editing lives in `keymap.ts`; this
  * component only renders state and forwards keys.
+ *
+ * Performance notes: the keydown listener is bound once, handlers are read from
+ * refs, and plain text runs are grouped into single text nodes. Only cursor,
+ * selection and search hits become elements.
  */
 export function VimEditor({ state, onKey, onText }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
   const composing = useRef(false);
+  const onKeyRef = useRef(onKey);
+  const onTextRef = useRef(onText);
+  const modeRef = useRef(state.mode);
   const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    onKeyRef.current = onKey;
+    onTextRef.current = onText;
+    modeRef.current = state.mode;
+  }, [onKey, onText, state.mode]);
 
   useEffect(() => {
     const area = inputRef.current;
@@ -72,32 +160,50 @@ export function VimEditor({ state, onKey, onText }: Props) {
       if (!key) return;
 
       // Printable insert characters flow through the textarea (IME/mobile safe).
-      if (state.mode === 'insert' && isPrintable(key) && !event.ctrlKey && !event.metaKey) {
+      if (modeRef.current === 'insert' && isPrintable(key) && !event.ctrlKey && !event.metaKey) {
         return;
       }
 
+      // Keep the browser paste shortcut working inside insert mode.
+      if (modeRef.current === 'insert' && key === 'C-v') return;
+
       event.preventDefault();
       event.stopPropagation();
-      onKey(key);
+      onKeyRef.current(key);
     };
 
     area.addEventListener('keydown', onKeyDown);
     return () => area.removeEventListener('keydown', onKeyDown);
-  }, [state.mode, onKey]);
+  }, []);
 
   // Switching to insert through a touch key should open the soft keyboard.
   useEffect(() => {
     if (state.mode === 'insert') inputRef.current?.focus();
   }, [state.mode]);
 
-  const commit = useCallback(
-    (value: string) => {
-      if (value && state.mode === 'insert') onText(value);
-    },
-    [state.mode, onText],
-  );
+  // zz/zt/zb and Ctrl-e/y update the logical scroll position.
+  useEffect(() => {
+    if (surfaceRef.current) surfaceRef.current.scrollTop = state.scrollTop;
+  }, [state.scrollTop]);
+
+  const commit = useCallback((value: string) => {
+    if (value && modeRef.current === 'insert') onTextRef.current(value);
+  }, []);
 
   const needle = state.mode === 'search' ? state.search : state.lastSearch;
+  const { lines, cursor, mode, showNumbers, relativeNumbers } = state;
+
+  const matchesByLine = useMemo(
+    () => lines.map((line) => searchSpans(line, needle ?? '')),
+    [lines, needle],
+  );
+  const selectionByLine = useMemo(
+    () =>
+      lines.map((line, lineIndex) =>
+        selectionFor({ anchor: state.anchor, cursor, mode }, lineIndex, line),
+      ),
+    [lines, state.anchor, cursor, mode],
+  );
 
   return (
     <Box
@@ -107,11 +213,9 @@ export function VimEditor({ state, onKey, onText }: Props) {
       data-cursor={`${state.cursor.line}:${state.cursor.col}`}
       className="vim-editor"
     >
-      <div className="vim-surface" aria-hidden="true">
-        {state.lines.map((line, lineIndex) => {
-          const cells = Array.from(line);
-          const selection = selectionFor(state, lineIndex, line);
-          const matches = searchSpans(line, needle ?? '');
+      <div ref={surfaceRef} className="vim-surface" aria-hidden="true">
+        {lines.map((line, lineIndex) => {
+          const selection = selectionByLine[lineIndex];
           const selectedLine = selection === 'line';
 
           return (
@@ -119,51 +223,29 @@ export function VimEditor({ state, onKey, onText }: Props) {
               key={lineIndex}
               className={`vim-line${selectedLine ? ' vim-line-selected' : ''}`}
             >
-              {state.showNumbers ? (
-                <span className="vim-gutter">{String(lineIndex + 1).padStart(3, ' ')}</span>
+              {showNumbers ? (
+                <span className="vim-gutter">
+                  {relativeNumbers
+                    ? lineIndex === cursor.line
+                      ? String(lineIndex + 1).padStart(3, ' ')
+                      : String(Math.abs(lineIndex - cursor.line)).padStart(3, ' ')
+                    : String(lineIndex + 1).padStart(3, ' ')}
+                </span>
               ) : null}
               <span className="vim-text">
-                {cells.length === 0 && lineIndex === state.cursor.line && state.mode !== 'insert' ? (
-                  <span className="vim-cursor">&nbsp;</span>
-                ) : null}
-                {cells.map((char, col) => {
-                  const isCursor = lineIndex === state.cursor.line && col === state.cursor.col;
-                  const inSelection =
-                    selection !== null &&
-                    selection !== 'line' &&
-                    col >= selection.start &&
-                    col <= selection.end;
-                  const inMatch = matches.some((span) => col >= span.start && col <= span.end);
-                  const classes = ['vim-char'];
-                  if (inSelection) classes.push('vim-selection');
-                  if (inMatch) classes.push('vim-match');
-
-                  return (
-                    <span key={col} className={classes.join(' ')}>
-                      {state.mode === 'insert' && isCursor ? <span className="vim-caret" /> : null}
-                      <span className={isCursor && state.mode !== 'insert' ? 'vim-cursor' : undefined}>
-                        {char}
-                      </span>
-                    </span>
-                  );
-                })}
-                {state.mode === 'insert' &&
-                lineIndex === state.cursor.line &&
-                state.cursor.col >= cells.length ? (
-                  <span className="vim-caret" />
-                ) : null}
+                {renderLine(line, lineIndex, selection, matchesByLine[lineIndex] ?? [], cursor, mode)}
               </span>
             </div>
           );
         })}
 
-        {state.mode === 'command' ? (
+        {mode === 'command' ? (
           <div className="vim-commandline">
             :{state.command}
             <span className="vim-caret" />
           </div>
         ) : null}
-        {state.mode === 'search' ? (
+        {mode === 'search' ? (
           <div className="vim-commandline">
             {state.searchDirection === 1 ? '/' : '?'}
             {state.search}
@@ -176,8 +258,7 @@ export function VimEditor({ state, onKey, onText }: Props) {
         Editor Vim. Clique para focar. Use Escape para voltar ao modo normal. Tab sai do editor.
       </p>
       <p className="vim-sr-only">
-        Buffer: {state.lines.join(' ')}. Linha {state.cursor.line + 1}, coluna{' '}
-        {state.cursor.col + 1}.
+        Buffer: {lines.join(' ')}. Linha {cursor.line + 1}, coluna {cursor.col + 1}.
       </p>
 
       <textarea
@@ -186,7 +267,7 @@ export function VimEditor({ state, onKey, onText }: Props) {
         aria-label="Editor Vim"
         aria-describedby="vim-editor-help"
         value=""
-        inputMode={state.mode === 'insert' ? 'text' : 'none'}
+        inputMode={mode === 'insert' ? 'text' : 'none'}
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
@@ -208,9 +289,19 @@ export function VimEditor({ state, onKey, onText }: Props) {
       />
 
       {!focused ? (
-        <div className="vim-focus-hint" aria-hidden="true">
-          clique para focar
-        </div>
+        <button
+          type="button"
+          tabIndex={-1}
+          className="vim-focus-overlay"
+          aria-label="Focar no editor Vim"
+          onClick={() => inputRef.current?.focus()}
+        >
+          <span className="vim-focus-card">
+            <KeyboardIcon size={22} />
+            <span className="vim-focus-title">Clique para focar</span>
+            <span className="vim-focus-sub">Esc volta ao normal · Tab sai do editor</span>
+          </span>
+        </button>
       ) : null}
     </Box>
   );

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { fireEvent, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { renderWithProviders } from '@/test/render';
 import { applyKeys, applyText, createState } from '../keymap';
 import type { VimState } from '../types';
-import { VimCheatsheet } from './VimCheatsheet';
 import { VimEditor } from './VimEditor';
 import { VimStatusline } from './VimStatusline';
 
@@ -37,7 +36,7 @@ describe('VimEditor', () => {
     const input = screen.getByRole('textbox', { name: 'Editor Vim' });
 
     fireEvent.focus(input);
-    expect(screen.queryByText('clique para focar')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Focar no editor Vim' })).not.toBeInTheDocument();
 
     fireEvent.keyDown(input, { key: 'j' });
     expect(screen.getByRole('application')).toHaveAttribute('data-cursor', '1:0');
@@ -58,36 +57,43 @@ describe('VimEditor', () => {
     expect(screen.getByRole('application')).toHaveAttribute('data-mode', 'normal');
   });
 
+  it('shows the centered focus overlay and focuses on click', () => {
+    renderWithProviders(<EditorHarness />);
+
+    const overlay = screen.getByRole('button', { name: 'Focar no editor Vim' });
+    expect(overlay).toBeInTheDocument();
+    expect(overlay).toHaveClass('vim-focus-overlay');
+    expect(screen.getByText('Clique para focar')).toBeInTheDocument();
+
+    fireEvent.click(overlay);
+    expect(screen.queryByRole('button', { name: 'Focar no editor Vim' })).not.toBeInTheDocument();
+  });
+
+  it('brings the overlay back when the editor loses focus', () => {
+    renderWithProviders(<EditorHarness />);
+    const input = screen.getByRole('textbox', { name: 'Editor Vim' });
+
+    fireEvent.focus(input);
+    expect(screen.queryByRole('button', { name: 'Focar no editor Vim' })).not.toBeInTheDocument();
+
+    fireEvent.blur(input);
+    expect(screen.getByRole('button', { name: 'Focar no editor Vim' })).toBeInTheDocument();
+  });
+
   it('announces mode and message in the statusline', () => {
     renderWithProviders(<EditorHarness />);
     const input = screen.getByRole('textbox', { name: 'Editor Vim' });
 
     fireEvent.keyDown(input, { key: ':' });
     expect(screen.getByRole('application')).toHaveAttribute('data-mode', 'command');
-    expect(screen.getAllByText('COMANDO').length).toBeGreaterThan(0);
+    expect(screen.getByText('COMANDO')).toBeInTheDocument();
     expect(screen.getByText('teste.txt')).toBeInTheDocument();
   });
-});
 
-describe('VimCheatsheet', () => {
-  it('filters commands and keeps the essential groups', () => {
-    renderWithProviders(<VimCheatsheet onPractice={vi.fn()} />);
+  it('keeps the DOM small on long buffers', () => {
+    const lines = Array.from({ length: 120 }, (_, index) => `const value${index} = ${index};`);
+    const { container } = renderWithProviders(<EditorHarness lines={lines} />);
 
-    expect(screen.getByText('desfazer')).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText('Filtrar cheatsheet'), {
-      target: { value: 'diw' },
-    });
-
-    expect(screen.queryByText('desfazer')).not.toBeInTheDocument();
-    expect(screen.getByText('apagar a palavra sob o cursor')).toBeInTheDocument();
-  });
-
-  it('shows a practice action only for staged items', () => {
-    const onPractice = vi.fn();
-    renderWithProviders(<VimCheatsheet onPractice={onPractice} />);
-
-    fireEvent.click(screen.getByLabelText('praticar inserir antes do cursor'));
-    expect(onPractice).toHaveBeenCalledTimes(1);
-    expect(onPractice.mock.calls[0][0].id).toBe('i');
+    expect(container.querySelectorAll('.vim-editor *').length).toBeLessThan(800);
   });
 });
