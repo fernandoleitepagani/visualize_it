@@ -129,8 +129,9 @@ describe('loop lessons', () => {
   ] as const)('%s acumula 1..n', (slug, n) => {
     const steps = lessons[slug].steps([n]);
     const last = steps[steps.length - 1];
-    const total = last.cells?.find((cell) => cell.labels?.includes('S'))?.val;
-    expect(total).toBe(sumTo(n));
+    expect(last.vars?.S).toBe(sumTo(n));
+    expect(last.loop?.accumulator?.value).toBe(sumTo(n));
+    expect(last.cells).toBeUndefined();
   });
 });
 
