@@ -95,3 +95,47 @@ describe('LessonView unit-interval input', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('LessonView operations group (vetores-matrizes)', () => {
+  const vmLesson = getLesson('vetores-matrizes');
+  if (!vmLesson) throw new Error('A lição de vetores-matrizes precisa existir.');
+
+  it('renders structure and operation controls for vetores-matrizes', () => {
+    renderWithProviders(<LessonView lesson={vmLesson} />);
+
+    expect(screen.getByText('Estrutura')).toBeInTheDocument();
+    expect(screen.getByText('Operação')).toBeInTheDocument();
+    expect(screen.getByText('Vetor (1D)')).toBeInTheDocument();
+    expect(screen.getByText('Matriz (2D)')).toBeInTheDocument();
+    expect(screen.getByText('Preencher')).toBeInTheDocument();
+    expect(screen.getByText('Limpar')).toBeInTheDocument();
+    expect(screen.getByText('Buscar')).toBeInTheDocument();
+    expect(screen.getByText('Somar')).toBeInTheDocument();
+  });
+
+  it('allows entering custom vector values and applying', () => {
+    renderWithProviders(<LessonView lesson={vmLesson} />);
+
+    const input = screen.getByLabelText('valores do vetor');
+    fireEvent.change(input, { target: { value: '5, 15, 25' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Aplicar' }));
+
+    expect(input).toHaveValue('5, 15, 25');
+    expect(screen.getByText(/3 elementos/)).toBeInTheDocument();
+  });
+
+  it('switches to Matriz and shows row input fields with add line control', () => {
+    renderWithProviders(<LessonView lesson={vmLesson} />);
+
+    fireEvent.click(screen.getByText('Matriz (2D)'));
+
+    expect(screen.getByText(/Linhas da matriz/)).toBeInTheDocument();
+    expect(screen.getByLabelText('valores da linha 0')).toBeInTheDocument();
+    expect(screen.getByLabelText('valores da linha 1')).toBeInTheDocument();
+
+    const addLineBtn = screen.getByRole('button', { name: '+ Linha' });
+    fireEvent.click(addLineBtn);
+
+    expect(screen.getByLabelText('valores da linha 2')).toBeInTheDocument();
+  });
+});
