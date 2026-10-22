@@ -445,8 +445,12 @@ matéria próprio.
 | Cursor insert | barra de 2 px âmbar; pisca com `vim-blink`, desligada por `prefers-reduced-motion` |
 | Seleção visual | `color-mix` do âmbar a 26%; linha inteira a 14% |
 | Busca | `--viz-purple` a 24% |
-| Foco | anel interno `--viz-accent-line` via `:focus-within` |
-| Teclas tocáveis | `Button` `variant="default"`, mono, visíveis abaixo de 62em ou em ponteiro grosso |
+| Foco normal | anel interno `--viz-accent-line` via `:focus-within` |
+| Foco insert | anel interno violeta (`--viz-purple` a 55%) |
+| Sem foco | overlay central com `backdrop-filter: blur(5px)`, fundo `--viz-canvas` a 42%, card em `--viz-panel`; clicar devolve o foco ao `textarea` |
+| Cheatsheet | 2 colunas; linha com `grid-template-columns: minmax(72px, auto) 1fr`; keycaps `Kbd` 11.5, rótulo 13 em `--viz-ink-2`; um "praticar" por grupo |
+| Trilha de desafios | grade 6×2 de chips; ativo com `--viz-accent-soft` e `--viz-accent-line` |
+| Teclas tocáveis | 3 grupos (mover, modos, editar), `Button` `variant="default"` mono, visíveis abaixo de 62em ou em ponteiro grosso; deck sticky no mobile |
 
 Não crie uma paleta paralela: qualquer estado novo da seção deve reutilizar `--viz-*`. O texto do
 buffer é mono; rótulos e instruções seguem a tipografia do site. O conteúdo é pt-BR, os comandos Vim

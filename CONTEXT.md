@@ -229,8 +229,11 @@ O guia completo de uso (temas, variáveis, acentos por matéria, componentes e a
 - `src/content/theory/index.ts` registra os artigos de teoria.
 
 Cada matéria tem uma rota `/materias/:subjectId` com busca local, filtros por grupo e por view,
-contagem e estado na URL (`q`, `grupo`, `view`). A home lista apenas as três matérias e alguns
-destaques. A busca do header abre um painel agrupado por matéria. O título dos cards de lição vem do
+contagem e estado na URL (`q`, `grupo`, `view`). A home lista as três matérias, três frentes de
+aprendizado, destaques, um recorte de código e as duas ferramentas (Vim e Playground). A busca do
+header abre um painel agrupado por matéria. A navegação primária é `Início`, menu `Matérias`,
+`Vim` e `Playground`; no mobile, o drawer repete os mesmos grupos com rótulos e o acento de cada
+matéria. O título dos cards de lição vem do
 próprio `Lesson`; `subjects.ts` guarda apenas slug, descrição curta e tag de complexidade.
 
 ### 4.6 Seção Vim
