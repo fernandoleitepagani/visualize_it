@@ -227,6 +227,35 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'loop') {
+    return (
+      <Flex gap={2} align="center" justify="center" h={30} aria-hidden>
+        <Box
+          w={20}
+          h={20}
+          style={{
+            borderRadius: radius.pill,
+            border: `2px solid color-mix(in srgb, ${accent} 70%, transparent)`,
+            borderTopColor: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: 'rotate(-45deg)',
+          }}
+        >
+          <Box
+            w={5}
+            h={5}
+            style={{
+              borderRadius: radius.pill,
+              background: accent,
+            }}
+          />
+        </Box>
+      </Flex>
+    );
+  }
+
   return (
     <Flex gap={3} align="flex-end" h={30} aria-hidden>
       {barHeights.map((height, i) => (

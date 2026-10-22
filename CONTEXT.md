@@ -36,7 +36,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 468 testes em 47 arquivos, passando |
+| Testes | 474 testes em 48 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -292,7 +292,7 @@ polimento.
 | ID | Sev. | Achado | Evidência | Impacto | Correção sugerida |
 |---|---|---|---|---|---|
 | BUG-01 | Resolvido | Destaque da linha ativa agora suporta mapeamento por linguagem em AEDS II | `StepLine` suporta `{ java: number, c: number }`; 10 lições com listagens desalinhadas foram calibradas e `lessons.test.ts` valida limites para todas as linguagens suportadas | — | Coberto por `lessons.test.ts` em todas as linguagens |
-| BUG-02 | Alta | `for.ts`: Java, C e simulação calculam resultados diferentes | Java: `i <= N-1` e `p <= N`; C: `i <= N` e `p <= N-1`; simulação: `i <= N` e `p <= N-1`. Para N=3, Java ≈ 3,7 e C/simulação = 1,0 | A lição ensina um código e anima outro; o resultado exibido não corresponde ao Java | Unificar a especificação, corrigir as três versões e adicionar teste do valor final |
+| BUG-02 | Resolvido | Loop Tracker desacoplado de células e correção do somatório em `for.ts` | Issue #57 resolvida: `for`, `while` e `do-while` migrados para `LoopView` com alternância entre Quadrados de Iteração (1D e 2D triangular) e Dashboard analítico; variáveis locais no `VarsPanel`; código C de `for.ts` simplificado para somatório aninhado didático ($j \le i$) com exata correspondência | — | Coberto por `LoopView.test.tsx` e `lessons.test.ts` |
 | BUG-03 | Resolvido | Lista dupla mostrava `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` agora mapeia `prev: nd.ant` e `next: nd.prox`; `NodesView` resolve os ids para os valores e desenha conectores curvos | — | Coberto por `lessons.test.ts`; a view também exibe o terminal `∅` |
 | BUG-04 | Resolvido | Validação de entrada por schema e prevenção de estouro de memória | Módulo `inputValidation.ts` introduzido com `InputSchema` (`min`, `max`, `integerOnly`, `unit-interval`), limites estritos e mensagens claras em pt-BR; counting sort protegido em 0..30 | — | Coberto por `inputValidation.test.ts`, `LessonView.test.tsx` e `ComparePage.tsx` |
 | BUG-05 | Média | Busca sempre procura o elemento do meio | `busca-sequencial.ts` e `busca-binaria.ts` definem `target = v[Math.floor(v.length / 2)]` | Não dá para demonstrar melhor/pior caso nem o caminho “não encontrado”; a busca sequencial sempre percorre metade do vetor | Permitir alvo explícito na entrada; manter um padrão quando não informado |
@@ -344,11 +344,12 @@ polimento.
 
 ### Curto prazo (próximas entregas)
 
-- Corrigir BUG-01 e BUG-02.
+- Alvo configurável nas lições de busca (Issue #56).
+- Visualização de chamada recursiva (Call Stack) em Quicksort e Mergesort (Issue #59).
+- Visualização de Árvore Binária para Heapsort (Issue #60).
+- FileView: disco vs RAM com cursor sequencial (Issue #54).
+- Operações interativas em listas encadeadas (Issue #58).
 - Remover o shim/alias `viz` depois de migrar os imports restantes.
-- Validar entrada por lição (inteiros, faixa, quantidade, N único, alvo).
-- Adicionar testes de limites de linha e de igualdade entre Java e C.
-- Limpar `dump.txt` e `criar-issues.sh`.
 
 ### Médio prazo
 

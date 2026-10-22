@@ -28,6 +28,7 @@ const viewLabels: Record<ViewKind, string> = {
   matrix: 'Matriz',
   pointers: 'Ponteiros',
   object: 'Objetos',
+  loop: 'Laços',
 };
 
 interface Props {

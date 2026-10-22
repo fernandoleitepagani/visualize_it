@@ -129,8 +129,24 @@ describe('loop lessons', () => {
   ] as const)('%s acumula 1..n', (slug, n) => {
     const steps = lessons[slug].steps([n]);
     const last = steps[steps.length - 1];
-    const total = last.cells?.find((cell) => cell.labels?.includes('S'))?.val;
-    expect(total).toBe(sumTo(n));
+    expect(last.vars?.S).toBe(sumTo(n));
+    expect(last.loop?.accumulator?.value).toBe(sumTo(n));
+    expect(last.cells).toBeUndefined();
+  });
+
+  it('for acumula corretamente em laços aninhados (j <= i)', () => {
+    const steps = lessons.for.steps([3]);
+    const last = steps[steps.length - 1];
+    // n=3: i=1 (j=1 -> 1) + i=2 (j=1,2 -> 3) + i=3 (j=1,2,3 -> 6) = 10
+    expect(last.vars?.S).toBe(10);
+    expect(last.loop?.accumulator?.value).toBe(10);
+    expect(last.cells).toBeUndefined();
+
+    // Testa com n=4 -> 20
+    const steps4 = lessons.for.steps([4]);
+    const last4 = steps4[steps4.length - 1];
+    expect(last4.vars?.S).toBe(20);
+    expect(last4.loop?.accumulator?.value).toBe(20);
   });
 });
 
