@@ -35,7 +35,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Views | 5 (`bars`, `cells`, `nodes`, `plot`, `matrix`) |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `*` (404) |
-| Testes | 218 testes em 28 arquivos, passando |
+| Testes | 232 testes em 29 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -69,7 +69,11 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 - quiz no player, URL compartilhável (`arr`/`step`), entrada persistida por lição, playground,
   alternância de tema claro/escuro e view `plot`;
 - view bidimensional `matrix` com realce cruzado de coordenadas $(i, j)$ e suporte a matrizes 2D reais
-  em `vetores-matrizes` e `classes-vetores-matrizes` (Issue #49).
+  em `vetores-matrizes` e `classes-vetores-matrizes` (Issue #49);
+- separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
+  `Vetor (1D)` e `Matriz (2D)`, 4 operações (`preencher`, `limpar`, `buscar`, `somar`), entradas dinâmicas
+  (vetor proporcional à quantidade de valores; matriz com campos de linha empilhados até 10x10) e sincronização
+  completa com o código C e o `VarsPanel`.
 
 ---
 
@@ -389,6 +393,7 @@ npm run build
 | 2026-10-21 | AEDS I somente em C; `Lesson.languages`, listagens parciais e linhas recalibradas | Remover ambiguidade Java/C nas lições introdutórias e evitar código não utilizado |
 | 2026-10-21 | Comparação determinística em `/comparar`, dicas/curiosidades em `content/insights.ts`, copiar/baixar código, atalhos com modal e link de reportar problema | Aproveitar ideias do SortVision sem copiar a arquitetura imperativa nem métricas de tempo de animação |
 | 2026-10-21 | 15 novos módulos de AEDS I: OOP (C++) e dados/memória (C), com `inputless` e `languages` | Cobrir os tópicos das notas sem duplicar a toolbar de entrada e mantendo uma única linguagem por módulo |
+| 2026-10-22 | Separação interativa de vetores e matrizes em `vetores-matrizes` com entradas dinâmicas e 4 operações (preencher, limpar, buscar, somar) | Facilitar a compreensão de vetores 1D e matrizes 2D isoladamente com código C dedicado e dimensionamento flexível até 10x10 (Issue #51) |
 
 ---
 
