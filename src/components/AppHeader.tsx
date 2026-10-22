@@ -36,6 +36,7 @@ export function AppHeader() {
     ? pathname.split('/')[2]
     : currentEntry?.subject.id;
   const playgroundActive = pathname === '/playground';
+  const vimActive = pathname.startsWith('/vim');
 
   return (
     <Container
@@ -91,6 +92,19 @@ export function AppHeader() {
         </Group>
 
         <Group gap="sm" wrap="nowrap">
+          {isDesktop ? (
+            <Anchor
+              component={Link}
+              to="/vim"
+              underline="never"
+              className="nav-link"
+              data-active={vimActive ? 'true' : undefined}
+              fz={font.small}
+              aria-current={vimActive ? 'page' : undefined}
+            >
+              Vim
+            </Anchor>
+          ) : null}
           {isDesktop ? (
             <Anchor
               component={Link}
@@ -161,6 +175,17 @@ export function AppHeader() {
               {subject.title}
             </Anchor>
           ))}
+          <Anchor
+            component={Link}
+            to="/vim"
+            onClick={drawer.close}
+            underline="never"
+            className="nav-link"
+            data-active={vimActive ? 'true' : undefined}
+            h={38}
+          >
+            Vim
+          </Anchor>
           <Anchor
             component={Link}
             to="/playground"

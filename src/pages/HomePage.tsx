@@ -14,7 +14,7 @@ import {
   subjects,
 } from '@/content/subjects';
 import { font, radius, space, vizVar } from '@/theme';
-import { ArrowRightIcon, SigmaIcon } from '@/components/icons';
+import { ArrowRightIcon, KeyboardIcon, SigmaIcon } from '@/components/icons';
 
 const featuredSlugs = ['selecao', 'busca-binaria', 'pilha-sequencial'];
 
@@ -80,6 +80,69 @@ export function HomePage() {
             <AlgorithmCard key={location.entry.slug} location={location} />
           ))}
         </SimpleGrid>
+      </Box>
+
+      <Box component="section" aria-labelledby="ferramentas" mb={space.xxl}>
+        <SectionHeading id="ferramentas" index="03" kicker="ferramentas">
+          Ferramentas
+        </SectionHeading>
+        <Paper
+          component={Link}
+          to="/vim"
+          withBorder
+          radius="xl"
+          p="lg"
+          style={{
+            display: 'block',
+            borderColor: vizVar.line,
+            background: vizVar.panel,
+          }}
+        >
+          <Group justify="space-between" align="center" gap="lg" wrap="wrap">
+            <Group gap="md" align="flex-start" wrap="nowrap">
+              <Box
+                aria-hidden
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: radius.md,
+                  background: vizVar.accentSoft,
+                  border: `1px solid ${vizVar.accentLine}`,
+                  color: vizVar.accent,
+                  flexShrink: 0,
+                }}
+              >
+                <KeyboardIcon size={20} />
+              </Box>
+              <Box>
+                <Title order={2} fz={font.lead} fw={600} mb={4}>
+                  Vim — pratique no buffer
+                </Title>
+                <Text fz={font.small} c="dimmed" maw="58ch">
+                  Doze desafios curtos, cursor de bloco e um cheatsheet essencial para aprender os
+                  movimentos e operadores que realmente importam.
+                </Text>
+              </Box>
+            </Group>
+            <Text
+              fz={font.small}
+              fw={600}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                color: 'var(--viz-accent)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              abrir treinador
+              <ArrowRightIcon size={14} />
+            </Text>
+          </Group>
+        </Paper>
       </Box>
 
       <Paper

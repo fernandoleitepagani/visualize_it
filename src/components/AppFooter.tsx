@@ -30,6 +30,9 @@ export function AppFooter() {
               {subject.title}
             </Anchor>
           ))}
+          <Anchor component={Link} to="/vim" underline="never" fz={font.tiny} c="dimmed">
+            Vim
+          </Anchor>
           <Anchor component={Link} to="/playground" underline="never" fz={font.tiny} c="dimmed">
             Playground
           </Anchor>
