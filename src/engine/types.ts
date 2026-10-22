@@ -68,6 +68,7 @@ export interface ObjectAttribute {
   value?: string | number | boolean | null;
   visibility?: ObjectVisibility;
   state?: ObjectItemState;
+  sourceValue?: string;
 }
 
 export interface ObjectMethod {
@@ -109,6 +110,7 @@ export interface ObjectCallStack {
   dispatchedTo?: string;
   params?: Record<string, string | number>;
   returned?: string | number;
+  effect?: string;
 }
 
 export interface ObjectExceptionState {

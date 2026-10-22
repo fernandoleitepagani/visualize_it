@@ -148,7 +148,10 @@ function BlueprintCard({ blueprint, activeMethod }: { blueprint: ObjectClassBlue
                 style={{
                   borderRadius: radius.xs,
                   background: isActive ? vizVar.accentSoft : vizVar.surface3,
-                  border: `1px solid ${isActive ? vizVar.accentLine : vizVar.line}`,
+                  borderColor: isActive ? vizVar.accent : vizVar.line,
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  boxShadow: isActive ? `0 0 10px -2px ${vizVar.accent}` : undefined,
                   transition: `all ${transition.fast} ease`,
                 }}
               >
@@ -157,13 +160,18 @@ function BlueprintCard({ blueprint, activeMethod }: { blueprint: ObjectClassBlue
                   <Text
                     fz={font.micro}
                     ff="monospace"
-                    fw={isActive ? 600 : 400}
-                    style={{ color: isActive ? vizVar.ink : vizVar.ink2 }}
+                    fw={isActive ? 700 : 400}
+                    style={{ color: isActive ? vizVar.accent : vizVar.ink2 }}
                   >
                     {method.name}({method.params ?? ''})
                   </Text>
                 </Group>
                 <Group gap={4} align="center">
+                  {isActive && (
+                    <Badge size="xs" variant="filled" color="yellow" radius="xs" fz={9} leftSection={<ArrowRightIcon size={10} />}>
+                      ativo
+                    </Badge>
+                  )}
                   {method.isVirtual && (
                     <Badge size="xs" variant="light" color="yellow" radius="xs" fz={9}>
                       virtual
@@ -226,7 +234,7 @@ function InstanceCard({ instance }: { instance: ObjectInstance }) {
         </Badge>
       </Group>
 
-      <Stack gap={3}>
+      <Stack gap={4}>
         <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.08em' }}>
           Estado Interno (Atributos)
         </Text>
@@ -234,6 +242,8 @@ function InstanceCard({ instance }: { instance: ObjectInstance }) {
           const itemStyle = attributeItemStyle(attr.state);
           const hasValue = attr.value !== undefined && attr.value !== null && attr.value !== '';
           const displayValue = hasValue ? (typeof attr.value === 'string' ? `"${attr.value}"` : String(attr.value)) : '—';
+          const isWrite = attr.state === 'write';
+          const isRead = attr.state === 'read';
 
           return (
             <Group
@@ -241,7 +251,8 @@ function InstanceCard({ instance }: { instance: ObjectInstance }) {
               justify="space-between"
               align="center"
               px={8}
-              py={4}
+              py={5}
+              className={isWrite && !reducedMotion ? 'viz-attr-write' : undefined}
               style={{
                 borderRadius: radius.xs,
                 border: '1px solid',
@@ -260,21 +271,37 @@ function InstanceCard({ instance }: { instance: ObjectInstance }) {
                 <Text
                   fz={font.micro}
                   ff="monospace"
-                  fw={attr.state === 'write' ? 700 : 500}
+                  fw={isWrite ? 700 : 500}
                   style={{
-                    color: attr.state === 'write' ? vizVar.accent : hasValue ? vizVar.ink : vizVar.dim,
+                    color: isWrite ? vizVar.accent : hasValue ? vizVar.ink : vizVar.dim,
                   }}
                 >
                   {displayValue}
                 </Text>
-                {attr.state === 'write' && (
-                  <Badge size="xs" variant="filled" color="yellow" radius="xs" fz={9}>
-                    gravado
+
+                {isWrite && (
+                  <Badge
+                    size="xs"
+                    variant="filled"
+                    color="yellow"
+                    radius="xs"
+                    fz={9}
+                    leftSection={<ArrowRightIcon size={9} style={{ transform: 'rotate(180deg)' }} />}
+                  >
+                    {attr.sourceValue ? `⬅ ${attr.sourceValue}` : 'gravado'}
                   </Badge>
                 )}
-                {attr.state === 'read' && (
-                  <Badge size="xs" variant="outline" color="yellow" radius="xs" fz={9}>
-                    lido
+
+                {isRead && (
+                  <Badge
+                    size="xs"
+                    variant="outline"
+                    color="yellow"
+                    radius="xs"
+                    fz={9}
+                    rightSection={<ArrowRightIcon size={9} />}
+                  >
+                    {attr.sourceValue ? `➔ ${attr.sourceValue}` : 'lido'}
                   </Badge>
                 )}
               </Group>
@@ -428,7 +455,7 @@ function ExceptionBlock({ exception }: { exception: ObjectExceptionState }) {
 const LEGEND = [
   { key: 'private', label: 'privado (🔒)', color: vizVar.dim },
   { key: 'public', label: 'público (🌐)', color: vizVar.ink2 },
-  { key: 'write', label: 'escrita / alterado', color: vizVar.accent },
+  { key: 'write', label: 'escrita / atribuído', color: vizVar.accent },
   { key: 'virtual', label: 'virtual / override', color: vizVar.purple },
 ] as const;
 
@@ -452,66 +479,12 @@ export function ObjectView({ state }: ObjectViewProps) {
 
   const { blueprints, instances, pointer, call, exception } = state;
   const activeMethodName = call?.target?.split('(')[0]?.split('.')?.pop()?.split('->')?.pop();
+  const hasInteractiveControl = Boolean(call || exception || pointer);
 
   return (
     <Box>
       <Stack gap="md" pt="xs" pb="sm">
-        {/* Banner de Chamada / Despacho Ativo */}
-        {call && (
-          <Paper
-            withBorder
-            radius="md"
-            px="md"
-            py="xs"
-            style={{
-              background: `linear-gradient(90deg, ${vizVar.accentSoft}, ${vizVar.surface2})`,
-              borderColor: vizVar.accentLine,
-            }}
-          >
-            <Flex justify="space-between" align="center" wrap="wrap" gap="xs">
-              <Group gap="xs" align="center">
-                <Badge size="xs" variant="filled" color="yellow" radius="sm">
-                  executando método
-                </Badge>
-                <Text fz={font.small} ff="monospace" fw={700} style={{ color: vizVar.ink }}>
-                  {call.target}
-                </Text>
-              </Group>
-
-              {call.dispatchedTo && (
-                <Group gap="xs" align="center">
-                  <Text fz={font.micro} c="dimmed">
-                    despacho dinâmico:
-                  </Text>
-                  <Badge size="xs" variant="light" color="blue" radius="sm" ff="monospace">
-                    ➔ {call.dispatchedTo}
-                  </Badge>
-                </Group>
-              )}
-
-              {call.params && Object.keys(call.params).length > 0 && (
-                <Group gap={6} align="center">
-                  <Text fz={font.micro} c="dimmed">
-                    parâmetros:
-                  </Text>
-                  {Object.entries(call.params).map(([k, val]) => (
-                    <Badge key={k} size="xs" variant="outline" color="gray" radius="xs" ff="monospace">
-                      {k} = {typeof val === 'string' ? `"${val}"` : val}
-                    </Badge>
-                  ))}
-                </Group>
-              )}
-            </Flex>
-          </Paper>
-        )}
-
-        {/* Rastreador de Exceção */}
-        {exception && <ExceptionBlock exception={exception} />}
-
-        {/* Ponteiro Polimórfico */}
-        {pointer && <PointerCard pointer={pointer} />}
-
-        {/* Grade com Moldes (Classes) e Instâncias (Objetos) */}
+        {/* 1. TOP: Grade com Moldes (Classes) e Instâncias (Objetos) fixos no topo */}
         <SimpleGrid cols={{ base: 1, sm: blueprints?.length && instances?.length ? 2 : 1 }} spacing="md">
           {blueprints && blueprints.length > 0 && (
             <Stack gap="xs">
@@ -536,6 +509,92 @@ export function ObjectView({ state }: ObjectViewProps) {
           )}
         </SimpleGrid>
 
+        {/* 2. BOTTOM: Painel de Execução Inferior (Workbench) com Altura Mínima Estável */}
+        <Box mih={58} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          {hasInteractiveControl ? (
+            <Stack gap="xs">
+              {pointer && <PointerCard pointer={pointer} />}
+
+              {exception && <ExceptionBlock exception={exception} />}
+
+              {call && (
+                <Paper
+                  withBorder
+                  radius="md"
+                  px="md"
+                  py="xs"
+                  style={{
+                    background: `linear-gradient(90deg, ${vizVar.accentSoft}, ${vizVar.surface2})`,
+                    borderColor: vizVar.accentLine,
+                  }}
+                >
+                  <Flex justify="space-between" align="center" wrap="wrap" gap="xs">
+                    <Group gap="xs" align="center">
+                      <Badge size="xs" variant="filled" color="yellow" radius="sm">
+                        executando método
+                      </Badge>
+                      <Text fz={font.small} ff="monospace" fw={700} style={{ color: vizVar.ink }}>
+                        {call.target}
+                      </Text>
+                    </Group>
+
+                    {call.dispatchedTo && (
+                      <Group gap="xs" align="center">
+                        <Text fz={font.micro} c="dimmed">
+                          despacho:
+                        </Text>
+                        <Badge size="xs" variant="light" color="blue" radius="sm" ff="monospace">
+                          ➔ {call.dispatchedTo}
+                        </Badge>
+                      </Group>
+                    )}
+
+                    {call.params && Object.keys(call.params).length > 0 && (
+                      <Group gap={6} align="center">
+                        <Text fz={font.micro} c="dimmed">
+                          parâmetros:
+                        </Text>
+                        {Object.entries(call.params).map(([k, val]) => (
+                          <Badge key={k} size="xs" variant="outline" color="gray" radius="xs" ff="monospace">
+                            {k} = {typeof val === 'string' ? `"${val}"` : val}
+                          </Badge>
+                        ))}
+                      </Group>
+                    )}
+
+                    {call.effect && (
+                      <Group gap={6} align="center">
+                        <Badge size="xs" variant="outline" color="yellow" radius="xs" ff="monospace" leftSection={<ArrowRightIcon size={9} />}>
+                          {call.effect}
+                        </Badge>
+                      </Group>
+                    )}
+                  </Flex>
+                </Paper>
+              )}
+            </Stack>
+          ) : (
+            <Paper
+              withBorder
+              radius="md"
+              px="md"
+              py={6}
+              style={{
+                background: vizVar.surface2,
+                borderColor: vizVar.line,
+                borderStyle: 'dashed',
+              }}
+            >
+              <Group justify="center" align="center" gap="xs">
+                <Text fz={font.micro} c="dimmed" ff="monospace">
+                  • escopo de execução em main() •
+                </Text>
+              </Group>
+            </Paper>
+          )}
+        </Box>
+
+        {/* 3. Legenda da Visualização */}
         <ViewLegend items={[...LEGEND]} />
       </Stack>
     </Box>

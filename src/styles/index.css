@@ -887,6 +887,21 @@ body::before {
   }
 }
 
+@keyframes viz-write-pulse {
+  0%, 100% {
+    border-color: var(--viz-accent);
+    box-shadow: 0 0 0 1px var(--viz-accent-line), 0 0 16px -4px var(--viz-accent);
+  }
+  50% {
+    border-color: var(--viz-accent-dim);
+    box-shadow: 0 0 0 1px var(--viz-accent-soft), 0 0 6px -2px var(--viz-accent);
+  }
+}
+
+.viz-attr-write {
+  animation: viz-write-pulse 1.8s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

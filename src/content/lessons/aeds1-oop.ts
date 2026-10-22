@@ -103,7 +103,7 @@ export const lessonOop: Lesson = {
     ),
     so(
       lineOf(oopCode, 'Aluno a;'),
-      'Instanciação do objeto a: uma área de memória é reservada para a instância do tipo Aluno.',
+      'Instanciação do objeto a: uma área de memória é reservada para a instância do tipo Aluno na pilha (stack).',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -123,7 +123,7 @@ export const lessonOop: Lesson = {
     ),
     so(
       lineOf(oopCode, 'a.setNome("Ana");'),
-      'Invocação do método a.setNome("Ana"): controle salta para o método membro passando "Ana".',
+      'Invocação do método a.setNome("Ana"): controle prepara a chamada repassando o argumento "Ana".',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -142,9 +142,36 @@ export const lessonOop: Lesson = {
           target: 'a.setNome("Ana")',
           dispatchedTo: 'Aluno::setNome',
           params: { n: 'Ana' },
+          effect: 'prepara envio de "Ana"',
         },
       },
-      { 'a.setNome': 'chamado', 'parâmetro n': '"Ana"' },
+      { 'chamada': 'a.setNome("Ana")', 'argumento': '"Ana"' },
+    ),
+    so(
+      lineOf(oopCode, 'void setNome(string n)'),
+      'O fluxo entra no método setNome: o parâmetro formal n recebe o valor "Ana".',
+      {
+        blueprints: [alunoBlueprint],
+        instances: [
+          {
+            id: 'a',
+            label: 'Aluno a',
+            className: 'Aluno',
+            attributes: [
+              { name: 'nome', value: null, visibility: 'private' },
+              { name: 'matricula', value: null, visibility: 'private' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a.setNome("Ana")',
+          dispatchedTo: 'Aluno::setNome',
+          params: { n: 'Ana' },
+          effect: 'parâmetro n inicializado',
+        },
+      },
+      { 'escopo': 'Aluno::setNome', 'parâmetro n': '"Ana"' },
     ),
     so(
       lineOf(oopCode, 'nome = n;'),
@@ -157,7 +184,7 @@ export const lessonOop: Lesson = {
             label: 'Aluno a',
             className: 'Aluno',
             attributes: [
-              { name: 'nome', value: 'Ana', visibility: 'private', state: 'write' },
+              { name: 'nome', value: 'Ana', visibility: 'private', state: 'write', sourceValue: 'parâmetro n ("Ana")' },
               { name: 'matricula', value: null, visibility: 'private' },
             ],
           },
@@ -167,13 +194,14 @@ export const lessonOop: Lesson = {
           target: 'a.setNome("Ana")',
           dispatchedTo: 'Aluno::setNome',
           params: { n: 'Ana' },
+          effect: 'atualiza a.nome = "Ana"',
         },
       },
       { 'a.nome': '"Ana"' },
     ),
     so(
       lineOf(oopCode, 'a.setMatricula(202601);'),
-      'Invocação do método a.setMatricula(202601): controle salta para o método passando o número de matrícula.',
+      'Retorno a main(): agora invocamos a.setMatricula(202601) passando a matrícula como argumento.',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -192,13 +220,14 @@ export const lessonOop: Lesson = {
           target: 'a.setMatricula(202601)',
           dispatchedTo: 'Aluno::setMatricula',
           params: { m: 202601 },
+          effect: 'prepara envio de 202601',
         },
       },
-      { 'a.setMatricula': 'chamado', 'parâmetro m': 202601 },
+      { 'chamada': 'a.setMatricula(202601)' },
     ),
     so(
-      lineOf(oopCode, 'matricula = m;'),
-      'Atribuição: o valor m (202601) é armazenado no atributo privado matricula da instância a.',
+      lineOf(oopCode, 'void setMatricula(int m)'),
+      'O fluxo entra em setMatricula: o parâmetro formal m recebe o valor 202601.',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -208,7 +237,7 @@ export const lessonOop: Lesson = {
             className: 'Aluno',
             attributes: [
               { name: 'nome', value: 'Ana', visibility: 'private' },
-              { name: 'matricula', value: 202601, visibility: 'private', state: 'write' },
+              { name: 'matricula', value: null, visibility: 'private' },
             ],
           },
         ],
@@ -217,13 +246,65 @@ export const lessonOop: Lesson = {
           target: 'a.setMatricula(202601)',
           dispatchedTo: 'Aluno::setMatricula',
           params: { m: 202601 },
+          effect: 'parâmetro m inicializado',
+        },
+      },
+      { 'escopo': 'Aluno::setMatricula', 'parâmetro m': 202601 },
+    ),
+    so(
+      lineOf(oopCode, 'matricula = m;'),
+      'Atribuição: o valor de m (202601) é armazenado no atributo privado matricula da instância a.',
+      {
+        blueprints: [alunoBlueprint],
+        instances: [
+          {
+            id: 'a',
+            label: 'Aluno a',
+            className: 'Aluno',
+            attributes: [
+              { name: 'nome', value: 'Ana', visibility: 'private' },
+              { name: 'matricula', value: 202601, visibility: 'private', state: 'write', sourceValue: 'parâmetro m (202601)' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a.setMatricula(202601)',
+          dispatchedTo: 'Aluno::setMatricula',
+          params: { m: 202601 },
+          effect: 'atualiza a.matricula = 202601',
         },
       },
       { 'a.matricula': 202601 },
     ),
     so(
       lineOf(oopCode, 'cout << a.getNome()'),
-      'Leitura de estado protegido: a.getNome() recupera o atributo encapsulado nome ("Ana").',
+      'Em main(), chamada ao getter a.getNome() para consultar o nome encapsulado.',
+      {
+        blueprints: [alunoBlueprint],
+        instances: [
+          {
+            id: 'a',
+            label: 'Aluno a',
+            className: 'Aluno',
+            attributes: [
+              { name: 'nome', value: 'Ana', visibility: 'private' },
+              { name: 'matricula', value: 202601, visibility: 'private' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a.getNome()',
+          dispatchedTo: 'Aluno::getNome',
+          effect: 'leitura de a.nome',
+        },
+      },
+      { 'chamada': 'a.getNome()' },
+    ),
+    so(
+      lineOf(oopCode, 'string getNome()'),
+      'Entrada no método acessor getNome(): nenhuma modificação de estado será permitida.',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -241,10 +322,55 @@ export const lessonOop: Lesson = {
           caller: 'main()',
           target: 'a.getNome()',
           dispatchedTo: 'Aluno::getNome',
-          returned: 'Ana',
+          effect: 'lendo campo nome',
         },
       },
-      { 'saída': '"Ana"' },
+      { 'escopo': 'Aluno::getNome' },
+    ),
+    so(
+      lineOf(oopCode, 'return nome;'),
+      'Retorno: o atributo privado nome ("Ana") é lido e devolvido para a expressão em main().',
+      {
+        blueprints: [alunoBlueprint],
+        instances: [
+          {
+            id: 'a',
+            label: 'Aluno a',
+            className: 'Aluno',
+            attributes: [
+              { name: 'nome', value: 'Ana', visibility: 'private', state: 'read', sourceValue: 'retorna "Ana"' },
+              { name: 'matricula', value: 202601, visibility: 'private' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a.getNome()',
+          dispatchedTo: 'Aluno::getNome',
+          returned: 'Ana',
+          effect: 'retorna "Ana"',
+        },
+      },
+      { 'retorno': '"Ana"' },
+    ),
+    so(
+      lineOf(oopCode, 'cout << a.getNome() << endl;'),
+      'A saída padrão recebe o retorno de getNome() e imprime "Ana" com quebra de linha.',
+      {
+        blueprints: [alunoBlueprint],
+        instances: [
+          {
+            id: 'a',
+            label: 'Aluno a',
+            className: 'Aluno',
+            attributes: [
+              { name: 'nome', value: 'Ana', visibility: 'private' },
+              { name: 'matricula', value: 202601, visibility: 'private' },
+            ],
+          },
+        ],
+      },
+      { 'console': '"Ana"' },
     ),
     so(
       lineOf(oopCode, 'return 0;'),
@@ -263,7 +389,7 @@ export const lessonOop: Lesson = {
           },
         ],
       },
-      { 'status': 'concluído' },
+      { 'status': 'concluído com sucesso' },
     ),
   ],
 };
@@ -332,7 +458,7 @@ export const lessonAbstracao: Lesson = {
     ),
     so(
       lineOf(abstracaoCode, 'Conta c;'),
-      'Instanciação: o objeto c é criado e o construtor default é acionado.',
+      'Instanciação: o objeto c é criado na memória e o construtor default é acionado.',
       {
         blueprints: [contaBlueprint],
         instances: [
@@ -343,6 +469,12 @@ export const lessonAbstracao: Lesson = {
             attributes: [{ name: 'saldo', value: 0, visibility: 'private' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'Conta()',
+          dispatchedTo: 'Conta::Conta',
+          effect: 'invoca construtor default',
+        },
       },
       { 'instância': 'c' },
     ),
@@ -357,9 +489,15 @@ export const lessonAbstracao: Lesson = {
             label: 'Conta c',
             className: 'Conta',
             state: 'write',
-            attributes: [{ name: 'saldo', value: 0, visibility: 'private', state: 'write' }],
+            attributes: [{ name: 'saldo', value: 0, visibility: 'private', state: 'write', sourceValue: 'inicializado com 0' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'Conta()',
+          dispatchedTo: 'Conta::Conta',
+          effect: 'c.saldo = 0.0',
+        },
       },
       { 'c.saldo': 0 },
     ),
@@ -381,9 +519,33 @@ export const lessonAbstracao: Lesson = {
           target: 'c.depositar(100)',
           dispatchedTo: 'Conta::depositar',
           params: { valor: 100 },
+          effect: 'prepara depósito de 100',
         },
       },
       { 'operação': 'depositar', 'valor': 100 },
+    ),
+    so(
+      lineOf(abstracaoCode, 'void depositar(double valor)'),
+      'Entrada no método depositar: parâmetro valor recebe 100.0.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 0, visibility: 'private' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.depositar(100)',
+          dispatchedTo: 'Conta::depositar',
+          params: { valor: 100 },
+          effect: 'valida valor > 0',
+        },
+      },
+      { 'parâmetro valor': 100 },
     ),
     so(
       lineOf(abstracaoCode, 'if (valor > 0) saldo += valor;'),
@@ -395,9 +557,15 @@ export const lessonAbstracao: Lesson = {
             id: 'c',
             label: 'Conta c',
             className: 'Conta',
-            attributes: [{ name: 'saldo', value: 100, visibility: 'private', state: 'write' }],
+            attributes: [{ name: 'saldo', value: 100, visibility: 'private', state: 'write', sourceValue: '+100 creditado' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'c.depositar(100)',
+          dispatchedTo: 'Conta::depositar',
+          effect: 'atualiza c.saldo = 100',
+        },
       },
       { 'c.saldo': 100 },
     ),
@@ -419,9 +587,33 @@ export const lessonAbstracao: Lesson = {
           target: 'c.sacar(30)',
           dispatchedTo: 'Conta::sacar',
           params: { valor: 30 },
+          effect: 'prepara saque de 30',
         },
       },
       { 'operação': 'sacar', 'valor': 30 },
+    ),
+    so(
+      lineOf(abstracaoCode, 'void sacar(double valor)'),
+      'Entrada no método sacar: parâmetro valor recebe 30.0.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 100, visibility: 'private' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.sacar(30)',
+          dispatchedTo: 'Conta::sacar',
+          params: { valor: 30 },
+          effect: 'valida saldo suficiente',
+        },
+      },
+      { 'parâmetro valor': 30 },
     ),
     so(
       lineOf(abstracaoCode, 'if (valor <= saldo) saldo -= valor;'),
@@ -433,9 +625,15 @@ export const lessonAbstracao: Lesson = {
             id: 'c',
             label: 'Conta c',
             className: 'Conta',
-            attributes: [{ name: 'saldo', value: 70, visibility: 'private', state: 'write' }],
+            attributes: [{ name: 'saldo', value: 70, visibility: 'private', state: 'write', sourceValue: '-30 debitado' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'c.sacar(30)',
+          dispatchedTo: 'Conta::sacar',
+          effect: 'atualiza c.saldo = 70',
+        },
       },
       { 'c.saldo': 70 },
     ),
@@ -449,7 +647,7 @@ export const lessonAbstracao: Lesson = {
             id: 'c',
             label: 'Conta c',
             className: 'Conta',
-            attributes: [{ name: 'saldo', value: 70, visibility: 'private', state: 'read' }],
+            attributes: [{ name: 'saldo', value: 70, visibility: 'private', state: 'read', sourceValue: 'retorna 70' }],
           },
         ],
         call: {
@@ -457,9 +655,26 @@ export const lessonAbstracao: Lesson = {
           target: 'c.getSaldo()',
           dispatchedTo: 'Conta::getSaldo',
           returned: 70,
+          effect: 'retorna 70',
         },
       },
       { 'saldo final': 70 },
+    ),
+    so(
+      lineOf(abstracaoCode, 'return 0;'),
+      'Conclusão: o usuário manipulou a conta através de operações de negócio sem tocar na estrutura interna.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 70, visibility: 'private' }],
+          },
+        ],
+      },
+      { 'status': 'sucesso' },
     ),
   ],
 };
@@ -518,8 +733,14 @@ export const lessonClasses: Lesson = {
       { 'tipo criado': 'Pessoa' },
     ),
     so(
+      lineOf(classesCode, 'int main()'),
+      'Início do programa em main(): a pilha de execução é preparada.',
+      { blueprints: [pessoaClassBlueprint] },
+      { 'escopo': 'main()' },
+    ),
+    so(
       lineOf(classesCode, 'Pessoa p;'),
-      'Instanciação: a variável p do tipo Pessoa é alocada na memória da pilha.',
+      'Instanciação: a variável p do tipo Pessoa é alocada na memória da pilha com campos vazios.',
       {
         blueprints: [pessoaClassBlueprint],
         instances: [
@@ -548,7 +769,7 @@ export const lessonClasses: Lesson = {
             label: 'Pessoa p',
             className: 'Pessoa',
             attributes: [
-              { name: 'nome', value: 'Carlos', visibility: 'public', state: 'write' },
+              { name: 'nome', value: 'Carlos', visibility: 'public', state: 'write', sourceValue: 'atribuído: "Carlos"' },
               { name: 'idade', value: null, visibility: 'public' },
             ],
           },
@@ -568,7 +789,7 @@ export const lessonClasses: Lesson = {
             className: 'Pessoa',
             attributes: [
               { name: 'nome', value: 'Carlos', visibility: 'public' },
-              { name: 'idade', value: 30, visibility: 'public', state: 'write' },
+              { name: 'idade', value: 30, visibility: 'public', state: 'write', sourceValue: 'atribuído: 30' },
             ],
           },
         ],
@@ -586,6 +807,31 @@ export const lessonClasses: Lesson = {
             label: 'Pessoa p',
             className: 'Pessoa',
             attributes: [
+              { name: 'nome', value: 'Carlos', visibility: 'public' },
+              { name: 'idade', value: 30, visibility: 'public' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'p.apresentar()',
+          dispatchedTo: 'Pessoa::apresentar',
+          effect: 'executa apresentar()',
+        },
+      },
+      { 'chamada': 'p.apresentar()' },
+    ),
+    so(
+      lineOf(classesCode, 'void apresentar()'),
+      'Entrada no método apresentar(): o ponteiro implícito this aponta para o objeto p.',
+      {
+        blueprints: [pessoaClassBlueprint],
+        instances: [
+          {
+            id: 'p',
+            label: 'Pessoa p',
+            className: 'Pessoa',
+            attributes: [
               { name: 'nome', value: 'Carlos', visibility: 'public', state: 'read' },
               { name: 'idade', value: 30, visibility: 'public', state: 'read' },
             ],
@@ -595,9 +841,10 @@ export const lessonClasses: Lesson = {
           caller: 'main()',
           target: 'p.apresentar()',
           dispatchedTo: 'Pessoa::apresentar',
+          effect: 'lendo atributos de p',
         },
       },
-      { 'chamada': 'p.apresentar()' },
+      { 'this': '&p' },
     ),
     so(
       lineOf(classesCode, 'cout << nome'),
@@ -720,13 +967,14 @@ export const lessonConstrutores: Lesson = {
           target: 'Pessoa("Carlos", 30)',
           dispatchedTo: 'Pessoa::Pessoa',
           params: { n: 'Carlos', i: 30 },
+          effect: 'invoca construtor parametrizado',
         },
       },
       { 'construtor': 'invocado', 'n': '"Carlos"', 'i': 30 },
     ),
     so(
-      lineOf(construtoresCode, 'nome = n;'),
-      'O construtor atribui o argumento n ("Carlos") ao atributo privado nome.',
+      lineOf(construtoresCode, 'Pessoa(string n, int i)'),
+      'Entrada no corpo do construtor: parâmetros n e i estão prontos para inicializar os atributos da instância.',
       {
         blueprints: [pessoaConstrutorBlueprint],
         instances: [
@@ -735,7 +983,7 @@ export const lessonConstrutores: Lesson = {
             label: 'Pessoa p',
             className: 'Pessoa',
             attributes: [
-              { name: 'nome', value: 'Carlos', visibility: 'private', state: 'write' },
+              { name: 'nome', value: null, visibility: 'private' },
               { name: 'idade', value: null, visibility: 'private' },
             ],
           },
@@ -745,13 +993,40 @@ export const lessonConstrutores: Lesson = {
           target: 'Pessoa("Carlos", 30)',
           dispatchedTo: 'Pessoa::Pessoa',
           params: { n: 'Carlos', i: 30 },
+          effect: 'inicializando campos',
+        },
+      },
+      { 'parâmetros': 'n="Carlos", i=30' },
+    ),
+    so(
+      lineOf(construtoresCode, 'nome = n;'),
+      'O construtor atribui o argumento n ("Carlos") ao atributo privado nome da instância p.',
+      {
+        blueprints: [pessoaConstrutorBlueprint],
+        instances: [
+          {
+            id: 'p',
+            label: 'Pessoa p',
+            className: 'Pessoa',
+            attributes: [
+              { name: 'nome', value: 'Carlos', visibility: 'private', state: 'write', sourceValue: 'parâmetro n ("Carlos")' },
+              { name: 'idade', value: null, visibility: 'private' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'Pessoa("Carlos", 30)',
+          dispatchedTo: 'Pessoa::Pessoa',
+          params: { n: 'Carlos', i: 30 },
+          effect: 'atualiza p.nome = "Carlos"',
         },
       },
       { 'p.nome': '"Carlos"' },
     ),
     so(
       lineOf(construtoresCode, 'idade = i;'),
-      'O construtor atribui o argumento i (30) ao atributo privado idade.',
+      'O construtor atribui o argumento i (30) ao atributo privado idade da instância p.',
       {
         blueprints: [pessoaConstrutorBlueprint],
         instances: [
@@ -761,7 +1036,7 @@ export const lessonConstrutores: Lesson = {
             className: 'Pessoa',
             attributes: [
               { name: 'nome', value: 'Carlos', visibility: 'private' },
-              { name: 'idade', value: 30, visibility: 'private', state: 'write' },
+              { name: 'idade', value: 30, visibility: 'private', state: 'write', sourceValue: 'parâmetro i (30)' },
             ],
           },
         ],
@@ -770,6 +1045,7 @@ export const lessonConstrutores: Lesson = {
           target: 'Pessoa("Carlos", 30)',
           dispatchedTo: 'Pessoa::Pessoa',
           params: { n: 'Carlos', i: 30 },
+          effect: 'atualiza p.idade = 30',
         },
       },
       { 'p.idade': 30 },
@@ -794,9 +1070,35 @@ export const lessonConstrutores: Lesson = {
           caller: 'main()',
           target: 'p.apresentar()',
           dispatchedTo: 'Pessoa::apresentar',
+          effect: 'chama apresentar()',
         },
       },
       { 'chamada': 'p.apresentar()' },
+    ),
+    so(
+      lineOf(construtoresCode, 'void apresentar()'),
+      'Entrada no método apresentar(): os dados válidos são lidos da memória.',
+      {
+        blueprints: [pessoaConstrutorBlueprint],
+        instances: [
+          {
+            id: 'p',
+            label: 'Pessoa p',
+            className: 'Pessoa',
+            attributes: [
+              { name: 'nome', value: 'Carlos', visibility: 'private', state: 'read' },
+              { name: 'idade', value: 30, visibility: 'private', state: 'read' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'p.apresentar()',
+          dispatchedTo: 'Pessoa::apresentar',
+          effect: 'lendo atributos',
+        },
+      },
+      { 'lendo': 'p.nome, p.idade' },
     ),
     so(
       lineOf(construtoresCode, 'cout << nome'),
@@ -809,8 +1111,8 @@ export const lessonConstrutores: Lesson = {
             label: 'Pessoa p',
             className: 'Pessoa',
             attributes: [
-              { name: 'nome', value: 'Carlos', visibility: 'private', state: 'read' },
-              { name: 'idade', value: 30, visibility: 'private', state: 'read' },
+              { name: 'nome', value: 'Carlos', visibility: 'private' },
+              { name: 'idade', value: 30, visibility: 'private' },
             ],
           },
         ],
@@ -901,6 +1203,12 @@ export const lessonEncapsulamento: Lesson = {
             attributes: [{ name: 'saldo', value: 0, visibility: 'private' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'Conta()',
+          dispatchedTo: 'Conta::Conta',
+          effect: 'saldo inicializado com 0',
+        },
       },
       { 'c.saldo': 0 },
     ),
@@ -922,9 +1230,33 @@ export const lessonEncapsulamento: Lesson = {
           target: 'c.depositar(100)',
           dispatchedTo: 'Conta::depositar',
           params: { valor: 100 },
+          effect: 'prepara depósito',
         },
       },
       { 'acesso direto': 'bloqueado', 'método': 'depositar(100)' },
+    ),
+    so(
+      lineOf(encapsulamentoCode, 'void depositar(double valor)'),
+      'Entrada no método público depositar: o parâmetro valor recebe 100.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 0, visibility: 'private' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.depositar(100)',
+          dispatchedTo: 'Conta::depositar',
+          params: { valor: 100 },
+          effect: 'testa if (valor > 0)',
+        },
+      },
+      { 'parâmetro valor': 100 },
     ),
     so(
       lineOf(encapsulamentoCode, 'if (valor > 0) saldo += valor;'),
@@ -936,9 +1268,15 @@ export const lessonEncapsulamento: Lesson = {
             id: 'c',
             label: 'Conta c',
             className: 'Conta',
-            attributes: [{ name: 'saldo', value: 100, visibility: 'private', state: 'write' }],
+            attributes: [{ name: 'saldo', value: 100, visibility: 'private', state: 'write', sourceValue: '+100 validado' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'c.depositar(100)',
+          dispatchedTo: 'Conta::depositar',
+          effect: 'c.saldo = 100',
+        },
       },
       { 'c.saldo': 100 },
     ),
@@ -960,9 +1298,33 @@ export const lessonEncapsulamento: Lesson = {
           target: 'c.sacar(40)',
           dispatchedTo: 'Conta::sacar',
           params: { valor: 40 },
+          effect: 'prepara saque',
         },
       },
       { 'operação': 'sacar', 'valor': 40 },
+    ),
+    so(
+      lineOf(encapsulamentoCode, 'bool sacar(double valor)'),
+      'Entrada no método sacar: parâmetro valor recebe 40.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 100, visibility: 'private' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.sacar(40)',
+          dispatchedTo: 'Conta::sacar',
+          params: { valor: 40 },
+          effect: 'testa se 40 > saldo',
+        },
+      },
+      { 'parâmetro valor': 40 },
     ),
     so(
       lineOf(encapsulamentoCode, 'if (valor > saldo) return false;'),
@@ -977,6 +1339,12 @@ export const lessonEncapsulamento: Lesson = {
             attributes: [{ name: 'saldo', value: 100, visibility: 'private' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'c.sacar(40)',
+          dispatchedTo: 'Conta::sacar',
+          effect: 'saldo suficiente',
+        },
       },
       { 'saldo suficiente': 'sim' },
     ),
@@ -990,11 +1358,40 @@ export const lessonEncapsulamento: Lesson = {
             id: 'c',
             label: 'Conta c',
             className: 'Conta',
-            attributes: [{ name: 'saldo', value: 60, visibility: 'private', state: 'write' }],
+            attributes: [{ name: 'saldo', value: 60, visibility: 'private', state: 'write', sourceValue: '-40 debitado' }],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'c.sacar(40)',
+          dispatchedTo: 'Conta::sacar',
+          effect: 'c.saldo = 60',
+        },
       },
       { 'c.saldo': 60 },
+    ),
+    so(
+      lineOf(encapsulamentoCode, 'return true;'),
+      'Método retorna true confirmando que a operação foi autorizada e concluída.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 60, visibility: 'private' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.sacar(40)',
+          dispatchedTo: 'Conta::sacar',
+          returned: 'true',
+          effect: 'retorna true',
+        },
+      },
+      { 'retorno': 'true' },
     ),
     so(
       lineOf(encapsulamentoCode, 'cout << c.getSaldo()'),
@@ -1006,7 +1403,7 @@ export const lessonEncapsulamento: Lesson = {
             id: 'c',
             label: 'Conta c',
             className: 'Conta',
-            attributes: [{ name: 'saldo', value: 60, visibility: 'private', state: 'read' }],
+            attributes: [{ name: 'saldo', value: 60, visibility: 'private', state: 'read', sourceValue: 'retorna 60' }],
           },
         ],
         call: {
@@ -1014,9 +1411,26 @@ export const lessonEncapsulamento: Lesson = {
           target: 'c.getSaldo()',
           dispatchedTo: 'Conta::getSaldo',
           returned: 60,
+          effect: 'leitura somente-leitura',
         },
       },
       { 'saldo consultado': 60 },
+    ),
+    so(
+      lineOf(encapsulamentoCode, 'return 0;'),
+      'Encapsulamento garante que o estado interno só transite por caminhos previstos e seguros.',
+      {
+        blueprints: [contaBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Conta c',
+            className: 'Conta',
+            attributes: [{ name: 'saldo', value: 60, visibility: 'private' }],
+          },
+        ],
+      },
+      { 'status': 'sucesso' },
     ),
   ],
 };
@@ -1106,6 +1520,28 @@ export const lessonHeranca: Lesson = {
     ),
     so(
       lineOf(herancaCode, 'c.ligar();'),
+      'Invocação de c.ligar() no main(): o programa solicita a execução do método no objeto c.',
+      {
+        blueprints: [veiculoBlueprint, carroBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Carro c',
+            className: 'Carro',
+            attributes: [{ name: 'base', value: 'Veiculo embutido', visibility: 'public' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.ligar()',
+          dispatchedTo: 'Veiculo::ligar [herdado]',
+          effect: 'busca na hierarquia de herança',
+        },
+      },
+      { 'chamada': 'c.ligar()' },
+    ),
+    so(
+      lineOf(herancaCode, 'void ligar()'),
       'Resolução de método herdado: o compilador busca ligar() em Carro, não encontra, e resolve no ancestral Veiculo.',
       {
         blueprints: [veiculoBlueprint, carroBlueprint],
@@ -1121,6 +1557,7 @@ export const lessonHeranca: Lesson = {
           caller: 'main()',
           target: 'c.ligar()',
           dispatchedTo: 'Veiculo::ligar [herdado]',
+          effect: 'executando Veiculo::ligar',
         },
       },
       { 'resolvido em': 'Veiculo::ligar' },
@@ -1143,7 +1580,7 @@ export const lessonHeranca: Lesson = {
     ),
     so(
       lineOf(herancaCode, 'c.abrirPorta();'),
-      'Invocação do método específico da classe derivada Carro.',
+      'Invocação do método específico c.abrirPorta() no main().',
       {
         blueprints: [veiculoBlueprint, carroBlueprint],
         instances: [
@@ -1158,6 +1595,29 @@ export const lessonHeranca: Lesson = {
           caller: 'main()',
           target: 'c.abrirPorta()',
           dispatchedTo: 'Carro::abrirPorta',
+          effect: 'busca local em Carro',
+        },
+      },
+      { 'chamada': 'c.abrirPorta()' },
+    ),
+    so(
+      lineOf(herancaCode, 'void abrirPorta()'),
+      'Resolução local: o método abrirPorta pertence diretamente à classe derivada Carro.',
+      {
+        blueprints: [veiculoBlueprint, carroBlueprint],
+        instances: [
+          {
+            id: 'c',
+            label: 'Carro c',
+            className: 'Carro',
+            attributes: [{ name: 'base', value: 'Veiculo embutido', visibility: 'public' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'c.abrirPorta()',
+          dispatchedTo: 'Carro::abrirPorta',
+          effect: 'executando Carro::abrirPorta',
         },
       },
       { 'resolvido em': 'Carro::abrirPorta' },
@@ -1321,7 +1781,7 @@ export const lessonPolimorfismo: Lesson = {
             label: 'c',
             className: 'Cachorro',
             state: 'write',
-            attributes: [{ name: 'vtable', value: '&Cachorro::emitirSom', visibility: 'private' }],
+            attributes: [{ name: 'vtable', value: '&Cachorro::emitirSom', visibility: 'private', sourceValue: 'apontado por a' }],
           },
           {
             id: 'g',
@@ -1335,7 +1795,7 @@ export const lessonPolimorfismo: Lesson = {
     ),
     so(
       lineOf(polimorfismoCode, 'a->emitirSom();'),
-      'Despacho dinâmico: a chamada a->emitirSom() consulta a vtable de c e invoca Cachorro::emitirSom().',
+      'Invocação polimórfica: a->emitirSom() é chamado pelo ponteiro base a.',
       {
         blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
         pointer: { name: 'Animal* a', type: 'Animal*', targetId: 'c', targetLabel: '&c (Cachorro)' },
@@ -1357,6 +1817,36 @@ export const lessonPolimorfismo: Lesson = {
           caller: 'main()',
           target: 'a->emitirSom()',
           dispatchedTo: 'Cachorro::emitirSom',
+          effect: 'consulta vtable de &c',
+        },
+      },
+      { 'despacho': 'vtable de Cachorro' },
+    ),
+    so(
+      lineOf(polimorfismoCode, 'void emitirSom() override {'),
+      'Ligação dinâmica (dynamic dispatch): a execução cai em Cachorro::emitirSom(), imprimindo "Au au".',
+      {
+        blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
+        pointer: { name: 'Animal* a', type: 'Animal*', targetId: 'c', targetLabel: '&c (Cachorro)' },
+        instances: [
+          {
+            id: 'c',
+            label: 'c',
+            className: 'Cachorro',
+            attributes: [{ name: 'vtable', value: '&Cachorro::emitirSom', visibility: 'private', state: 'read', sourceValue: 'Au au' }],
+          },
+          {
+            id: 'g',
+            label: 'g',
+            className: 'Gato',
+            attributes: [{ name: 'vtable', value: '&Gato::emitirSom', visibility: 'private' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a->emitirSom()',
+          dispatchedTo: 'Cachorro::emitirSom',
+          effect: 'emite "Au au"',
         },
       },
       { 'método chamado': 'Cachorro::emitirSom', 'saída': '"Au au"' },
@@ -1379,7 +1869,7 @@ export const lessonPolimorfismo: Lesson = {
             label: 'g',
             className: 'Gato',
             state: 'write',
-            attributes: [{ name: 'vtable', value: '&Gato::emitirSom', visibility: 'private' }],
+            attributes: [{ name: 'vtable', value: '&Gato::emitirSom', visibility: 'private', sourceValue: 'apontado por a' }],
           },
         ],
       },
@@ -1387,7 +1877,7 @@ export const lessonPolimorfismo: Lesson = {
     ),
     so(
       lineOf(polimorfismoCode, 'a->emitirSom();'),
-      'A mesma instrução a->emitirSom(), sem alteração no código, agora despacha para Gato::emitirSom().',
+      'A mesma instrução a->emitirSom(), sem alteração no código, agora consulta a vtable de g.',
       {
         blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
         pointer: { name: 'Animal* a', type: 'Animal*', targetId: 'g', targetLabel: '&g (Gato)' },
@@ -1409,6 +1899,36 @@ export const lessonPolimorfismo: Lesson = {
           caller: 'main()',
           target: 'a->emitirSom()',
           dispatchedTo: 'Gato::emitirSom',
+          effect: 'consulta vtable de &g',
+        },
+      },
+      { 'despacho': 'vtable de Gato' },
+    ),
+    so(
+      lineOf(polimorfismoCode, 'void emitirSom() override {'),
+      'Ligação dinâmica: o método executado agora é Gato::emitirSom(), imprimindo "Miau".',
+      {
+        blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
+        pointer: { name: 'Animal* a', type: 'Animal*', targetId: 'g', targetLabel: '&g (Gato)' },
+        instances: [
+          {
+            id: 'c',
+            label: 'c',
+            className: 'Cachorro',
+            attributes: [{ name: 'vtable', value: '&Cachorro::emitirSom', visibility: 'private' }],
+          },
+          {
+            id: 'g',
+            label: 'g',
+            className: 'Gato',
+            attributes: [{ name: 'vtable', value: '&Gato::emitirSom', visibility: 'private', state: 'read', sourceValue: 'Miau' }],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a->emitirSom()',
+          dispatchedTo: 'Gato::emitirSom',
+          effect: 'emite "Miau"',
         },
       },
       { 'método chamado': 'Gato::emitirSom', 'saída': '"Miau"' },
@@ -1518,6 +2038,12 @@ export const lessonAcessores: Lesson = {
             ],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'Aluno()',
+          dispatchedTo: 'Aluno::Aluno',
+          effect: 'inicialização default',
+        },
       },
       { 'a.nome': '"nao informado"', 'a.idade': 0 },
     ),
@@ -1542,6 +2068,7 @@ export const lessonAcessores: Lesson = {
           target: 'a.setNome("Ana")',
           dispatchedTo: 'Aluno::setNome',
           params: { n: 'Ana' },
+          effect: 'prepara envio de "Ana"',
         },
       },
       { 'setter': 'setNome' },
@@ -1557,11 +2084,17 @@ export const lessonAcessores: Lesson = {
             label: 'Aluno a',
             className: 'Aluno',
             attributes: [
-              { name: 'nome', value: 'Ana', visibility: 'private', state: 'write' },
+              { name: 'nome', value: 'Ana', visibility: 'private', state: 'write', sourceValue: 'parâmetro n ("Ana")' },
               { name: 'idade', value: 0, visibility: 'private' },
             ],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'a.setNome("Ana")',
+          dispatchedTo: 'Aluno::setNome',
+          effect: 'atualiza a.nome = "Ana"',
+        },
       },
       { 'a.nome': '"Ana"' },
     ),
@@ -1586,9 +2119,36 @@ export const lessonAcessores: Lesson = {
           target: 'a.setIdade(20)',
           dispatchedTo: 'Aluno::setIdade',
           params: { i: 20 },
+          effect: 'prepara validação da idade',
         },
       },
       { 'setter': 'setIdade', 'valor proposto': 20 },
+    ),
+    so(
+      lineOf(acessoresCode, 'void setIdade(int i)'),
+      'Entrada no setter setIdade: parâmetro i recebe 20.',
+      {
+        blueprints: [alunoAcessoresBlueprint],
+        instances: [
+          {
+            id: 'a',
+            label: 'Aluno a',
+            className: 'Aluno',
+            attributes: [
+              { name: 'nome', value: 'Ana', visibility: 'private' },
+              { name: 'idade', value: 0, visibility: 'private' },
+            ],
+          },
+        ],
+        call: {
+          caller: 'main()',
+          target: 'a.setIdade(20)',
+          dispatchedTo: 'Aluno::setIdade',
+          params: { i: 20 },
+          effect: 'testa se 0 <= i <= 120',
+        },
+      },
+      { 'parâmetro i': 20 },
     ),
     so(
       lineOf(acessoresCode, 'if (i >= 0 && i <= 120) idade = i;'),
@@ -1602,10 +2162,16 @@ export const lessonAcessores: Lesson = {
             className: 'Aluno',
             attributes: [
               { name: 'nome', value: 'Ana', visibility: 'private' },
-              { name: 'idade', value: 20, visibility: 'private', state: 'write' },
+              { name: 'idade', value: 20, visibility: 'private', state: 'write', sourceValue: 'validado: 20' },
             ],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'a.setIdade(20)',
+          dispatchedTo: 'Aluno::setIdade',
+          effect: 'atualiza a.idade = 20',
+        },
       },
       { 'a.idade': 20 },
     ),
@@ -1620,11 +2186,18 @@ export const lessonAcessores: Lesson = {
             label: 'Aluno a',
             className: 'Aluno',
             attributes: [
-              { name: 'nome', value: 'Ana', visibility: 'private', state: 'read' },
-              { name: 'idade', value: 20, visibility: 'private', state: 'read' },
+              { name: 'nome', value: 'Ana', visibility: 'private', state: 'read', sourceValue: 'retorna "Ana"' },
+              { name: 'idade', value: 20, visibility: 'private', state: 'read', sourceValue: 'retorna 20' },
             ],
           },
         ],
+        call: {
+          caller: 'main()',
+          target: 'a.getNome()',
+          dispatchedTo: 'Aluno::getNome',
+          returned: 'Ana',
+          effect: 'retorna "Ana"',
+        },
       },
       { 'saída': '"Ana 20"' },
     ),
@@ -1710,6 +2283,7 @@ export const lessonExcecoes: Lesson = {
           caller: 'main() [bloco try]',
           target: 'dividir(10, 0)',
           params: { a: 10, b: 0 },
+          effect: 'invoca função com b=0',
         },
         exception: { stage: 'try' },
       },

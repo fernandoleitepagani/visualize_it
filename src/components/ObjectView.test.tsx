@@ -36,7 +36,7 @@ describe('ObjectView', () => {
     expect(screen.getByText('getNome()')).toBeInTheDocument();
   });
 
-  it('renders object instances with internal state and highlights written fields', () => {
+  it('renders object instances with internal state and highlights written fields with source arrows', () => {
     const state: ObjectState = {
       instances: [
         {
@@ -45,7 +45,7 @@ describe('ObjectView', () => {
           className: 'Aluno',
           state: 'write',
           attributes: [
-            { name: 'nome', value: 'Ana', visibility: 'private', state: 'write' },
+            { name: 'nome', value: 'Ana', visibility: 'private', state: 'write', sourceValue: 'n ("Ana")' },
             { name: 'matricula', value: 202601, visibility: 'private' },
           ],
         },
@@ -58,16 +58,17 @@ describe('ObjectView', () => {
     expect(screen.getByText('instância : Aluno')).toBeInTheDocument();
     expect(screen.getByText('"Ana"')).toBeInTheDocument();
     expect(screen.getByText('202601')).toBeInTheDocument();
-    expect(screen.getByText('gravado')).toBeInTheDocument();
+    expect(screen.getByText('⬅ n ("Ana")')).toBeInTheDocument();
   });
 
-  it('renders active method execution call banner', () => {
+  it('renders active method execution call banner with effect', () => {
     const state: ObjectState = {
       call: {
         caller: 'main()',
         target: 'a.setNome("Ana")',
         dispatchedTo: 'Aluno::setNome',
         params: { n: 'Ana' },
+        effect: 'atualiza a.nome = "Ana"',
       },
     };
 
@@ -77,6 +78,7 @@ describe('ObjectView', () => {
     expect(screen.getByText('a.setNome("Ana")')).toBeInTheDocument();
     expect(screen.getByText('➔ Aluno::setNome')).toBeInTheDocument();
     expect(screen.getByText('n = "Ana"')).toBeInTheDocument();
+    expect(screen.getByText('atualiza a.nome = "Ana"')).toBeInTheDocument();
   });
 
   it('renders pointer and dynamic polymorphic dispatch', () => {

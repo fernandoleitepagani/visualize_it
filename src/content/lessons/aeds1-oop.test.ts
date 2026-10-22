@@ -33,13 +33,13 @@ describe('OOP Lessons (AEDS I)', () => {
     }
   });
 
-  it('every lesson produces at least 7 detailed pedagogical steps', () => {
+  it('every lesson produces granular pedagogical steps (at least 8-14 steps)', () => {
     for (const lesson of oopLessons) {
       const steps = lesson.steps([1]);
       expect(
         steps.length,
-        `Lesson ${lesson.id} should have at least 7 steps, but had ${steps.length}`,
-      ).toBeGreaterThanOrEqual(7);
+        `Lesson ${lesson.id} should have at least 8 steps, but had ${steps.length}`,
+      ).toBeGreaterThanOrEqual(8);
 
       const codeLines = lesson.code.cpp ?? [];
       expect(codeLines.length).toBeGreaterThan(0);
@@ -57,6 +57,13 @@ describe('OOP Lessons (AEDS I)', () => {
         expect(step.object, `Step ${i} of ${lesson.id} should contain object state`).toBeDefined();
       }
     }
+  });
+
+  it('written attributes carry sourceValue annotations for directional data-flow', () => {
+    const oopSteps = lessonOop.steps([1]);
+    const writtenAttrs = oopSteps.flatMap((s) => s.object?.instances?.flatMap((inst) => inst.attributes) ?? [])
+      .filter((a) => a.state === 'write');
+    expect(writtenAttrs.some((a) => Boolean(a.sourceValue))).toBe(true);
   });
 
   it('polimorfismo showcases base pointer redirection and dynamic dispatch', () => {
