@@ -18,8 +18,10 @@ const so = (
   desc: string,
   object: ObjectState,
   vars?: Record<string, VarValue>,
+  callerLine?: number,
 ): Step => ({
   line,
+  callerLine,
   desc,
   object,
   vars,
@@ -78,6 +80,10 @@ const alunoBlueprint: ObjectClassBlueprint = {
   ],
 };
 
+const oopCallSetNome = lineOf(oopCode, 'a.setNome("Ana");');
+const oopCallSetMatricula = lineOf(oopCode, 'a.setMatricula(202601);');
+const oopCallGetNome = lineOf(oopCode, 'cout << a.getNome()');
+
 export const lessonOop: Lesson = {
   ...base,
   id: 'oop',
@@ -122,8 +128,8 @@ export const lessonOop: Lesson = {
       { 'instância': 'a' },
     ),
     so(
-      lineOf(oopCode, 'a.setNome("Ana");'),
-      'Invocação do método a.setNome("Ana"): controle prepara a chamada repassando o argumento "Ana".',
+      oopCallSetNome,
+      'Invocação do método a.setNome("Ana"): linha do chamador é pausada enquanto a execução salta para o método da classe.',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -149,7 +155,7 @@ export const lessonOop: Lesson = {
     ),
     so(
       lineOf(oopCode, 'void setNome(string n)'),
-      'O fluxo entra no método setNome: o parâmetro formal n recebe o valor "Ana".',
+      'O fluxo entra no método setNome: o parâmetro formal n recebe o valor "Ana". O chamador em main() permanece marcado em espera.',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -172,6 +178,7 @@ export const lessonOop: Lesson = {
         },
       },
       { 'escopo': 'Aluno::setNome', 'parâmetro n': '"Ana"' },
+      oopCallSetNome,
     ),
     so(
       lineOf(oopCode, 'nome = n;'),
@@ -198,9 +205,10 @@ export const lessonOop: Lesson = {
         },
       },
       { 'a.nome': '"Ana"' },
+      oopCallSetNome,
     ),
     so(
-      lineOf(oopCode, 'a.setMatricula(202601);'),
+      oopCallSetMatricula,
       'Retorno a main(): agora invocamos a.setMatricula(202601) passando a matrícula como argumento.',
       {
         blueprints: [alunoBlueprint],
@@ -227,7 +235,7 @@ export const lessonOop: Lesson = {
     ),
     so(
       lineOf(oopCode, 'void setMatricula(int m)'),
-      'O fluxo entra em setMatricula: o parâmetro formal m recebe o valor 202601.',
+      'O fluxo entra em setMatricula: o parâmetro formal m recebe o valor 202601. A linha chamadora em main() fica destacada.',
       {
         blueprints: [alunoBlueprint],
         instances: [
@@ -250,6 +258,7 @@ export const lessonOop: Lesson = {
         },
       },
       { 'escopo': 'Aluno::setMatricula', 'parâmetro m': 202601 },
+      oopCallSetMatricula,
     ),
     so(
       lineOf(oopCode, 'matricula = m;'),
@@ -276,9 +285,10 @@ export const lessonOop: Lesson = {
         },
       },
       { 'a.matricula': 202601 },
+      oopCallSetMatricula,
     ),
     so(
-      lineOf(oopCode, 'cout << a.getNome()'),
+      oopCallGetNome,
       'Em main(), chamada ao getter a.getNome() para consultar o nome encapsulado.',
       {
         blueprints: [alunoBlueprint],
@@ -326,6 +336,7 @@ export const lessonOop: Lesson = {
         },
       },
       { 'escopo': 'Aluno::getNome' },
+      oopCallGetNome,
     ),
     so(
       lineOf(oopCode, 'return nome;'),
@@ -352,6 +363,7 @@ export const lessonOop: Lesson = {
         },
       },
       { 'retorno': '"Ana"' },
+      oopCallGetNome,
     ),
     so(
       lineOf(oopCode, 'cout << a.getNome() << endl;'),
@@ -439,6 +451,11 @@ const contaBlueprint: ObjectClassBlueprint = {
   ],
 };
 
+const abstracaoInstancia = lineOf(abstracaoCode, 'Conta c;');
+const abstracaoCallDepositar = lineOf(abstracaoCode, 'c.depositar(100);');
+const abstracaoCallSacar = lineOf(abstracaoCode, 'c.sacar(30);');
+const abstracaoCallGetSaldo = lineOf(abstracaoCode, 'cout << c.getSaldo()');
+
 export const lessonAbstracao: Lesson = {
   ...base,
   id: 'abstracao',
@@ -457,7 +474,7 @@ export const lessonAbstracao: Lesson = {
       { 'abstração': 'Conta bancária' },
     ),
     so(
-      lineOf(abstracaoCode, 'Conta c;'),
+      abstracaoInstancia,
       'Instanciação: o objeto c é criado na memória e o construtor default é acionado.',
       {
         blueprints: [contaBlueprint],
@@ -480,7 +497,7 @@ export const lessonAbstracao: Lesson = {
     ),
     so(
       lineOf(abstracaoCode, 'saldo = 0;'),
-      'O construtor garante que a conta inicie com saldo válido (0.0).',
+      'O construtor garante que a conta inicie com saldo válido (0.0). A linha chamadora em main() é mantida em espera.',
       {
         blueprints: [contaBlueprint],
         instances: [
@@ -500,9 +517,10 @@ export const lessonAbstracao: Lesson = {
         },
       },
       { 'c.saldo': 0 },
+      abstracaoInstancia,
     ),
     so(
-      lineOf(abstracaoCode, 'c.depositar(100);'),
+      abstracaoCallDepositar,
       'Interface em ação: o cliente solicita a operação depositar(100) sem manipular diretamente o saldo.',
       {
         blueprints: [contaBlueprint],
@@ -526,7 +544,7 @@ export const lessonAbstracao: Lesson = {
     ),
     so(
       lineOf(abstracaoCode, 'void depositar(double valor)'),
-      'Entrada no método depositar: parâmetro valor recebe 100.0.',
+      'Entrada no método depositar: parâmetro valor recebe 100.0. A linha do chamador c.depositar(100) fica visível em pausa.',
       {
         blueprints: [contaBlueprint],
         instances: [
@@ -546,6 +564,7 @@ export const lessonAbstracao: Lesson = {
         },
       },
       { 'parâmetro valor': 100 },
+      abstracaoCallDepositar,
     ),
     so(
       lineOf(abstracaoCode, 'if (valor > 0) saldo += valor;'),
@@ -568,9 +587,10 @@ export const lessonAbstracao: Lesson = {
         },
       },
       { 'c.saldo': 100 },
+      abstracaoCallDepositar,
     ),
     so(
-      lineOf(abstracaoCode, 'c.sacar(30);'),
+      abstracaoCallSacar,
       'O cliente solicita sacar(30) através da mesma interface uniforme.',
       {
         blueprints: [contaBlueprint],
@@ -594,7 +614,7 @@ export const lessonAbstracao: Lesson = {
     ),
     so(
       lineOf(abstracaoCode, 'void sacar(double valor)'),
-      'Entrada no método sacar: parâmetro valor recebe 30.0.',
+      'Entrada no método sacar: parâmetro valor recebe 30.0. A linha do chamador c.sacar(30) é marcada em espera.',
       {
         blueprints: [contaBlueprint],
         instances: [
@@ -614,6 +634,7 @@ export const lessonAbstracao: Lesson = {
         },
       },
       { 'parâmetro valor': 30 },
+      abstracaoCallSacar,
     ),
     so(
       lineOf(abstracaoCode, 'if (valor <= saldo) saldo -= valor;'),
@@ -636,9 +657,10 @@ export const lessonAbstracao: Lesson = {
         },
       },
       { 'c.saldo': 70 },
+      abstracaoCallSacar,
     ),
     so(
-      lineOf(abstracaoCode, 'cout << c.getSaldo()'),
+      abstracaoCallGetSaldo,
       'getSaldo() entrega o resultado (70) ao usuário sem expor os bastidores do cálculo.',
       {
         blueprints: [contaBlueprint],
@@ -714,6 +736,8 @@ const pessoaClassBlueprint: ObjectClassBlueprint = {
   ],
   methods: [{ name: 'apresentar', params: '', returnType: 'void', visibility: 'public' }],
 };
+
+const classesCallApresentar = lineOf(classesCode, 'p.apresentar();');
 
 export const lessonClasses: Lesson = {
   ...base,
@@ -797,7 +821,7 @@ export const lessonClasses: Lesson = {
       { 'p.idade': 30 },
     ),
     so(
-      lineOf(classesCode, 'p.apresentar();'),
+      classesCallApresentar,
       'Invocação de método: p.apresentar() executa a lógica de apresentação da instância.',
       {
         blueprints: [pessoaClassBlueprint],
@@ -823,7 +847,7 @@ export const lessonClasses: Lesson = {
     ),
     so(
       lineOf(classesCode, 'void apresentar()'),
-      'Entrada no método apresentar(): o ponteiro implícito this aponta para o objeto p.',
+      'Entrada no método apresentar(): o ponteiro implícito this aponta para o objeto p. A linha chamadora em main() é mantida visível.',
       {
         blueprints: [pessoaClassBlueprint],
         instances: [
@@ -845,6 +869,7 @@ export const lessonClasses: Lesson = {
         },
       },
       { 'this': '&p' },
+      classesCallApresentar,
     ),
     so(
       lineOf(classesCode, 'cout << nome'),
@@ -864,6 +889,7 @@ export const lessonClasses: Lesson = {
         ],
       },
       { 'saída': '"Carlos tem 30 anos"' },
+      classesCallApresentar,
     ),
     so(
       lineOf(classesCode, 'return 0;'),
@@ -928,6 +954,9 @@ const pessoaConstrutorBlueprint: ObjectClassBlueprint = {
   ],
 };
 
+const construtoresInstancia = lineOf(construtoresCode, 'Pessoa p("Carlos", 30);');
+const construtoresCallApresentar = lineOf(construtoresCode, 'p.apresentar();');
+
 export const lessonConstrutores: Lesson = {
   ...base,
   id: 'construtores',
@@ -946,7 +975,7 @@ export const lessonConstrutores: Lesson = {
       { 'classe': 'Pessoa' },
     ),
     so(
-      lineOf(construtoresCode, 'Pessoa p("Carlos", 30);'),
+      construtoresInstancia,
       'Instanciação: ao declarar p("Carlos", 30), o C++ aciona imediatamente o construtor com os argumentos fornecidos.',
       {
         blueprints: [pessoaConstrutorBlueprint],
@@ -974,7 +1003,7 @@ export const lessonConstrutores: Lesson = {
     ),
     so(
       lineOf(construtoresCode, 'Pessoa(string n, int i)'),
-      'Entrada no corpo do construtor: parâmetros n e i estão prontos para inicializar os atributos da instância.',
+      'Entrada no corpo do construtor: parâmetros n e i estão prontos para inicializar os atributos da instância. A linha chamadora em main() fica marcada.',
       {
         blueprints: [pessoaConstrutorBlueprint],
         instances: [
@@ -997,6 +1026,7 @@ export const lessonConstrutores: Lesson = {
         },
       },
       { 'parâmetros': 'n="Carlos", i=30' },
+      construtoresInstancia,
     ),
     so(
       lineOf(construtoresCode, 'nome = n;'),
@@ -1023,6 +1053,7 @@ export const lessonConstrutores: Lesson = {
         },
       },
       { 'p.nome': '"Carlos"' },
+      construtoresInstancia,
     ),
     so(
       lineOf(construtoresCode, 'idade = i;'),
@@ -1049,9 +1080,10 @@ export const lessonConstrutores: Lesson = {
         },
       },
       { 'p.idade': 30 },
+      construtoresInstancia,
     ),
     so(
-      lineOf(construtoresCode, 'p.apresentar();'),
+      construtoresCallApresentar,
       'O objeto p nasce totalmente inicializado e íntegro, pronto para executar apresentar().',
       {
         blueprints: [pessoaConstrutorBlueprint],
@@ -1099,6 +1131,7 @@ export const lessonConstrutores: Lesson = {
         },
       },
       { 'lendo': 'p.nome, p.idade' },
+      construtoresCallApresentar,
     ),
     so(
       lineOf(construtoresCode, 'cout << nome'),
@@ -1118,6 +1151,7 @@ export const lessonConstrutores: Lesson = {
         ],
       },
       { 'saída': '"Carlos (30)"' },
+      construtoresCallApresentar,
     ),
     so(
       lineOf(construtoresCode, 'return 0;'),
@@ -1173,6 +1207,10 @@ int main() {
   return 0;
 }`);
 
+const encapCallDepositar = lineOf(encapsulamentoCode, 'c.depositar(100);');
+const encapCallSacar = lineOf(encapsulamentoCode, 'c.sacar(40);');
+const encapCallGetSaldo = lineOf(encapsulamentoCode, 'cout << c.getSaldo()');
+
 export const lessonEncapsulamento: Lesson = {
   ...base,
   id: 'encapsulamento',
@@ -1213,7 +1251,7 @@ export const lessonEncapsulamento: Lesson = {
       { 'c.saldo': 0 },
     ),
     so(
-      lineOf(encapsulamentoCode, 'c.depositar(100);'),
+      encapCallDepositar,
       'Tentativa de alteração direta c.saldo = 100 geraria erro de compilação. O acesso deve ser feito via depositar().',
       {
         blueprints: [contaBlueprint],
@@ -1237,7 +1275,7 @@ export const lessonEncapsulamento: Lesson = {
     ),
     so(
       lineOf(encapsulamentoCode, 'void depositar(double valor)'),
-      'Entrada no método público depositar: o parâmetro valor recebe 100.',
+      'Entrada no método público depositar: o parâmetro valor recebe 100. A linha do chamador c.depositar(100) fica visível em pausa.',
       {
         blueprints: [contaBlueprint],
         instances: [
@@ -1257,6 +1295,7 @@ export const lessonEncapsulamento: Lesson = {
         },
       },
       { 'parâmetro valor': 100 },
+      encapCallDepositar,
     ),
     so(
       lineOf(encapsulamentoCode, 'if (valor > 0) saldo += valor;'),
@@ -1279,9 +1318,10 @@ export const lessonEncapsulamento: Lesson = {
         },
       },
       { 'c.saldo': 100 },
+      encapCallDepositar,
     ),
     so(
-      lineOf(encapsulamentoCode, 'c.sacar(40);'),
+      encapCallSacar,
       'Chamada a sacar(40): a classe valida se o valor excede o saldo disponível.',
       {
         blueprints: [contaBlueprint],
@@ -1305,7 +1345,7 @@ export const lessonEncapsulamento: Lesson = {
     ),
     so(
       lineOf(encapsulamentoCode, 'bool sacar(double valor)'),
-      'Entrada no método sacar: parâmetro valor recebe 40.',
+      'Entrada no método sacar: parâmetro valor recebe 40. O chamador c.sacar(40) é mantido em espera.',
       {
         blueprints: [contaBlueprint],
         instances: [
@@ -1325,6 +1365,7 @@ export const lessonEncapsulamento: Lesson = {
         },
       },
       { 'parâmetro valor': 40 },
+      encapCallSacar,
     ),
     so(
       lineOf(encapsulamentoCode, 'if (valor > saldo) return false;'),
@@ -1347,6 +1388,7 @@ export const lessonEncapsulamento: Lesson = {
         },
       },
       { 'saldo suficiente': 'sim' },
+      encapCallSacar,
     ),
     so(
       lineOf(encapsulamentoCode, 'saldo -= valor;'),
@@ -1369,6 +1411,7 @@ export const lessonEncapsulamento: Lesson = {
         },
       },
       { 'c.saldo': 60 },
+      encapCallSacar,
     ),
     so(
       lineOf(encapsulamentoCode, 'return true;'),
@@ -1392,9 +1435,10 @@ export const lessonEncapsulamento: Lesson = {
         },
       },
       { 'retorno': 'true' },
+      encapCallSacar,
     ),
     so(
-      lineOf(encapsulamentoCode, 'cout << c.getSaldo()'),
+      encapCallGetSaldo,
       'O método constante getSaldo() lê o valor 60 sem permitir que o chamador modifique os dados.',
       {
         blueprints: [contaBlueprint],
@@ -1478,6 +1522,9 @@ const carroBlueprint: ObjectClassBlueprint = {
   ],
 };
 
+const herancaCallLigar = lineOf(herancaCode, 'c.ligar();');
+const herancaCallAbrirPorta = lineOf(herancaCode, 'c.abrirPorta();');
+
 export const lessonHeranca: Lesson = {
   ...base,
   id: 'heranca',
@@ -1519,7 +1566,7 @@ export const lessonHeranca: Lesson = {
       { 'instância': 'c', 'tipo': 'Carro' },
     ),
     so(
-      lineOf(herancaCode, 'c.ligar();'),
+      herancaCallLigar,
       'Invocação de c.ligar() no main(): o programa solicita a execução do método no objeto c.',
       {
         blueprints: [veiculoBlueprint, carroBlueprint],
@@ -1561,6 +1608,7 @@ export const lessonHeranca: Lesson = {
         },
       },
       { 'resolvido em': 'Veiculo::ligar' },
+      herancaCallLigar,
     ),
     so(
       lineOf(herancaCode, 'cout << "Veiculo ligado"'),
@@ -1577,9 +1625,10 @@ export const lessonHeranca: Lesson = {
         ],
       },
       { 'saída': '"Veiculo ligado"' },
+      herancaCallLigar,
     ),
     so(
-      lineOf(herancaCode, 'c.abrirPorta();'),
+      herancaCallAbrirPorta,
       'Invocação do método específico c.abrirPorta() no main().',
       {
         blueprints: [veiculoBlueprint, carroBlueprint],
@@ -1621,6 +1670,7 @@ export const lessonHeranca: Lesson = {
         },
       },
       { 'resolvido em': 'Carro::abrirPorta' },
+      herancaCallAbrirPorta,
     ),
     so(
       lineOf(herancaCode, 'cout << "Porta aberta"'),
@@ -1637,6 +1687,7 @@ export const lessonHeranca: Lesson = {
         ],
       },
       { 'saída': '"Porta aberta"' },
+      herancaCallAbrirPorta,
     ),
     so(
       lineOf(herancaCode, 'return 0;'),
@@ -1713,6 +1764,9 @@ const gatoBlueprint: ObjectClassBlueprint = {
   baseClass: 'Animal',
   methods: [{ name: 'emitirSom', params: '', returnType: 'void', visibility: 'public', isOverride: true }],
 };
+
+const poliCallSom1 = lineOf(polimorfismoCode, 'a->emitirSom();');
+const poliCallGato = lineOf(polimorfismoCode, 'a = &g;');
 
 export const lessonPolimorfismo: Lesson = {
   ...base,
@@ -1794,7 +1848,7 @@ export const lessonPolimorfismo: Lesson = {
       { 'a aponta para': '&c (Cachorro)' },
     ),
     so(
-      lineOf(polimorfismoCode, 'a->emitirSom();'),
+      poliCallSom1,
       'Invocação polimórfica: a->emitirSom() é chamado pelo ponteiro base a.',
       {
         blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
@@ -1824,7 +1878,7 @@ export const lessonPolimorfismo: Lesson = {
     ),
     so(
       lineOf(polimorfismoCode, 'void emitirSom() override {'),
-      'Ligação dinâmica (dynamic dispatch): a execução cai em Cachorro::emitirSom(), imprimindo "Au au".',
+      'Ligação dinâmica (dynamic dispatch): a execução cai em Cachorro::emitirSom(), imprimindo "Au au". A linha chamadora em main() é mantida em espera.',
       {
         blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
         pointer: { name: 'Animal* a', type: 'Animal*', targetId: 'c', targetLabel: '&c (Cachorro)' },
@@ -1850,9 +1904,10 @@ export const lessonPolimorfismo: Lesson = {
         },
       },
       { 'método chamado': 'Cachorro::emitirSom', 'saída': '"Au au"' },
+      poliCallSom1,
     ),
     so(
-      lineOf(polimorfismoCode, 'a = &g;'),
+      poliCallGato,
       'Redirecionamento: o mesmo ponteiro base a agora aponta para o endereço do objeto Gato (&g).',
       {
         blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
@@ -1905,7 +1960,7 @@ export const lessonPolimorfismo: Lesson = {
       { 'despacho': 'vtable de Gato' },
     ),
     so(
-      lineOf(polimorfismoCode, 'void emitirSom() override {'),
+      lineOf(polimorfismoCode, 'cout << "Miau" << endl;'),
       'Ligação dinâmica: o método executado agora é Gato::emitirSom(), imprimindo "Miau".',
       {
         blueprints: [animalBlueprint, cachorroBlueprint, gatoBlueprint],
@@ -1932,6 +1987,7 @@ export const lessonPolimorfismo: Lesson = {
         },
       },
       { 'método chamado': 'Gato::emitirSom', 'saída': '"Miau"' },
+      lineOf(polimorfismoCode, 'a->emitirSom();'),
     ),
     so(
       lineOf(polimorfismoCode, 'return 0;'),
@@ -2004,6 +2060,10 @@ const alunoAcessoresBlueprint: ObjectClassBlueprint = {
   ],
 };
 
+const acessoresCallNome = lineOf(acessoresCode, 'a.setNome("Ana");');
+const acessoresCallIdade = lineOf(acessoresCode, 'a.setIdade(20);');
+const acessoresCallPrint = lineOf(acessoresCode, 'cout << a.getNome()');
+
 export const lessonAcessores: Lesson = {
   ...base,
   id: 'metodos-acessores',
@@ -2048,7 +2108,7 @@ export const lessonAcessores: Lesson = {
       { 'a.nome': '"nao informado"', 'a.idade': 0 },
     ),
     so(
-      lineOf(acessoresCode, 'a.setNome("Ana");'),
+      acessoresCallNome,
       'Invocação do setter setNome("Ana") para atualizar o nome protegido.',
       {
         blueprints: [alunoAcessoresBlueprint],
@@ -2075,7 +2135,7 @@ export const lessonAcessores: Lesson = {
     ),
     so(
       lineOf(acessoresCode, 'void setNome(string n) { nome = n; }'),
-      'O setter grava com sucesso o novo nome na instância.',
+      'O setter grava com sucesso o novo nome na instância. A linha chamadora em main() fica destacada.',
       {
         blueprints: [alunoAcessoresBlueprint],
         instances: [
@@ -2097,9 +2157,10 @@ export const lessonAcessores: Lesson = {
         },
       },
       { 'a.nome': '"Ana"' },
+      acessoresCallNome,
     ),
     so(
-      lineOf(acessoresCode, 'a.setIdade(20);'),
+      acessoresCallIdade,
       'Invocação do setter setIdade(20) que contém verificação de integridade.',
       {
         blueprints: [alunoAcessoresBlueprint],
@@ -2126,7 +2187,7 @@ export const lessonAcessores: Lesson = {
     ),
     so(
       lineOf(acessoresCode, 'void setIdade(int i)'),
-      'Entrada no setter setIdade: parâmetro i recebe 20.',
+      'Entrada no setter setIdade: parâmetro i recebe 20. O chamador a.setIdade(20) fica visível em pausa.',
       {
         blueprints: [alunoAcessoresBlueprint],
         instances: [
@@ -2149,6 +2210,7 @@ export const lessonAcessores: Lesson = {
         },
       },
       { 'parâmetro i': 20 },
+      acessoresCallIdade,
     ),
     so(
       lineOf(acessoresCode, 'if (i >= 0 && i <= 120) idade = i;'),
@@ -2174,9 +2236,10 @@ export const lessonAcessores: Lesson = {
         },
       },
       { 'a.idade': 20 },
+      acessoresCallIdade,
     ),
     so(
-      lineOf(acessoresCode, 'cout << a.getNome()'),
+      acessoresCallPrint,
       'Os getters getNome() e getIdade() retornam os valores sem conceder acesso de escrita ao chamador.',
       {
         blueprints: [alunoAcessoresBlueprint],
@@ -2248,6 +2311,8 @@ int main() {
   return 0;
 }`);
 
+const excecoesCallDividir = lineOf(excecoesCode, 'double r = dividir(10, 0);');
+
 export const lessonExcecoes: Lesson = {
   ...base,
   id: 'excecoes',
@@ -2276,7 +2341,7 @@ export const lessonExcecoes: Lesson = {
       { 'bloco': 'try monitorado' },
     ),
     so(
-      lineOf(excecoesCode, 'double r = dividir(10, 0);'),
+      excecoesCallDividir,
       'Chamada a dividir(10, 0): os argumentos a = 10 e b = 0 são repassados à função.',
       {
         call: {
@@ -2301,6 +2366,7 @@ export const lessonExcecoes: Lesson = {
         },
       },
       { 'exceção disparada': 'runtime_error("divisao por zero")' },
+      excecoesCallDividir,
     ),
     so(
       lineOf(excecoesCode, 'cout << r << endl;'),

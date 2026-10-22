@@ -9,6 +9,7 @@ import { CheckIcon, CodeIcon, CopyIcon, DownloadIcon } from './icons';
 interface Props {
   code: string[];
   activeLine: number;
+  callerLine?: number;
   lang: CodeLang;
   onLangChange: (lang: CodeLang) => void;
   /** Languages available for this lesson. Defaults to Java and C. */
@@ -27,6 +28,7 @@ const EXTENSIONS: Record<CodeLang, string> = { java: 'java', c: 'c', cpp: 'cpp' 
 export function CodePanel({
   code,
   activeLine,
+  callerLine,
   lang,
   onLangChange,
   languages = ['java', 'c'],
@@ -152,6 +154,7 @@ export function CodePanel({
           </Group>
           <Text fz={font.micro} c="dimmed" ff="monospace">
             linha {Math.min(activeLine + 1, code.length)} de {code.length}
+            {callerLine !== undefined && ` · chamador: l.${callerLine + 1}`}
           </Text>
         </Group>
       }
@@ -173,6 +176,25 @@ export function CodePanel({
       >
         {code.map((_, i) => {
           const active = i === activeLine;
+          const isCaller = callerLine !== undefined && i === callerLine && !active;
+
+          let borderLeft = '3px solid transparent';
+          let background: string | undefined;
+
+          if (active) {
+            borderLeft = '3px solid var(--subject-accent, var(--viz-accent))';
+            background = `linear-gradient(90deg, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 14%, transparent) 0%, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 3%, transparent) 88%, transparent 100%)`;
+          } else if (isCaller) {
+            borderLeft = '3px solid var(--viz-accent, #fbbf24)';
+            background = `linear-gradient(90deg, color-mix(in srgb, var(--viz-accent, #fbbf24) 15%, transparent) 0%, color-mix(in srgb, var(--viz-accent, #fbbf24) 3%, transparent) 88%, transparent 100%)`;
+          }
+
+          const lineNumberColor = active
+            ? 'var(--subject-accent, var(--viz-accent))'
+            : isCaller
+              ? 'var(--viz-accent, #fbbf24)'
+              : vizVar.dim;
+
           return (
             <div
               key={i}
@@ -180,13 +202,12 @@ export function CodePanel({
               aria-current={active ? 'step' : undefined}
               style={{
                 display: 'flex',
+                alignItems: 'center',
                 whiteSpace: 'pre',
                 minHeight: 25,
                 paddingRight: space.lg,
-                borderLeft: `3px solid ${active ? 'var(--subject-accent, var(--viz-accent))' : 'transparent'}`,
-                background: active
-                  ? `linear-gradient(90deg, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 11%, transparent) 0%, color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 3%, transparent) 88%, transparent 100%)`
-                  : undefined,
+                borderLeft,
+                background,
                 transition:
                   'background 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease',
               }}
@@ -194,19 +215,51 @@ export function CodePanel({
               <span
                 aria-hidden
                 style={{
-                  flex: '0 0 42px',
+                  flex: '0 0 46px',
                   textAlign: 'right',
-                  paddingRight: 14,
+                  paddingRight: 12,
                   fontSize: font.micro,
                   lineHeight: '25px',
                   userSelect: 'none',
-                  color: active ? 'var(--subject-accent, var(--viz-accent))' : vizVar.dim,
-                  fontWeight: active ? 700 : 400,
+                  color: lineNumberColor,
+                  fontWeight: active || isCaller ? 700 : 400,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  gap: 4,
                 }}
               >
-                {i + 1}
+                {active && <span style={{ fontSize: 9 }}>▶</span>}
+                {isCaller && <span style={{ fontSize: 9, color: 'var(--viz-accent, #fbbf24)' }}>⏸</span>}
+                <span>{i + 1}</span>
               </span>
               <span style={{ lineHeight: '25px', color: vizVar.codeInk }}>{highlighted[i]}</span>
+              {isCaller && (
+                <span
+                  style={{
+                    marginLeft: 'auto',
+                    paddingLeft: 12,
+                    userSelect: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: font.micro,
+                      lineHeight: '16px',
+                      padding: '1px 6px',
+                      borderRadius: 4,
+                      background: 'color-mix(in srgb, var(--viz-accent, #fbbf24) 20%, transparent)',
+                      color: 'var(--viz-accent, #fbbf24)',
+                      fontWeight: 600,
+                      border: '1px solid color-mix(in srgb, var(--viz-accent, #fbbf24) 35%, transparent)',
+                    }}
+                  >
+                    chamada em espera
+                  </span>
+                </span>
+              )}
             </div>
           );
         })}

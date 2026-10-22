@@ -134,6 +134,8 @@ export interface ObjectState {
 export interface Step {
   /** Index into the lesson's source-code listing (0-based). */
   line: number;
+  /** Optional index of the caller / paused scope instruction (0-based). */
+  callerLine?: number;
   /** Human-readable description of what just happened. */
   desc: string;
   /** Optional named variables surfaced next to the visualization. */

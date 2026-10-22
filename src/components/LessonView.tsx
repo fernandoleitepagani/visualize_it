@@ -542,6 +542,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     <CodePanel
       code={currentCode}
       activeLine={step?.line ?? 0}
+      callerLine={step?.callerLine}
       lang={lang}
       languages={languages}
       fileBaseName={getCodeFileBaseName(lesson, hasApproaches ? approach : undefined)}
