@@ -40,7 +40,7 @@ function visibilityIcon(visibility?: ObjectVisibility) {
     return <LockIcon size={12} style={{ color: vizVar.dim }} />;
   }
   if (visibility === 'protected') {
-    return <LockIcon size={12} style={{ color: vizVar.info }} />;
+    return <LockIcon size={12} style={{ color: vizVar.purple }} />;
   }
   return <UnlockIcon size={12} style={{ color: vizVar.accent }} />;
 }
@@ -375,7 +375,7 @@ function ExceptionBlock({ exception }: { exception: ObjectExceptionState }) {
                   style={{
                     background: isCurrent
                       ? isThrow
-                        ? vizVar.dangerSoft
+                        ? 'color-mix(in srgb, var(--viz-danger) 18%, transparent)'
                         : vizVar.accentSoft
                       : vizVar.surface3,
                     borderColor: isCurrent
@@ -429,7 +429,7 @@ const LEGEND = [
   { key: 'private', label: 'privado (🔒)', color: vizVar.dim },
   { key: 'public', label: 'público (🌐)', color: vizVar.ink2 },
   { key: 'write', label: 'escrita / alterado', color: vizVar.accent },
-  { key: 'virtual', label: 'virtual / override', color: vizVar.info },
+  { key: 'virtual', label: 'virtual / override', color: vizVar.purple },
 ] as const;
 
 export function ObjectView({ state }: ObjectViewProps) {
