@@ -11,8 +11,12 @@ const views = [
   { name: 'bucket', route: '/algoritmos/bucket', heading: 'Bucket Sort' },
   { name: 'cells', route: '/algoritmos/pilha-sequencial', heading: 'Pilha Sequencial' },
   { name: 'nodes', route: '/algoritmos/lista-encadeada', heading: 'Lista Encadeada' },
+  { name: 'pointers', route: '/algoritmos/ponteiros-basico', heading: 'Ponteiros: endereço e valor' },
+  { name: 'double pointers', route: '/algoritmos/ponteiros-duplos', heading: 'Ponteiros duplos' },
   { name: 'theory', route: '/teoria/complexidade', heading: 'Complexidade de Algoritmos' },
   { name: 'compare', route: '/comparar', heading: 'Comparar algoritmos' },
+  { name: 'vim', route: '/vim', heading: 'Vim' },
+  { name: 'vim challenge', route: '/vim/desafios/hjkl', heading: 'Mover sem as setas' },
 ];
 
 describe('App', () => {
@@ -129,6 +133,11 @@ describe('App', () => {
 
   it('renders the 404 page for an unknown subject', () => {
     renderWithProviders(<App />, '/materias/inexistente');
+    expect(screen.getByText('Página não encontrada')).toBeInTheDocument();
+  });
+
+  it('renders the 404 page for an unknown vim challenge', () => {
+    renderWithProviders(<App />, '/vim/desafios/inexistente');
     expect(screen.getByText('Página não encontrada')).toBeInTheDocument();
   });
 });

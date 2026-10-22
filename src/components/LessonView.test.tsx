@@ -96,6 +96,48 @@ describe('LessonView unit-interval input', () => {
   });
 });
 
+describe('LessonView pointers', () => {
+  const pointersLesson = getLesson('ponteiros-basico');
+
+  if (!pointersLesson) throw new Error('A lição ponteiros-basico precisa existir.');
+
+  it('renders the memory canvas without an input toolbar and with C only', () => {
+    renderWithProviders(
+      <LessonView lesson={pointersLesson} />,
+      '/algoritmos/ponteiros-basico?lang=java',
+    );
+
+    expect(screen.getByRole('img', { name: /Memória com 1 variável/ })).toBeInTheDocument();
+    expect(screen.queryByLabelText('valores')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Código Java' })).not.toBeInTheDocument();
+  });
+
+  const doublePointersLesson = getLesson('ponteiros-duplos');
+
+  if (!doublePointersLesson) throw new Error('A lição ponteiros-duplos precisa existir.');
+
+  it('renders the pp -> p -> x chain in the double pointers lesson', () => {
+    renderWithProviders(
+      <LessonView lesson={doublePointersLesson} />,
+      '/algoritmos/ponteiros-duplos?lang=java',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ir para o passo 4' }));
+
+    const canvas = screen.getByRole('img', { name: /pp.*0x100c.*aponta para p/i });
+    expect(canvas).toHaveAccessibleName(/p.*0x1008.*aponta para x/i);
+    expect(canvas.querySelectorAll('path[data-lane]')).toHaveLength(2);
+    expect(screen.queryByLabelText('valores')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Código Java' })).not.toBeInTheDocument();
+  });
+});
+
 describe('LessonView operations group (vetores-matrizes)', () => {
   const vmLesson = getLesson('vetores-matrizes');
   if (!vmLesson) throw new Error('A lição de vetores-matrizes precisa existir.');

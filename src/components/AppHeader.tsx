@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Anchor, Box, Burger, Container, Drawer, Group, Stack, Text } from '@mantine/core';
+import { Anchor, Box, Burger, Container, Drawer, Group, Menu, Stack, Text } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { allEntryLocations, getEntryPath, subjects } from '@/content/subjects';
-import { font, space } from '@/theme';
+import { font, space, subjectAccent } from '@/theme';
+import { ChevronDownIcon } from './icons';
 import { GlobalSearch } from './GlobalSearch';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -24,6 +25,31 @@ function BrandMark() {
   );
 }
 
+function NavLink({
+  to,
+  active,
+  children,
+}: {
+  to: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Anchor
+      component={Link}
+      to={to}
+      underline="never"
+      className="nav-link"
+      data-active={active ? 'true' : undefined}
+      fz={font.small}
+      fw={active ? 600 : 500}
+      aria-current={active ? 'page' : undefined}
+    >
+      {children}
+    </Anchor>
+  );
+}
+
 export function AppHeader() {
   const pathname = useLocation().pathname;
   const [drawerOpened, drawer] = useDisclosure(false);
@@ -35,7 +61,10 @@ export function AppHeader() {
   const activeSubjectId = pathname.startsWith('/materias/')
     ? pathname.split('/')[2]
     : currentEntry?.subject.id;
+  const onSubjectPage = Boolean(activeSubjectId);
   const playgroundActive = pathname === '/playground';
+  const vimActive = pathname.startsWith('/vim');
+  const homeActive = pathname === '/';
 
   return (
     <Container
@@ -65,45 +94,88 @@ export function AppHeader() {
           </Anchor>
 
           {isDesktop ? (
-            <Box component="nav" aria-label="Matérias">
+            <Box component="nav" aria-label="Principal">
               <Group gap={4} wrap="nowrap">
-                {subjects.map((subject) => {
-                  const active = subject.id === activeSubjectId;
-                  return (
-                    <Anchor
-                      key={subject.id}
-                      component={Link}
-                      to={`/materias/${subject.id}`}
-                      underline="never"
-                      className="nav-link"
-                      data-active={active ? 'true' : undefined}
+                <NavLink to="/" active={homeActive}>
+                  Início
+                </NavLink>
+
+                <Menu
+                  position="bottom-start"
+                  withArrow
+                  shadow="md"
+                  width={220}
+                  radius="md"
+                  withinPortal
+                  styles={{
+                    dropdown: {
+                      background: 'var(--viz-panel)',
+                      borderColor: 'var(--viz-line)',
+                    },
+                    item: { fontSize: font.small },
+                    label: {
+                      fontSize: font.micro,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.12em',
+                    },
+                  }}
+                >
+                  <Menu.Target>
+                    <Box
+                      component="button"
+                      type="button"
+                      className="nav-link nav-menu-trigger"
+                      data-active={onSubjectPage ? 'true' : undefined}
+                      aria-haspopup="menu"
+                      aria-label="Escolher matéria"
                       fz={font.small}
-                      fw={active ? 600 : 500}
-                      aria-current={active ? 'page' : undefined}
+                      fw={onSubjectPage ? 600 : 500}
                     >
-                      {subject.title}
-                    </Anchor>
-                  );
-                })}
+                      Matérias
+                      <ChevronDownIcon size={12} />
+                    </Box>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>matérias</Menu.Label>
+                    {subjects.map((subject) => {
+                      const active = subject.id === activeSubjectId;
+                      return (
+                        <Menu.Item
+                          key={subject.id}
+                          component={Link}
+                          to={`/materias/${subject.id}`}
+                          fw={active ? 600 : 400}
+                          leftSection={
+                            <Box
+                              w={6}
+                              h={6}
+                              aria-hidden
+                              style={{
+                                borderRadius: 999,
+                                background: subjectAccent[subject.accent],
+                              }}
+                            />
+                          }
+                        >
+                          {subject.title}
+                        </Menu.Item>
+                      );
+                    })}
+                  </Menu.Dropdown>
+                </Menu>
+
+                <NavLink to="/vim" active={vimActive}>
+                  Vim
+                </NavLink>
+                <NavLink to="/playground" active={playgroundActive}>
+                  Playground
+                </NavLink>
               </Group>
             </Box>
           ) : null}
         </Group>
 
         <Group gap="sm" wrap="nowrap">
-          {isDesktop ? (
-            <Anchor
-              component={Link}
-              to="/playground"
-              underline="never"
-              className="nav-link"
-              data-active={playgroundActive ? 'true' : undefined}
-              fz={font.small}
-              aria-current={playgroundActive ? 'page' : undefined}
-            >
-              Playground
-            </Anchor>
-          ) : null}
           <ThemeToggle />
           {isDesktop ? (
             <GlobalSearch trigger="input" shortcut />
@@ -134,18 +206,29 @@ export function AppHeader() {
           header: { background: 'var(--viz-panel)' },
         }}
       >
-        <Stack gap={6}>
+        <Stack gap={4}>
           <Anchor
             component={Link}
             to="/"
             onClick={drawer.close}
             underline="never"
             className="nav-link"
-            data-active={pathname === '/' ? 'true' : undefined}
+            data-active={homeActive ? 'true' : undefined}
             h={38}
           >
             Início
           </Anchor>
+
+          <Text
+            fz={font.micro}
+            tt="uppercase"
+            c="dimmed"
+            mt={space.sm}
+            px={13}
+            style={{ letterSpacing: '0.12em' }}
+          >
+            matérias
+          </Text>
           {subjects.map((subject) => (
             <Anchor
               key={subject.id}
@@ -158,9 +241,37 @@ export function AppHeader() {
               fw={subject.id === activeSubjectId ? 600 : 400}
               h={38}
             >
+              <Box
+                w={6}
+                h={6}
+                aria-hidden
+                style={{ borderRadius: 999, background: subjectAccent[subject.accent] }}
+              />
               {subject.title}
             </Anchor>
           ))}
+
+          <Text
+            fz={font.micro}
+            tt="uppercase"
+            c="dimmed"
+            mt={space.sm}
+            px={13}
+            style={{ letterSpacing: '0.12em' }}
+          >
+            ferramentas
+          </Text>
+          <Anchor
+            component={Link}
+            to="/vim"
+            onClick={drawer.close}
+            underline="never"
+            className="nav-link"
+            data-active={vimActive ? 'true' : undefined}
+            h={38}
+          >
+            Vim
+          </Anchor>
           <Anchor
             component={Link}
             to="/playground"

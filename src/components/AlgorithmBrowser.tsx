@@ -24,7 +24,9 @@ const viewLabels: Record<ViewKind, string> = {
   cells: 'Células',
   nodes: 'Nós',
   plot: 'Gráfico',
+  strings: 'Strings',
   matrix: 'Matriz',
+  pointers: 'Ponteiros',
   object: 'Objetos',
 };
 

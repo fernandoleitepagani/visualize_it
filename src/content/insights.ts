@@ -20,9 +20,45 @@ export const insights: Record<string, LessonInsight> = {
     tip: 'O teste acontece depois do corpo, então o bloco executa pelo menos uma vez.',
     funFact: 'É útil quando a primeira leitura ou execução precisa acontecer antes da validação.',
   },
+  'ponteiros-basico': {
+    tip: '&x devolve o endereço de x; *p acessa o valor guardado nesse endereço. p e *p são coisas diferentes.',
+    funFact: 'O tipo do ponteiro diz ao compilador como interpretar o valor apontado; por isso int * e char * não são intercambiáveis.',
+  },
+  'ponteiros-duplos': {
+    tip: '*pp não é o valor final; é o ponteiro p. Para chegar ao int, use **pp.',
+    funFact: 'Funções que precisam trocar o ponteiro do chamador recebem int **; elas alteram *param, não apenas o parâmetro local.',
+  },
   aritmetica: {
     tip: 'p++ avança uma posição; p += 2 avança duas; p-- volta uma. O tipo do ponteiro define o tamanho do passo.',
     funFact: 'Em C, a aritmética de ponteiros é medida em elementos, não em bytes.',
+  },
+  strings: {
+    tip: 'sizeof conta o vetor inteiro, incluindo o terminador; strlen conta só os caracteres antes dele.',
+    funFact: 'C não tem um tipo string nativo: uma string é apenas um vetor de char com \\0 no fim.',
+  },
+  strlen: {
+    tip: 'A varredura para no primeiro \\0. Se o terminador estiver faltando, strlen continua lendo memória indefinidamente.',
+    funFact: 'O custo é proporcional ao tamanho da string: não existe atalho para saber o comprimento.',
+  },
+  strcpy: {
+    tip: 'O destino precisa ter espaço para todos os caracteres da origem mais o terminador.',
+    funFact: 'strncpy não garante o \\0 quando a origem tem n ou mais caracteres; finalize manualmente.',
+  },
+  strcat: {
+    tip: 'Antes de concatenar, confira se o destino comporta o texto atual, o sufixo e o terminador.',
+    funFact: 'strncat sempre termina a string, mas ainda pode estourar o buffer se o destino for pequeno demais.',
+  },
+  strcmp: {
+    tip: 'Use strcmp ou strncmp para comparar conteúdo; == compara os endereços dos vetores.',
+    funFact: 'O retorno de strcmp só precisa ser negativo, zero ou positivo; não confie em valores como -1 ou 1.',
+  },
+  'busca-string': {
+    tip: 'Sempre teste o retorno de strchr, strrchr e strstr contra NULL antes de desreferenciar o ponteiro.',
+    funFact: 'A diferença entre dois ponteiros do mesmo vetor, como r - s, produz um índice do tipo ptrdiff_t.',
+  },
+  strtok: {
+    tip: 'strtok altera a string original trocando delimitadores por \\0; guarde uma cópia se precisar do texto intacto.',
+    funFact: 'strtok mantém estado interno e não é reentrante; strtok_r permite tokenizações independentes.',
   },
   soma: {
     tip: 'A cada termo, o total acumulado é a soma de tudo o que já passou.',

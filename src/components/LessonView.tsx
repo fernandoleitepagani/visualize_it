@@ -35,7 +35,9 @@ import { Panel } from './Panel';
 import { PlayerControls } from './PlayerControls';
 import { ShortcutsModal } from './ShortcutsModal';
 import { PlotView } from './PlotView';
+import { PointersView } from './PointersView';
 import { QuizPanel } from './QuizPanel';
+import { StringsView } from './StringsView';
 import { VarsPanel } from './VarsPanel';
 import { BarsIcon, CheckIcon, GaugeIcon, InfoIcon, LightbulbIcon, ShuffleIcon, SparkIcon } from './icons';
 
@@ -45,6 +47,8 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
   if (lesson.view === 'matrix') return <MatrixView matrix={step?.matrix} />;
   if (lesson.view === 'nodes') return <NodesView nodes={step?.nodes} linked={lesson.linked} />;
   if (lesson.view === 'plot') return <PlotView plot={step?.plot} />;
+  if (lesson.view === 'strings') return <StringsView state={step?.strings} />;
+  if (lesson.view === 'pointers') return <PointersView state={step?.pointers} />;
   if (lesson.view === 'object') return <ObjectView state={step?.object} />;
   return <BarsView state={step} ids={ids} />;
 }

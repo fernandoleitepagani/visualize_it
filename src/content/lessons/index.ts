@@ -23,6 +23,7 @@ import { lesson as bolha } from './bolha';
 import { lesson as bucket } from './bucket';
 import { lesson as buscaBinaria } from './busca-binaria';
 import { lesson as buscaSequencial } from './busca-sequencial';
+import { lesson as buscaString } from './busca-string';
 import { lesson as counting } from './counting';
 import { lesson as doWhile } from './do-while';
 import { lesson as filaCircular } from './fila-circular';
@@ -36,11 +37,18 @@ import { lesson as listaSequencial } from './lista-sequencial';
 import { lesson as mergesort } from './mergesort';
 import { lesson as pilhaEncadeada } from './pilha-encadeada';
 import { lesson as pilhaSequencial } from './pilha-sequencial';
+import { lesson as ponteirosBasico } from './ponteiros-basico';
+import { lesson as ponteirosDuplos } from './ponteiros-duplos';
 import { lesson as quicksort } from './quicksort';
 import { lesson as radix } from './radix';
 import { lesson as selecao } from './selecao';
 import { lesson as shellsort } from './shellsort';
 import { lesson as soma } from './soma';
+import { lesson as strcat } from './strcat';
+import { lesson as strcmp } from './strcmp';
+import { lesson as strcpy } from './strcpy';
+import { lesson as strlen } from './strlen';
+import { lesson as strtok } from './strtok';
 import { lesson as whileLoop } from './while';
 
 /** Every lesson, keyed by slug. The key is the URL segment. */
@@ -48,6 +56,8 @@ export const lessons = {
   for: forLoop,
   while: whileLoop,
   'do-while': doWhile,
+  'ponteiros-basico': ponteirosBasico,
+  'ponteiros-duplos': ponteirosDuplos,
   aritmetica,
   oop: lessonOop,
   abstracao: lessonAbstracao,
@@ -61,6 +71,12 @@ export const lessons = {
   structs: lessonStructs,
   'alocacao-memoria': lessonMemoria,
   strings: lessonStrings,
+  strlen,
+  strcpy,
+  strcat,
+  strcmp,
+  'busca-string': buscaString,
+  strtok,
   arquivos: lessonArquivos,
   'vetores-matrizes': lessonVetoresMatrizes,
   'classes-vetores-matrizes': lessonClassesVetores,

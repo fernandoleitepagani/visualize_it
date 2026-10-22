@@ -99,6 +99,7 @@ src/
 ├── test/                    # setup do Vitest + helpers de render
 ├── theme.ts                 # shim de re-exportação (migração em andamento)
 ├── theme/tokens.ts          # fonte única dos tokens visuais + cssVariablesResolver
+├── vim/                     # treinador Vim: motor puro (keymap), desafios, cheatsheet e editor
 └── main.tsx
 
 docs/
@@ -150,7 +151,9 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
 
 6. **As views compartilham o mesmo motor.**
    `BarsView` lê `arr`, `cmp`, `swap`, `pivot`, `sorted`, `dim`; `CellsView` lê `cells`; `NodesView`
-   lê `nodes` e `linked`. Não crie um quarto caminho de renderização sem uma decisão explícita.
+   lê `nodes` e `linked`; `PlotView` lê `plot`; `MatrixView` lê `matrix`; `StringsView` lê `strings`;
+   `PointersView` lê `pointers`.
+   Não crie um novo caminho de renderização sem uma decisão explícita.
 
 7. **Textos de UI e conteúdo didático em pt-BR.**
    Código, nomes de símbolos e comentários técnicos seguem o padrão do arquivo em que você está
@@ -165,6 +168,11 @@ input (LessonView) → lesson.steps(input) → Step[] → usePlayback → view a
    `CodePanel` esconde o seletor quando há uma só língua. Nunca selecione uma língua que a lição
    não declara, e mantenha `step.line` dentro da listagem de cada língua. Módulos conceituais usam
    `inputless: true`.
+
+10. **O motor do Vim é puro.** `src/vim/keymap.ts` não toca no DOM, não usa tempo nem aleatoriedade;
+    o editor apenas desenha `VimState` e encaminha teclas. A seção `/vim` não entra em
+    `subjects.ts` — é ferramenta, não matéria. Toda missão nova exige solução de referência coberta
+    por `challenges.test.ts`, e o cheatsheet só lista comandos realmente suportados.
 
 ---
 
@@ -211,7 +219,7 @@ O que merece teste:
 - igualdade entre lições registradas e cards do catálogo;
 - playback (`play`, `pause`, `next`, `prev`, `reset`, fim da lista);
 - validação da entrada (inteiros, faixa, quantidade);
-- views (`BarsView`, `CellsView`, `NodesView`) com estados vazios e estados ativos;
+- views (`BarsView`, `CellsView`, `NodesView`, `PlotView`, `MatrixView`, `StringsView`, `PointersView`) com estados vazios e ativos;
 - timeline do player, estado vazio (`0 / 0`) e tokenizer de código;
 - métricas de comparação, insights, atalhos e link de reportar problema;
 - rotas e 404.

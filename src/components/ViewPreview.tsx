@@ -57,6 +57,65 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'strings') {
+    return (
+      <Flex direction="column" gap={2} justify="center" h={30} aria-hidden>
+        {[0, 1].map((row) => (
+          <Flex key={row} gap={2} align="center">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <Box
+                key={i}
+                className="viz-preview-cell"
+                w={8}
+                h={9}
+                style={{
+                  border: `1px solid ${row === 0 && i === 1 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line2}`,
+                  borderRadius: 2,
+                  background:
+                    row === 0 && i === 1
+                      ? `color-mix(in srgb, ${accent} 12%, transparent)`
+                      : vizVar.surface2,
+                }}
+              />
+            ))}
+          </Flex>
+        ))}
+      </Flex>
+    );
+  }
+
+  if (view === 'pointers') {
+    return (
+      <Flex
+        data-testid="view-preview-pointers"
+        gap={3}
+        align="center"
+        h={30}
+        aria-hidden
+      >
+        {[0, 1, 2].map((i) => (
+          <Fragment key={i}>
+            {i === 1 ? (
+              <Text fz={font.micro} c="dimmed">
+                →
+              </Text>
+            ) : null}
+            <Box
+              w={13}
+              h={20}
+              style={{
+                border: `1px solid ${i === 1 ? `color-mix(in srgb, ${accent} 34%, transparent)` : vizVar.line2}`,
+                borderRadius: 4,
+                background:
+                  i === 1 ? `color-mix(in srgb, ${accent} 12%, transparent)` : vizVar.surface2,
+              }}
+            />
+          </Fragment>
+        ))}
+      </Flex>
+    );
+  }
+
   if (view === 'nodes') {
     return (
       <Flex gap={2} align="center" h={30} aria-hidden>

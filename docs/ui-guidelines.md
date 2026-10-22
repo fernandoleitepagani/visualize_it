@@ -115,7 +115,13 @@ As views são didáticas e usam cores globais, independentes da matéria:
 | `active` / `write` | âmbar |
 | `pivot` | violeta (`--viz-purple`) |
 | `sorted` | âmbar escuro (`--viz-accent-dim`) |
+| `terminator` | `\0` com borda tracejada (`--viz-line-3`) |
+| `diff` | vermelho de diferença (`--viz-danger`) |
 | `dim` | cinza (`--viz-dim`) |
+
+Na `PointersView`, leitura (`compare`) usa violeta e escrita/atividade usa âmbar. Cada seta é
+desenhada a partir do `targetId` da caixa; alvos ausentes não geram seta. Cadeias com várias setas,
+como `pp → p → x`, usam pistas (`data-lane`) separadas para não se sobrepor.
 
 Não codifique estado apenas por cor: use também legenda, rótulos e a descrição do passo.
 
@@ -232,6 +238,9 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `MetaPill` | Tag mono. `tone="subject"` segue a matéria; `accent`, `purple`, `danger` são globais; `green` é alias do âmbar. |
 | `Breadcrumbs` | Navegação acessível com `aria-current="page"`. |
 | `ViewLegend` | Legenda compartilhada das views. |
+| `MatrixView` | Grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos; usada por vetores/matrizes. |
+| `StringsView` | Fileiras de caracteres para lições de string: índices, ponteiros, terminador `\0`, setas de cópia/concatenação e resultado. |
+| `PointersView` | Caixas de memória para lições de ponteiro: tipo, nome, endereço, valor, setas por `targetId` e estados de leitura/escrita. |
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |
 | `CodePanel` | Código Java/C com linha ativa, highlighter e rodapé. |
@@ -404,7 +413,7 @@ npm run build
 - Novos padrões de página: teste comportamento observável, não animação/tempo.
 - Comparação: teste `countRunMetrics` e a página `/comparar`; insights: valide as chaves contra o
   registro de lições; código C-only: valide `step.line` contra a listagem declarada.
-- QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`), teoria, playground e 404;
+- QA visual: rotas de matéria, lição (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`), teoria, playground e 404;
   larguras 390, 768, 1024 e 1440; temas claro e escuro.
 
 ---
@@ -433,7 +442,30 @@ npm run build
 
 ---
 
-## 14. Referência rápida
+## 14. Seção Vim
+
+A seção `/vim` usa a identidade global da home (âmbar, papel quadriculado, mono), sem acento de
+matéria próprio.
+
+| Elemento | Regra |
+|---|---|
+| Painel do buffer | `Panel` com `label="buffer"`, `footer` de statusline; fundo `--viz-code-bg` |
+| Cursor normal | bloco âmbar com texto `--viz-accent-ink` |
+| Cursor insert | barra de 2 px âmbar; pisca com `vim-blink`, desligada por `prefers-reduced-motion` |
+| Seleção visual | `color-mix` do âmbar a 26%; linha inteira a 14% |
+| Busca | `--viz-purple` a 24% |
+| Foco normal | anel interno `--viz-accent-line` via `:focus-within` |
+| Foco insert | anel interno violeta (`--viz-purple` a 55%) |
+| Sem foco | overlay central com `backdrop-filter: blur(5px)`, fundo `--viz-canvas` a 42%, card em `--viz-panel`; clicar devolve o foco ao `textarea` |
+| Cheatsheet | 2 colunas; linha com `grid-template-columns: minmax(72px, auto) 1fr`; keycaps `Kbd` 11.5, rótulo 13 em `--viz-ink-2`; um "praticar" por grupo |
+| Trilha de desafios | grade 6×2 de chips; ativo com `--viz-accent-soft` e `--viz-accent-line` |
+| Teclas tocáveis | 3 grupos (mover, modos, editar), `Button` `variant="default"` mono, visíveis abaixo de 62em ou em ponteiro grosso; deck sticky no mobile |
+
+Não crie uma paleta paralela: qualquer estado novo da seção deve reutilizar `--viz-*`. O texto do
+buffer é mono; rótulos e instruções seguem a tipografia do site. O conteúdo é pt-BR, os comandos Vim
+ficam em inglês (`NORMAL`, `INSERT`, `:w`, `:q`).
+
+## 15. Referência rápida
 
 ```ts
 import {

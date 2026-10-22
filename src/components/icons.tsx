@@ -221,6 +221,14 @@ export function BugIcon(props: IconProps) {
   );
 }
 
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m6 9.5 6 6 6-6" />
+    </Svg>
+  );
+}
+
 export function SparkIcon(props: IconProps) {
   return (
     <Svg {...props}>

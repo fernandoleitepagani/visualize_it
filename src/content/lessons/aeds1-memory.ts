@@ -1,5 +1,6 @@
 import type { Cell, Lesson, MatrixState, Step } from '@/engine/types';
 import { lines } from '@/lib/lines';
+import { stringRow, stringStep, textWithTerminator } from './string-utils';
 
 const c = (val: Cell['val'], labels: string[], state = ''): Cell => ({ val, labels, state });
 const s = (line: number, desc: string, cells: Cell[]): Step => ({ line, desc, cells });
@@ -106,19 +107,12 @@ const stringsCode = lines(`
 #include <string.h>
 
 int main() {
-  char nome[30] = "Ana Paula";
-  char copia[30];
+  char nome[] = "Ana";
+  char *p = nome;
 
-  printf("Texto: %s\\n", nome);
-  printf("Tamanho: %zu\\n", strlen(nome));
-
-  strncpy(copia, nome, sizeof(copia) - 1);
-  copia[sizeof(copia) - 1] = '\\0';
-
-  if (strcmp(nome, copia) == 0) {
-    printf("Strings iguais\\n");
-  }
-
+  printf("primeiro: %c\\n", *p);
+  printf("sizeof: %zu\\n", sizeof(nome));
+  printf("strlen: %zu\\n", strlen(nome));
   return 0;
 }`);
 
@@ -128,16 +122,43 @@ export const lessonStrings: Lesson = {
   title: 'Strings',
   subtitle: 'Texto em C',
   description:
-    'Em C, string é um vetor de char terminado pelo caractere nulo `\\0`. O terminador permite que funções como strlen e printf saibam onde o texto acaba. Use fgets para ler linhas com espaço e strncpy para copiar com limite; comparar com == compara endereços, não conteúdo, por isso use strcmp.',
+    'Em C, string é um vetor de char terminado pelo caractere nulo `\\0`. O terminador permite que funções como strlen e printf saibam onde o texto acaba. sizeof(nome) conta o vetor inteiro, incluindo o `\\0`; strlen(nome) conta só os caracteres antes dele. Use fgets para ler linhas com espaço, strncpy para copiar com limite e strcmp para comparar conteúdo: == compara endereços.',
+  view: 'strings',
   panelLabel: 'string',
   languages: ['c'],
-  complexity: { time: { best: 'Θ(n)', avg: 'Θ(n)', worst: 'Θ(n)' }, space: 'Θ(n)' },
+  complexity: { time: { best: 'Θ(1)', avg: 'Θ(n)', worst: 'Θ(n)' }, space: 'Θ(n)' },
   code: { c: stringsCode },
   steps: () => [
-    s(lineOf(stringsCode, 'char nome'), 'O vetor guarda o texto e o terminador.', [c('A', ['0'], 'write'), c('n', ['1'], 'write'), c('\\0', ['fim'], 'write')]),
-    s(lineOf(stringsCode, 'strlen'), 'strlen conta até o terminador.', [c(9, ['tamanho'], 'active')]),
-    s(lineOf(stringsCode, 'strncpy'), 'strncpy copia com limite de segurança.', [c('copia', ['destino'], 'write')]),
-    s(lineOf(stringsCode, 'strcmp'), 'strcmp compara o conteúdo.', [c(0, ['resultado'], 'active')]),
+    stringStep(
+      lineOf(stringsCode, 'char nome[]'),
+      'O vetor guarda A, n, a e o terminador; a string tem três caracteres.',
+      [stringRow('nome', textWithTerminator('Ana'))],
+      { vars: { sizeof: 4, strlen: 3 } },
+    ),
+    stringStep(
+      lineOf(stringsCode, 'char *p = nome'),
+      'p aponta para o primeiro caractere da string.',
+      [stringRow('nome', textWithTerminator('Ana', { 0: 'active' }, { 0: ['p'] }))],
+      { vars: { p: '&nome[0]', '*p': 'A' } },
+    ),
+    stringStep(
+      lineOf(stringsCode, 'printf("primeiro'),
+      "O primeiro caractere é 'A'; o ponteiro não cria uma cópia do texto.",
+      [stringRow('nome', textWithTerminator('Ana', { 0: 'compare' }, { 0: ['p'] }))],
+      { vars: { '*p': 'A' } },
+    ),
+    stringStep(
+      lineOf(stringsCode, 'printf("sizeof'),
+      'sizeof(nome) vale 4: três letras e o terminador.',
+      [stringRow('nome', textWithTerminator('Ana', {}, {}, ['fim']))],
+      { vars: { sizeof: 4 }, result: { label: 'sizeof(nome)', value: '4' } },
+    ),
+    stringStep(
+      lineOf(stringsCode, 'printf("strlen'),
+      'strlen(nome) vale 3: ela para antes do terminador.',
+      [stringRow('nome', textWithTerminator('Ana', {}, {}, ['fim']))],
+      { vars: { strlen: 3 }, result: { label: 'strlen(nome)', value: '3' } },
+    ),
   ],
 };
 
