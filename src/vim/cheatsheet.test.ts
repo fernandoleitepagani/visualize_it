@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterCheatsheet } from './cheatsheet';
+import { cheatTotals, cheatsheet, filterCheatsheet } from './cheatsheet';
 import { loadProgress, recordSolved, saveProgress } from './progress';
 
 describe('cheatsheet', () => {
@@ -7,6 +7,21 @@ describe('cheatsheet', () => {
     const groups = filterCheatsheet('');
     expect(groups.length).toBeGreaterThanOrEqual(8);
     expect(groups.flatMap((group) => group.items).length).toBeGreaterThanOrEqual(45);
+  });
+
+  it('gives every group a practice snippet', () => {
+    for (const group of cheatsheet) {
+      expect(group.practice.lines.length).toBeGreaterThan(0);
+    }
+    expect(cheatTotals.commands).toBe(
+      cheatsheet.reduce((total, group) => total + group.items.length, 0),
+    );
+  });
+
+  it('filters essentials only', () => {
+    const items = filterCheatsheet('', true).flatMap((group) => group.items);
+    expect(items.length).toBe(cheatTotals.essentials);
+    expect(items.every((item) => item.essential)).toBe(true);
   });
 
   it('filters by command and label, ignoring accents and case', () => {
