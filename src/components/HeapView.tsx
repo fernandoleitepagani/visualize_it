@@ -363,26 +363,28 @@ export function HeapView({ state, ids = [] }: Props) {
       {/* Vector / Bars Representation */}
       {(displayMode === 'dual' || displayMode === 'bars') && (
         <Box
-          data-testid="heap-bars"
-          pos="relative"
-          h={PLOT_HEIGHT}
+          data-testid="heap-bars-container"
           mx={space.xs}
           mb={space.md}
-          mt={displayMode === 'dual' ? space.sm : space.xs}
+          mt={displayMode === 'dual' ? space.md : space.xs}
         >
-          {/* Header indicator inside bars */}
-          <Box
-            pos="absolute"
-            top={-18}
-            left={4}
+          {/* Header indicator above bars area */}
+          <Text
             fz={font.micro}
             fw={700}
             c="dimmed"
-            style={{ textTransform: 'uppercase', letterSpacing: '0.1em', pointerEvents: 'none' }}
+            mb={6}
+            pl={4}
+            style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}
           >
             Vetor Implícito (Índices e Posições)
-          </Box>
+          </Text>
 
+          <Box
+            data-testid="heap-bars"
+            pos="relative"
+            h={PLOT_HEIGHT}
+          >
           {/* Grid lines */}
           {GRID_LINES.map((line) => (
             <Box
@@ -565,6 +567,7 @@ export function HeapView({ state, ids = [] }: Props) {
               {i}
             </Text>
           ))}
+          </Box>
         </Box>
       )}
 
