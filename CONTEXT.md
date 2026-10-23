@@ -17,7 +17,7 @@ O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de da
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
 - uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`,
-  `object`, `loop` ou `callstack`);
+  `object`, `loop`, `callstack` ou `heap`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -33,11 +33,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Item | Estado |
 |---|---|
 | Lições registradas | 49 (`src/content/lessons/index.ts`) |
-| Views | 10 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`) |
+| Views | 11 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`, `heap`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 523 testes em 52 arquivos, passando |
+| Testes | 530 testes em 53 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
