@@ -17,7 +17,7 @@ O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de da
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
 - uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`,
-  `object`, `loop`, `callstack` ou `heap`);
+  `object`, `loop`, `callstack`, `heap` ou `file`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -33,11 +33,11 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Item | Estado |
 |---|---|
 | Lições registradas | 49 (`src/content/lessons/index.ts`) |
-| Views | 11 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`, `heap`) |
+| Views | 12 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`, `heap`, `file`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 530 testes em 53 arquivos, passando |
+| Testes | 540 testes em 55 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -49,7 +49,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
   `recursao` (view `callstack`); depois `ponteiros-basico` (view `pointers`), `aritmetica`,
   `ponteiros-duplos` (view `pointers`), `soma` (view `plot`); o grupo
   **String** com `strings`, `strlen`, `strcpy`, `strcat`, `strcmp`, `busca-string`, `strtok`
-  (view `strings`); depois `structs`, `alocacao-memoria`, `arquivos`, `vetores-matrizes`,
+  (view `strings`); depois `structs`, `alocacao-memoria`, `arquivos` (view `file`), `vetores-matrizes`,
   `classes-vetores-matrizes` (C) e, por último, `oop`, `abstracao`, `classes`, `construtores`,
   `encapsulamento`, `heranca`, `polimorfismo`, `metodos-acessores`, `excecoes` (C++).
 - **AEDS II (19):**
@@ -89,7 +89,8 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   eliminando caixas indexadas de array e introduzindo moldes de classe (blueprints) com membros públicos/privados,
   instâncias concretas na memória com realce de escrita em tempo real, hierarquias de herança com resolução
   na classe base, despacho dinâmico polimórfico via ponteiro base com indicação de vtable, e fluxo interativo de
-  exceções (`try` -> `throw` -> `catch`).
+  exceções (`try` -> `throw` -> `catch`);
+- nova view de arquivos `file` (`FileView.tsx`) com distinção explícita entre memória RAM volátil e armazenamento persistente em disco (Issue #54), apresentando o ponteiro `FILE *f` com status e modo (w/r), buffer de E/S com indicador de flush (`fclose`), variáveis locais (`x`), representação física de `dados.txt` com linhas numeradas, seek head (cursor sequencial) apontando para a linha ativa e leitor de EOF, além de terminal para saída padrão (`stdout`).
 
 ---
 
@@ -363,7 +364,7 @@ polimento.
 - Alvo configurável nas lições de busca (Issue #56).
 - Visualização de chamada recursiva (Call Stack) em Quicksort e Mergesort (Issue #59).
 - Visualização de Árvore Binária para Heapsort (Issue #60).
-- FileView: disco vs RAM com cursor sequencial (Issue #54).
+- FileView: disco vs RAM com cursor sequencial (Issue #54 - concluído).
 - Operações interativas em listas encadeadas (Issue #58).
 - Remover o shim/alias `viz` depois de migrar os imports restantes.
 
