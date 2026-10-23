@@ -31,6 +31,7 @@ const viewLabels: Record<ViewKind, string> = {
   loop: 'Laços',
   callstack: 'Pilha de chamadas',
   heap: 'Heap',
+  file: 'Arquivos',
 };
 
 interface Props {

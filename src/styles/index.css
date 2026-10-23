@@ -909,6 +909,50 @@ body::before {
   animation: viz-write-pulse 1.8s ease-in-out infinite;
 }
 
+/* File view stream highway & seek head animations */
+@keyframes file-stream-right {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes file-stream-left {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 24;
+  }
+}
+
+@keyframes file-seek-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12) translateX(2px);
+    opacity: 0.85;
+  }
+}
+
+.file-stream-arrow-right {
+  stroke-dasharray: 6 3;
+  animation: file-stream-right 1s linear infinite;
+}
+
+.file-stream-arrow-left {
+  stroke-dasharray: 6 3;
+  animation: file-stream-left 1s linear infinite;
+}
+
+.file-seek-pointer {
+  animation: file-seek-pulse 1.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

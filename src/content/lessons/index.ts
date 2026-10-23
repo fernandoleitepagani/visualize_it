@@ -11,8 +11,8 @@ import {
   lessonOop,
   lessonPolimorfismo,
 } from './aeds1-oop';
+import { lesson as lessonArquivos } from './arquivos';
 import {
-  lessonArquivos,
   lessonClassesVetores,
   lessonMemoria,
   lessonStrings,

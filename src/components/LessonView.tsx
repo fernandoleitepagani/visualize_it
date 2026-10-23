@@ -30,6 +30,7 @@ import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
 import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
 import { ComplexityTable } from './ComplexityTable';
+import { FileView } from './FileView';
 import { HeapView } from './HeapView';
 import { MatrixView } from './MatrixView';
 import { NodesView } from './NodesView';
@@ -57,6 +58,7 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
   if (lesson.view === 'loop') return <LoopView state={step?.loop} />;
   if (lesson.view === 'callstack') return <CallStackView state={step?.callstack} />;
   if (lesson.view === 'heap') return <HeapView state={step} ids={ids} />;
+  if (lesson.view === 'file') return <FileView state={step} />;
   return <BarsView state={step} ids={ids} />;
 }
 

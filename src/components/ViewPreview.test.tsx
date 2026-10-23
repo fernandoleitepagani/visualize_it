@@ -20,4 +20,10 @@ describe('ViewPreview', () => {
 
     expect(container.querySelector('[data-testid="view-preview-heap"]')).toBeInTheDocument();
   });
+
+  it('renders the file preview', () => {
+    const { container } = renderWithProviders(<ViewPreview view="file" kind="lesson" />);
+
+    expect(container.querySelector('[data-testid="view-preview-file"]')).toBeInTheDocument();
+  });
 });
