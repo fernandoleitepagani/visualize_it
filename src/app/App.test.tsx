@@ -13,6 +13,7 @@ const views = [
   { name: 'nodes', route: '/algoritmos/lista-encadeada', heading: 'Lista Encadeada' },
   { name: 'pointers', route: '/algoritmos/ponteiros-basico', heading: 'Ponteiros: endereço e valor' },
   { name: 'double pointers', route: '/algoritmos/ponteiros-duplos', heading: 'Ponteiros duplos' },
+  { name: 'file', route: '/algoritmos/arquivos', heading: 'Arquivos' },
   {
     name: 'functions',
     route: '/algoritmos/funcoes',
