@@ -53,95 +53,100 @@ export function CellsView({ cells }: { cells: Cell[] | undefined }) {
 
   return (
     <Box>
-      <Flex
-        gap={8}
-        align="flex-end"
-        justify="center"
-        wrap="nowrap"
-        pt="lg"
-        pb="sm"
-        mih={250}
+      <Box
         className="scroll-fade-x"
-        style={{ overflowX: 'auto', paddingInline: 4 }}
+        style={{ overflowX: 'auto', paddingInline: 8 }}
         role="img"
+        tabIndex={0}
         aria-label={list.length > 0 ? `Estrutura com ${list.length} células` : 'Estrutura vazia'}
       >
-        {list.length === 0 ? (
-          <Text fz="sm" c="dimmed" pb="xl">
-            Estrutura vazia
-          </Text>
-        ) : null}
-        {list.map((cell, i) => {
-          const empty = cell.val === null || cell.val === undefined;
-          const state = cell.state || (empty ? 'empty' : '');
-          const isActive = state === 'active' || state === 'write' || state === 'compare';
+        <Flex
+          gap={8}
+          align="flex-end"
+          justify="center"
+          wrap="nowrap"
+          pt="lg"
+          pb="sm"
+          mih={250}
+          style={{ minWidth: 'max-content', width: 'fit-content', margin: '0 auto' }}
+        >
+          {list.length === 0 ? (
+            <Text fz="sm" c="dimmed" pb="xl">
+              Estrutura vazia
+            </Text>
+          ) : null}
+          {list.map((cell, i) => {
+            const empty = cell.val === null || cell.val === undefined;
+            const state = cell.state || (empty ? 'empty' : '');
+            const isActive = state === 'active' || state === 'write' || state === 'compare';
 
-          return (
-            <Flex
-              key={i}
-              direction="column"
-              align="center"
-              gap={6}
-              style={{ flexShrink: 0, minWidth: 58 }}
-            >
+            return (
               <Flex
-                gap={space.xs}
-                wrap="wrap"
-                mih={20}
-                w="100%"
+                key={i}
+                direction="column"
                 align="center"
-                justify="center"
-                fz={font.micro}
-                style={{ color: vizVar.accent }}
+                gap={6}
+                style={{ flexShrink: 0, minWidth: 58 }}
               >
-                {(cell.labels ?? []).map((label, j) => (
-                  <Text
-                    key={j}
-                    span
-                    className="viz-pointer-badge"
-                    px={6}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: radius.pill,
-                      border: `1px solid ${vizVar.accentLine}`,
-                      background: vizVar.accentSoft,
-                      lineHeight: 1,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {label}
-                  </Text>
-                ))}
+                <Flex
+                  gap={space.xs}
+                  wrap="wrap"
+                  mih={20}
+                  w="100%"
+                  align="center"
+                  justify="center"
+                  fz={font.micro}
+                  style={{ color: vizVar.accent }}
+                >
+                  {(cell.labels ?? []).map((label, j) => (
+                    <Text
+                      key={j}
+                      span
+                      className="viz-pointer-badge"
+                      px={6}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: radius.pill,
+                        border: `1px solid ${vizVar.accentLine}`,
+                        background: vizVar.accentSoft,
+                        lineHeight: 1,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {label}
+                    </Text>
+                  ))}
+                </Flex>
+                <Flex
+                  w={56}
+                  h={54}
+                  align="center"
+                  justify="center"
+                  fz="sm"
+                  fw={600}
+                  c={empty ? 'dimmed' : undefined}
+                  style={{
+                    border: '1.5px solid',
+                    borderRadius: radius.md,
+                    transform: isActive ? 'translateY(-4px)' : undefined,
+                    transition: reducedMotion
+                      ? 'none'
+                      : `transform ${transition.base}, background ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
+                    ...boxStyle(state),
+                  }}
+                >
+                  {empty ? '' : cell.val}
+                </Flex>
+                <Text fz={font.micro} style={{ color: vizVar.dim }}>
+                  {i}
+                </Text>
               </Flex>
-              <Flex
-                w={56}
-                h={54}
-                align="center"
-                justify="center"
-                fz="sm"
-                fw={600}
-                c={empty ? 'dimmed' : undefined}
-                style={{
-                  border: '1.5px solid',
-                  borderRadius: radius.md,
-                  transform: isActive ? 'translateY(-4px)' : undefined,
-                  transition: reducedMotion
-                    ? 'none'
-                    : `transform ${transition.base}, background ${transition.base}, border-color ${transition.base}, box-shadow ${transition.base}`,
-                  ...boxStyle(state),
-                }}
-              >
-                {empty ? '' : cell.val}
-              </Flex>
-              <Text fz={font.micro} style={{ color: vizVar.dim }}>
-                {i}
-              </Text>
-            </Flex>
-          );
-        })}
-      </Flex>
+            );
+          })}
+        </Flex>
+      </Box>
       <ViewLegend items={activeLegend} />
     </Box>
   );

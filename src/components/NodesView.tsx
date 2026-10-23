@@ -102,145 +102,150 @@ export function NodesView({
 
   return (
     <Box>
-      <Flex
-        gap={0}
-        align="center"
-        justify="center"
-        wrap="nowrap"
-        pt="lg"
-        pb="sm"
-        mih={250}
+      <Box
         className="scroll-fade-x"
-        style={{ overflowX: 'auto', paddingInline: 4 }}
+        style={{ overflowX: 'auto', paddingInline: 8 }}
         role="img"
+        tabIndex={0}
         aria-label={list.length > 0 ? `Lista com ${list.length} nós` : 'Lista vazia'}
       >
-        {list.length === 0 ? (
-          <Text fz="sm" c="dimmed" pb="xl">
-            Lista vazia
-          </Text>
-        ) : null}
-        {list.map((node, i) => {
-          const state = node.state || '';
-          const prev = node.prev ?? null;
-          const next = node.next ?? null;
-          const prevVal = prev ? (byId.get(prev)?.val ?? prev) : null;
-          const nextVal = next ? (byId.get(next)?.val ?? next) : null;
-          const isActive = state === 'active' || state === 'write' || state === 'compare';
+        <Flex
+          gap={0}
+          align="center"
+          justify="center"
+          wrap="nowrap"
+          pt="lg"
+          pb="sm"
+          mih={250}
+          style={{ minWidth: 'max-content', width: 'fit-content', margin: '0 auto' }}
+        >
+          {list.length === 0 ? (
+            <Text fz="sm" c="dimmed" pb="xl">
+              Lista vazia
+            </Text>
+          ) : null}
+          {list.map((node, i) => {
+            const state = node.state || '';
+            const prev = node.prev ?? null;
+            const next = node.next ?? null;
+            const prevVal = prev ? (byId.get(prev)?.val ?? prev) : null;
+            const nextVal = next ? (byId.get(next)?.val ?? next) : null;
+            const isActive = state === 'active' || state === 'write' || state === 'compare';
 
-          return (
-            <Fragment key={node.id}>
-              <Flex direction="column" align="center" gap={6} style={{ flexShrink: 0 }}>
-                <Flex
-                  gap={space.xs}
-                  wrap="nowrap"
-                  h={20}
-                  w="100%"
-                  align="center"
-                  justify="center"
-                  fz={font.micro}
-                  style={{ color: vizVar.accent }}
-                >
-                  {(node.labels ?? []).map((label, j) => (
-                    <Text
-                      key={j}
-                      span
-                      className="viz-pointer-badge"
-                      px={6}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: radius.pill,
-                        border: `1px solid ${vizVar.accentLine}`,
-                        background: vizVar.accentSoft,
-                        lineHeight: 1,
-                        whiteSpace: 'nowrap',
-                      }}
+            return (
+              <Fragment key={node.id}>
+                <Flex direction="column" align="center" gap={6} style={{ flexShrink: 0 }}>
+                  <Flex
+                    gap={space.xs}
+                    wrap="nowrap"
+                    h={20}
+                    w="100%"
+                    align="center"
+                    justify="center"
+                    fz={font.micro}
+                    style={{ color: vizVar.accent }}
+                  >
+                    {(node.labels ?? []).map((label, j) => (
+                      <Text
+                        key={j}
+                        span
+                        className="viz-pointer-badge"
+                        px={6}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderRadius: radius.pill,
+                          border: `1px solid ${vizVar.accentLine}`,
+                          background: vizVar.accentSoft,
+                          lineHeight: 1,
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {label}
+                      </Text>
+                    ))}
+                  </Flex>
+                  <Flex
+                    align="stretch"
+                    style={{
+                      border: '1.5px solid',
+                      borderRadius: radius.md,
+                      overflow: 'hidden',
+                      transform: isActive ? 'translateY(-4px)' : undefined,
+                      ...nodeTransition(reducedMotion),
+                      ...nodeStyle(state),
+                    }}
+                  >
+                    {linked === 'doubly' ? (
+                      <Flex
+                        align="center"
+                        px="xs"
+                        py={space.sm}
+                        fz={font.micro}
+                        style={{
+                          borderRight: `1px solid ${vizVar.line}`,
+                          background: 'color-mix(in srgb, var(--viz-surface) 46%, transparent)',
+                          color: prev ? vizVar.muted : vizVar.dim,
+                          minWidth: 34,
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {prev !== null ? `←${prevVal}` : '∅'}
+                      </Flex>
+                    ) : null}
+                    <Flex
+                      align="center"
+                      px="md"
+                      py={space.sm}
+                      fz="sm"
+                      fw={600}
+                      style={{ color: vizVar.ink, minWidth: 42, justifyContent: 'center' }}
                     >
-                      {label}
-                    </Text>
-                  ))}
-                </Flex>
-                <Flex
-                  align="stretch"
-                  style={{
-                    border: '1.5px solid',
-                    borderRadius: radius.md,
-                    overflow: 'hidden',
-                    transform: isActive ? 'translateY(-4px)' : undefined,
-                    ...nodeTransition(reducedMotion),
-                    ...nodeStyle(state),
-                  }}
-                >
-                  {linked === 'doubly' ? (
+                      {node.val}
+                    </Flex>
                     <Flex
                       align="center"
                       px="xs"
                       py={space.sm}
                       fz={font.micro}
                       style={{
-                        borderRight: `1px solid ${vizVar.line}`,
+                        borderLeft: `1px solid ${vizVar.line}`,
                         background: 'color-mix(in srgb, var(--viz-surface) 46%, transparent)',
-                        color: prev ? vizVar.muted : vizVar.dim,
+                        color: next ? vizVar.muted : vizVar.dim,
                         minWidth: 34,
                         justifyContent: 'center',
                       }}
                     >
-                      {prev !== null ? `←${prevVal}` : '∅'}
+                      {next !== null ? `${nextVal}→` : '∅'}
                     </Flex>
-                  ) : null}
-                  <Flex
-                    align="center"
-                    px="md"
-                    py={space.sm}
-                    fz="sm"
-                    fw={600}
-                    style={{ color: vizVar.ink, minWidth: 42, justifyContent: 'center' }}
-                  >
-                    {node.val}
-                  </Flex>
-                  <Flex
-                    align="center"
-                    px="xs"
-                    py={space.sm}
-                    fz={font.micro}
-                    style={{
-                      borderLeft: `1px solid ${vizVar.line}`,
-                      background: 'color-mix(in srgb, var(--viz-surface) 46%, transparent)',
-                      color: next ? vizVar.muted : vizVar.dim,
-                      minWidth: 34,
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {next !== null ? `${nextVal}→` : '∅'}
                   </Flex>
                 </Flex>
-              </Flex>
-              {i < list.length - 1 ? (
-                <Connector active={isActive} doubly={linked === 'doubly'} />
-              ) : (
-                <>
+                {i < list.length - 1 ? (
                   <Connector active={isActive} doubly={linked === 'doubly'} />
-                  <Box
-                    px="sm"
-                    py={space.xs}
-                    fz={font.tiny}
-                    style={{
-                      border: `1px dashed ${vizVar.line2}`,
-                      borderRadius: radius.pill,
-                      color: vizVar.dim,
-                      flexShrink: 0,
-                    }}
-                  >
-                    ∅
-                  </Box>
-                </>
-              )}
-            </Fragment>
-          );
-        })}
-      </Flex>
+                ) : (
+                  <>
+                    <Connector active={isActive} doubly={linked === 'doubly'} />
+                    <Box
+                      px="sm"
+                      py={space.xs}
+                      fz={font.tiny}
+                      style={{
+                        border: `1px dashed ${vizVar.line2}`,
+                        borderRadius: radius.pill,
+                        color: vizVar.dim,
+                        flexShrink: 0,
+                      }}
+                    >
+                      ∅
+                    </Box>
+                  </>
+                )}
+              </Fragment>
+            );
+          })}
+        </Flex>
+      </Box>
       <ViewLegend items={activeLegend} />
     </Box>
   );
