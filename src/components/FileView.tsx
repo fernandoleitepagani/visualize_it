@@ -52,13 +52,13 @@ function getHandleStatusBadge(status: FileHandleStatus) {
 
 function getModeBadge(mode?: string) {
   if (mode === 'w') {
-    return { label: 'Modo "w" (Escrita/Criação)', color: vizVar.accent };
+    return { label: 'Modo "w" (Escrita/Criação)', color: vizVar.accent, action: 'Escrita', isWrite: true };
   }
   if (mode === 'r') {
-    return { label: 'Modo "r" (Leitura sequencial)', color: vizVar.purple };
+    return { label: 'Modo "r" (Leitura sequencial)', color: vizVar.purple, action: 'Leitura', isWrite: false };
   }
   if (mode === 'a') {
-    return { label: 'Modo "a" (Anexação)', color: vizVar.purple };
+    return { label: 'Modo "a" (Anexação)', color: vizVar.purple, action: 'Anexo', isWrite: false };
   }
   return null;
 }
@@ -97,9 +97,14 @@ export function FileView({ state }: Props) {
   const statusBadge = getHandleStatusBadge(handle.status);
   const modeBadge = getModeBadge(handle.mode);
 
+  const isWriting = handle.status === 'open' && handle.mode === 'w';
+  const isReading = handle.status === 'open' && handle.mode === 'r';
+  const isFlushing = Boolean(ram.flushing);
+  const isStreamActive = handle.status === 'open';
+
   return (
     <Box data-testid="file-view" style={{ display: 'flex', flexDirection: 'column', gap: space.md, width: '100%' }}>
-      {/* Grid Principal: Memória RAM vs Armazenamento em Disco */}
+      {/* ================= ESTEIRA DE DADOS (PIPELINE: RAM ⇄ FLUXO ⇄ DISCO) ================= */}
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing={space.md}>
         {/* ================= SEÇÃO RAM ================= */}
         <Box
@@ -107,17 +112,27 @@ export function FileView({ state }: Props) {
           p={space.md}
           style={{
             background: vizVar.surface2,
-            border: `1px solid ${handle.state === 'active' || handle.state === 'write' ? vizVar.purple : vizVar.line2}`,
-            borderRadius: radius.md,
+            border: `1px solid ${isReading ? vizVar.purple : handle.state === 'active' || handle.state === 'write' ? vizVar.purple : vizVar.line2}`,
+            borderRadius: radius.lg,
             display: 'flex',
             flexDirection: 'column',
             gap: space.sm,
+            boxShadow: isReading ? `0 0 16px -8px ${vizVar.purple}` : 'none',
             transition: motionTransition,
           }}
         >
-          {/* Cabeçalho da Seção RAM */}
+          {/* Topo do Módulo de RAM */}
           <Flex justify="space-between" align="center" wrap="wrap" gap={space.xs}>
             <Flex align="center" gap={space.xs}>
+              <Box
+                w={8}
+                h={8}
+                style={{
+                  borderRadius: radius.pill,
+                  background: isStreamActive ? vizVar.purple : vizVar.dim,
+                  boxShadow: isStreamActive ? `0 0 6px ${vizVar.purple}` : 'none',
+                }}
+              />
               <Text
                 ff="monospace"
                 fz={font.micro}
@@ -134,6 +149,7 @@ export function FileView({ state }: Props) {
                 Volátil
               </Badge>
             </Flex>
+
             <Badge
               size="sm"
               radius="sm"
@@ -142,31 +158,34 @@ export function FileView({ state }: Props) {
                 color: statusBadge.color,
                 border: `1px solid ${statusBadge.border}`,
                 fontFamily: 'monospace',
+                letterSpacing: '0.04em',
               }}
             >
               {statusBadge.label}
             </Badge>
           </Flex>
 
-          {/* Bloco do Manipulador FILE *f */}
+          {/* Cartão Unificado do Ponteiro FILE *f */}
           <Box
             p={space.sm}
             style={{
               background: vizVar.surface3,
               border: `1px solid ${handle.state === 'write' || handle.state === 'active' ? vizVar.purple : vizVar.line}`,
-              borderRadius: radius.sm,
+              borderRadius: radius.md,
               transition: motionTransition,
             }}
           >
-            <Flex justify="space-between" align="flex-start" mb={space.xxs}>
-              <Box>
-                <Text ff="monospace" fz={font.tiny} c="dimmed">
-                  Estrutura de Fluxo em RAM:
-                </Text>
+            <Flex justify="space-between" align="baseline">
+              <Flex align="center" gap={space.xs}>
                 <Text ff="monospace" fz={font.body} fw={700} c={vizVar.ink}>
                   FILE *{handle.name}
                 </Text>
-              </Box>
+                {modeBadge && (
+                  <Badge size="xs" variant="light" color={modeBadge.isWrite ? 'orange' : 'indigo'} radius="sm">
+                    {modeBadge.label}
+                  </Badge>
+                )}
+              </Flex>
               {handle.address && (
                 <Text ff="monospace" fz={font.tiny} c="dimmed" title="Endereço da estrutura na RAM">
                   addr: {handle.address}
@@ -174,58 +193,48 @@ export function FileView({ state }: Props) {
               )}
             </Flex>
 
-            {/* Metadados do Handle */}
-            <Flex gap={space.xs} wrap="wrap" mt={space.xs} align="center">
-              {modeBadge && (
-                <Badge size="xs" variant="light" color="indigo" radius="sm">
-                  {modeBadge.label}
-                </Badge>
-              )}
-              {handle.targetFileName && handle.status === 'open' && (
-                <Text ff="monospace" fz={font.tiny} c="dimmed">
-                  ➔ Aponta para: <span style={{ color: vizVar.accent, fontWeight: 600 }}>{handle.targetFileName}</span>
-                </Text>
-              )}
-            </Flex>
-          </Box>
-
-          {/* Buffer de I/O em RAM */}
-          <Box
-            p={space.sm}
-            style={{
-              background: ram.flushing ? vizVar.accentSoft : vizVar.surface3,
-              border: `1px ${ram.flushing ? 'solid' : 'dashed'} ${ram.flushing ? vizVar.accent : vizVar.line2}`,
-              borderRadius: radius.sm,
-              transition: motionTransition,
-            }}
-          >
-            <Flex justify="space-between" align="center">
-              <Text ff="monospace" fz={font.tiny} c={ram.flushing ? vizVar.accent : 'dimmed'}>
-                Buffer de E/S em RAM:
+            {handle.targetFileName && handle.status === 'open' && (
+              <Text ff="monospace" fz={font.tiny} c="dimmed" mt={space.xxs}>
+                ➔ Aponta para: <span style={{ color: vizVar.accent, fontWeight: 600 }}>{handle.targetFileName}</span>
               </Text>
-              {ram.flushing && (
-                <Badge size="xs" variant="filled" color="orange" radius="sm">
-                  FLUSH ⤓
-                </Badge>
-              )}
-            </Flex>
-            <Box mt={space.xxs}>
-              {ram.buffer ? (
-                <Text ff="monospace" fz={font.small} fw={600} c={vizVar.ink}>
-                  {JSON.stringify(ram.buffer)}
+            )}
+
+            {/* Buffer de E/S integrado na mesma caixa do ponteiro */}
+            <Box
+              mt={space.xs}
+              pt={space.xs}
+              style={{
+                borderTop: `1px dashed ${isFlushing ? vizVar.accentLine : vizVar.line2}`,
+              }}
+            >
+              <Flex justify="space-between" align="center">
+                <Text ff="monospace" fz={font.micro} c={isFlushing ? vizVar.accent : 'dimmed'} fw={600}>
+                  BUFFER DE E/S:
                 </Text>
-              ) : (
-                <Text ff="monospace" fz={font.tiny} c="dimmed" fs="italic">
-                  [Buffer vazio / descarregado]
-                </Text>
-              )}
+                {isFlushing && (
+                  <Badge size="xs" variant="filled" color="orange" radius="sm">
+                    FLUSH ⤓
+                  </Badge>
+                )}
+              </Flex>
+              <Box mt={space.xxs}>
+                {ram.buffer ? (
+                  <Text ff="monospace" fz={font.small} fw={600} c={vizVar.ink}>
+                    {JSON.stringify(ram.buffer)}
+                  </Text>
+                ) : (
+                  <Text ff="monospace" fz={font.micro} c="dimmed" fs="italic">
+                    [Buffer vazio / descarregado]
+                  </Text>
+                )}
+              </Box>
             </Box>
           </Box>
 
-          {/* Variáveis Locais em RAM (ex: int x) */}
-          <Box>
-            <Text ff="monospace" fz={font.tiny} c="dimmed" mb={space.xxs}>
-              Variáveis Locais:
+          {/* Variáveis Locais em RAM (int x) */}
+          <Box mt={space.xxs}>
+            <Text ff="monospace" fz={font.micro} c="dimmed" fw={600} mb={space.xs}>
+              VARIÁVEIS LOCAIS:
             </Text>
             {variables.length > 0 ? (
               <Flex gap={space.xs} wrap="wrap">
@@ -240,13 +249,14 @@ export function FileView({ state }: Props) {
                       key={v.name}
                       data-testid={`file-ram-var-${v.name}`}
                       px={space.sm}
-                      py={space.xxs}
+                      py={space.xs}
                       style={{
                         background: varBg,
                         border: `1px solid ${varBorder}`,
                         borderRadius: radius.sm,
-                        minWidth: 90,
+                        minWidth: 100,
                         transition: motionTransition,
+                        boxShadow: isWrite ? `0 0 10px -4px ${vizVar.accent}` : isRead ? `0 0 10px -4px ${vizVar.purple}` : 'none',
                       }}
                     >
                       <Text ff="monospace" fz={font.micro} c="dimmed">
@@ -273,17 +283,27 @@ export function FileView({ state }: Props) {
           p={space.md}
           style={{
             background: vizVar.surface2,
-            border: `1px solid ${disk.exists ? vizVar.accentLine : vizVar.line2}`,
-            borderRadius: radius.md,
+            border: `1px solid ${isWriting ? vizVar.accent : disk.exists ? vizVar.accentLine : vizVar.line2}`,
+            borderRadius: radius.lg,
             display: 'flex',
             flexDirection: 'column',
             gap: space.sm,
+            boxShadow: isWriting ? `0 0 16px -8px ${vizVar.accent}` : 'none',
             transition: motionTransition,
           }}
         >
-          {/* Cabeçalho da Seção Disco */}
+          {/* Topo do Módulo de Disco */}
           <Flex justify="space-between" align="center" wrap="wrap" gap={space.xs}>
             <Flex align="center" gap={space.xs}>
+              <Box
+                w={8}
+                h={8}
+                style={{
+                  borderRadius: radius.pill,
+                  background: disk.exists ? vizVar.accent : vizVar.dim,
+                  boxShadow: disk.exists ? `0 0 6px ${vizVar.accent}` : 'none',
+                }}
+              />
               <Text
                 ff="monospace"
                 fz={font.micro}
@@ -300,6 +320,7 @@ export function FileView({ state }: Props) {
                 Disco / Persistente
               </Badge>
             </Flex>
+
             <Badge
               size="sm"
               radius="sm"
@@ -308,29 +329,30 @@ export function FileView({ state }: Props) {
                 color: disk.exists ? vizVar.accent : vizVar.dim,
                 border: `1px solid ${disk.exists ? vizVar.accentLine : vizVar.line2}`,
                 fontFamily: 'monospace',
+                letterSpacing: '0.04em',
               }}
             >
               {disk.exists ? disk.name : 'Nenhum Arquivo'}
             </Badge>
           </Flex>
 
-          {/* Bloco do Arquivo no Disco */}
+          {/* Bloco do Arquivo com Margem Dedicada para o Seek Head */}
           <Box
             p={space.sm}
             style={{
               background: vizVar.surface,
               border: `1px solid ${vizVar.line}`,
-              borderRadius: radius.sm,
+              borderRadius: radius.md,
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
               minHeight: 180,
             }}
           >
-            {/* Barra de título do arquivo */}
+            {/* Barra do Arquivo com Indicador de Seek Head no Topo */}
             <Flex justify="space-between" align="center" pb={space.xs} mb={space.xs} style={{ borderBottom: `1px solid ${vizVar.line2}` }}>
               <Flex align="center" gap={space.xs}>
-                <Text ff="monospace" fz={font.tiny} fw={600} c={vizVar.accent}>
+                <Text ff="monospace" fz={font.tiny} fw={700} c={vizVar.accent}>
                   📄 {disk.name}
                 </Text>
                 <Text ff="monospace" fz={font.micro} c="dimmed">
@@ -344,7 +366,7 @@ export function FileView({ state }: Props) {
               )}
             </Flex>
 
-            {/* Linhas do Arquivo com Indicador de Seek Head (Cursor) */}
+            {/* Linhas do Arquivo com Coluna do Seek Head à Esquerda */}
             <Box style={{ display: 'flex', flexDirection: 'column', gap: space.xs, flex: 1 }}>
               {disk.lines.length === 0 ? (
                 <Box
@@ -352,7 +374,7 @@ export function FileView({ state }: Props) {
                   style={{
                     textAlign: 'center',
                     border: `1px dashed ${vizVar.line}`,
-                    borderRadius: radius.xs,
+                    borderRadius: radius.sm,
                     color: vizVar.dim,
                     fontFamily: 'monospace',
                     fontSize: font.tiny,
@@ -394,7 +416,7 @@ export function FileView({ state }: Props) {
                       style={{
                         background: rowBg,
                         border: `1px solid ${rowBorder}`,
-                        borderRadius: radius.xs,
+                        borderRadius: radius.sm,
                         transition: motionTransition,
                       }}
                     >
@@ -408,7 +430,12 @@ export function FileView({ state }: Props) {
                       </Flex>
 
                       {isCursorHere && (
-                        <Flex align="center" gap={space.xxs} data-testid={`seek-head-line-${line.number}`}>
+                        <Flex
+                          align="center"
+                          gap={space.xxs}
+                          data-testid={`seek-head-line-${line.number}`}
+                          className="file-seek-pointer"
+                        >
                           <Text ff="monospace" fz={font.micro} fw={700} c={vizVar.accent}>
                             ► CURSOR
                           </Text>
@@ -419,7 +446,7 @@ export function FileView({ state }: Props) {
                 })
               )}
 
-              {/* Indicador de EOF (Fim de Arquivo) */}
+              {/* Indicador de EOF */}
               {disk.exists && (
                 <Flex
                   data-testid="file-line-eof"
@@ -430,7 +457,7 @@ export function FileView({ state }: Props) {
                   style={{
                     background: disk.eofReached ? vizVar.purpleSoft : vizVar.surface3,
                     border: `1px dashed ${disk.eofReached ? vizVar.purple : vizVar.line}`,
-                    borderRadius: radius.xs,
+                    borderRadius: radius.sm,
                     opacity: disk.eofReached ? 1 : 0.6,
                     transition: motionTransition,
                   }}
@@ -439,7 +466,14 @@ export function FileView({ state }: Props) {
                     [EOF - End Of File]
                   </Text>
                   {disk.eofReached && (
-                    <Text ff="monospace" fz={font.micro} fw={700} c={vizVar.purple} data-testid="seek-head-eof">
+                    <Text
+                      ff="monospace"
+                      fz={font.micro}
+                      fw={700}
+                      c={vizVar.purple}
+                      data-testid="seek-head-eof"
+                      className="file-seek-pointer"
+                    >
                       ► CURSOR (EOF)
                     </Text>
                   )}
@@ -450,7 +484,82 @@ export function FileView({ state }: Props) {
         </Box>
       </SimpleGrid>
 
-      {/* ================= SAÍDA PADRÃO (CONSOLE / STDOUT) ================= */}
+      {/* ================= CANAL DE FLUXO INTERATIVO (SETAS DIRECIONAIS) ================= */}
+      <Box
+        p={space.xs}
+        style={{
+          background: vizVar.surface2,
+          border: `1px solid ${isWriting ? vizVar.accentLine : isReading ? 'color-mix(in srgb, var(--viz-purple) 35%, transparent)' : vizVar.line}`,
+          borderRadius: radius.md,
+          position: 'relative',
+          overflow: 'hidden',
+          transition: motionTransition,
+        }}
+      >
+        <Flex justify="space-between" align="center" wrap="wrap" gap={space.sm} px={space.xs}>
+          {/* Origem */}
+          <Flex align="center" gap={space.xs}>
+            <Text ff="monospace" fz={font.micro} fw={600} c={isReading ? vizVar.purple : 'dimmed'}>
+              RAM (Memória)
+            </Text>
+          </Flex>
+
+          {/* Conector Central com Seta Animada */}
+          <Flex align="center" gap={space.sm} style={{ flex: 1, maxWidth: 360, margin: '0 auto' }}>
+            <Box style={{ flex: 1, height: 16, position: 'relative' }}>
+              <svg width="100%" height="16" style={{ overflow: 'visible' }}>
+                <line
+                  x1="0"
+                  y1="8"
+                  x2="100%"
+                  y2="8"
+                  stroke={isWriting ? vizVar.accent : isReading ? vizVar.purple : vizVar.line2}
+                  strokeWidth="2"
+                  className={isWriting ? 'file-stream-arrow-right' : isReading ? 'file-stream-arrow-left' : undefined}
+                />
+              </svg>
+            </Box>
+
+            <Badge
+              size="sm"
+              radius="sm"
+              variant="filled"
+              color={isWriting ? 'orange' : isReading ? 'indigo' : 'gray'}
+              style={{
+                fontFamily: 'monospace',
+                fontSize: font.micro,
+                letterSpacing: '0.04em',
+                flexShrink: 0,
+              }}
+            >
+              {isWriting ? 'fprintf ➔ GRAVAÇÃO' : isReading ? '◂ fscanf LEITURA' : isFlushing ? 'fclose ⤓ FLUSH' : 'FLUXO INATIVO'}
+            </Badge>
+
+            <Box style={{ flex: 1, height: 16, position: 'relative' }}>
+              <svg width="100%" height="16" style={{ overflow: 'visible' }}>
+                <line
+                  x1="0"
+                  y1="8"
+                  x2="100%"
+                  y2="8"
+                  stroke={isWriting ? vizVar.accent : isReading ? vizVar.purple : vizVar.line2}
+                  strokeWidth="2"
+                  className={isWriting ? 'file-stream-arrow-right' : isReading ? 'file-stream-arrow-left' : undefined}
+                />
+              </svg>
+            </Box>
+          </Flex>
+
+          {/* Destino */}
+          <Flex align="center" gap={space.xs}>
+            <Text ff="monospace" fz={font.micro} fw={600} c={isWriting ? vizVar.accent : 'dimmed'}>
+              DISCO (Armazenamento)
+            </Text>
+          </Flex>
+        </Flex>
+      </Box>
+
+      {/* ================= TERMINAL / SAÍDA PADRÃO (STDOUT) ================= */}
       <Box
         data-testid="file-view-stdout"
         p={space.sm}

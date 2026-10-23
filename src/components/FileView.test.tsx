@@ -150,4 +150,31 @@ describe('FileView', () => {
     expect(screen.getByText('FECHADO / LIBERADO')).toBeInTheDocument();
     expect(screen.getByText('FLUSH ⤓')).toBeInTheDocument();
   });
+
+  it('renders stream connector with directional indicator for write and read', () => {
+    const writeStep: Step = {
+      line: 2,
+      desc: 'Escrevendo',
+      file: {
+        ram: { handle: { name: 'f', status: 'open', mode: 'w' } },
+        disk: { name: 'dados.txt', exists: true, lines: [] },
+      },
+    };
+
+    const { unmount } = renderWithProviders(<FileView state={writeStep} />);
+    expect(screen.getByText('fprintf ➔ GRAVAÇÃO')).toBeInTheDocument();
+    unmount();
+
+    const readStep: Step = {
+      line: 7,
+      desc: 'Lendo',
+      file: {
+        ram: { handle: { name: 'f', status: 'open', mode: 'r' } },
+        disk: { name: 'dados.txt', exists: true, lines: [{ number: 1, text: '10' }] },
+      },
+    };
+
+    renderWithProviders(<FileView state={readStep} />);
+    expect(screen.getByText('◂ fscanf LEITURA')).toBeInTheDocument();
+  });
 });
