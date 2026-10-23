@@ -910,7 +910,18 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   />
                 ))}
 
-                <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
+                <Button
+                  type="submit"
+                  size="sm"
+                  radius="sm"
+                  leftSection={<CheckIcon size={14} />}
+                  style={{
+                    background: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 16%, var(--viz-surface-2))',
+                    borderColor: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 42%, var(--viz-line2))',
+                    color: vizVar.ink,
+                    fontWeight: 600,
+                  }}
+                >
                   Aplicar
                 </Button>
                 <Button
@@ -997,7 +1008,18 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                     >
                       - Linha
                     </Button>
-                    <Button type="submit" variant="default" size="xs" leftSection={<CheckIcon size={13} />}>
+                    <Button
+                      type="submit"
+                      size="xs"
+                      radius="sm"
+                      leftSection={<CheckIcon size={13} />}
+                      style={{
+                        background: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 16%, var(--viz-surface-2))',
+                        borderColor: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 42%, var(--viz-line2))',
+                        color: vizVar.ink,
+                        fontWeight: 600,
+                      }}
+                    >
                       Aplicar
                     </Button>
                     <Button
@@ -1098,15 +1120,28 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                 ) : null}
               </Group>
             ) : null}
-            <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
+            <Button
+              type="submit"
+              size="sm"
+              radius="sm"
+              leftSection={<CheckIcon size={14} />}
+              style={{
+                background: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 16%, var(--viz-surface-2))',
+                borderColor: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 42%, var(--viz-line2))',
+                color: vizVar.ink,
+                fontWeight: 600,
+              }}
+            >
               Aplicar
             </Button>
             <Button
               type="button"
               variant="subtle"
               size="sm"
+              radius="sm"
               onClick={randomize}
               aria-keyshortcuts="N"
+              title="Sortear nova entrada aleatória (N)"
               leftSection={<ShuffleIcon size={14} />}
             >
               Sortear

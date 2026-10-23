@@ -531,39 +531,69 @@ body::before {
 /* ── Player ────────────────────────────────────────────────────────────── */
 
 .player-deck-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 18px;
+}
+
+.player-status-group {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .player-transport {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-}
-
-.player-progress {
-  display: flex;
-  align-items: center;
   justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .player-speed {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-left: auto;
+  min-width: 0;
 }
 
 .player-action {
   min-width: 40px;
+  transition: transform 120ms ease, background-color 140ms ease, border-color 140ms ease;
+}
+
+.player-action:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.player-action-step:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 45%, var(--viz-line2));
+  background: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 8%, var(--viz-surface-2));
 }
 
 .player-action-play {
   min-width: 136px;
   font-weight: 700;
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+}
+
+.status-dot.pulse {
+  animation: pulse-dot 1.8s ease-in-out infinite;
 }
 
 .btn-primary {
@@ -794,20 +824,22 @@ body::before {
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
 
-@media (max-width: 75.99em) {
+@media (max-width: 61.99em) {
   .player-deck-inner {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     gap: 10px;
+    padding: 10px 14px;
   }
 
-  .player-progress {
-    order: 2;
-  }
-
-  .player-speed {
-    order: 3;
-    justify-self: stretch;
+  .player-status-group {
     justify-content: space-between;
+  }
+
+  .player-transport {
+    justify-content: center;
+    width: 100%;
   }
 
   .player-transport .player-action {
@@ -817,9 +849,12 @@ body::before {
   .player-action-play {
     flex-grow: 2;
   }
-}
 
-@media (max-width: 61.99em) {
+  .player-speed {
+    justify-content: space-between;
+    width: 100%;
+  }
+
   .lesson-grid,
   .lesson-about-grid {
     grid-template-columns: 1fr;
