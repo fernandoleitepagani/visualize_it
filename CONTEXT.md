@@ -37,7 +37,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 540 testes em 55 arquivos, passando |
+| Testes | 541 testes em 55 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
