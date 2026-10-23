@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack' | 'heap';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -272,6 +272,8 @@ export interface Step {
   pivot?: number[];
   sorted?: number[];
   dim?: number[];
+  /** heap view boundary: number of active elements currently in the heap */
+  heapSize?: number;
   /** cells view */
   cells?: Cell[];
   /** nodes view */
