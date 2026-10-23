@@ -66,7 +66,8 @@ export function HeapView({ state, ids = [] }: Props) {
   const reducedMotion = useReducedMotion();
   const [displayMode, setDisplayMode] = useState<HeapDisplayMode>('dual');
 
-  const arr = state?.arr ?? [];
+  const rawArr = state?.arr;
+  const arr = useMemo(() => rawArr ?? [], [rawArr]);
   const n = arr.length;
 
   const cmp = useMemo(() => new Set(state?.cmp ?? []), [state?.cmp]);
@@ -327,7 +328,7 @@ export function HeapView({ state, ids = [] }: Props) {
                   h={14}
                   style={{
                     borderRadius: radius.pill,
-                    background: vizVar.surface1,
+                    background: vizVar.surface,
                     border: `1px solid ${node.flags.sorted ? vizVar.line : borderColor}`,
                     fontSize: 9,
                     fontWeight: 700,
@@ -340,7 +341,7 @@ export function HeapView({ state, ids = [] }: Props) {
 
                 {/* Node Value */}
                 <Text
-                  fz={font.sm}
+                  fz={font.small}
                   fw={700}
                   lh={1}
                   style={{

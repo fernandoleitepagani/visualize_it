@@ -24,6 +24,7 @@ const viewLabels: Record<ViewKind, string> = {
   object: 'objetos',
   loop: 'laço',
   callstack: 'pilha de chamadas',
+  heap: 'heap',
 };
 
 export function LessonPage() {
