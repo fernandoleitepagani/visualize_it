@@ -196,3 +196,80 @@ describe('LessonView operations group (vetores-matrizes)', () => {
     expect(screen.getByLabelText('valores da linha 2')).toBeInTheDocument();
   });
 });
+
+describe('LessonView search target input and scenarios', () => {
+  const buscaSeqLesson = getLesson('busca-sequencial');
+  if (!buscaSeqLesson) throw new Error('A lição de busca-sequencial precisa existir.');
+
+  it('renders target input, default target, presence badge and search scenarios', () => {
+    renderWithProviders(<LessonView lesson={buscaSeqLesson} />);
+
+    const targetInput = screen.getByLabelText('alvo da busca');
+    expect(targetInput).toBeInTheDocument();
+    expect(targetInput).toHaveValue('55');
+
+    // 55 is present in initial [10, 25, 30, 45, 55, 60, 75, 88]
+    expect(screen.getByTestId('target-status')).toHaveTextContent('Presente');
+
+    // Scenario buttons
+    expect(screen.getByRole('button', { name: 'Início' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Meio' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Fim' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ausente' })).toBeInTheDocument();
+  });
+
+  it('reads target from URL query string', () => {
+    renderWithProviders(
+      <LessonView lesson={buscaSeqLesson} />,
+      '/algoritmos/busca-sequencial?target=999',
+    );
+
+    const targetInput = screen.getByLabelText('alvo da busca');
+    expect(targetInput).toHaveValue('999');
+    expect(screen.getByTestId('target-status')).toHaveTextContent('Ausente');
+  });
+
+  it('validates invalid target when applying', () => {
+    renderWithProviders(<LessonView lesson={buscaSeqLesson} />);
+
+    const targetInput = screen.getByLabelText('alvo da busca');
+    fireEvent.change(targetInput, { target: { value: 'abc' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Aplicar' }));
+
+    expect(screen.getByText('Alvo deve ser um número inteiro.')).toBeInTheDocument();
+  });
+
+  it('clicking scenario presets updates target and presence badge', () => {
+    renderWithProviders(<LessonView lesson={buscaSeqLesson} />);
+
+    const targetInput = screen.getByLabelText('alvo da busca');
+
+    // Início: first element in [10, 25, 30, 45, 55, 60, 75, 88] is 10
+    fireEvent.click(screen.getByRole('button', { name: 'Início' }));
+    expect(targetInput).toHaveValue('10');
+    expect(screen.getByTestId('target-status')).toHaveTextContent('Presente');
+
+    // Fim: last element is 88
+    fireEvent.click(screen.getByRole('button', { name: 'Fim' }));
+    expect(targetInput).toHaveValue('88');
+    expect(screen.getByTestId('target-status')).toHaveTextContent('Presente');
+
+    // Ausente: number not in vector
+    fireEvent.click(screen.getByRole('button', { name: 'Ausente' }));
+    expect(screen.getByTestId('target-status')).toHaveTextContent('Ausente');
+  });
+
+  it('supports binary search presets based on effective sorted order', () => {
+    const buscaBinLesson = getLesson('busca-binaria');
+    if (!buscaBinLesson) throw new Error('A lição busca-binaria precisa existir.');
+
+    renderWithProviders(<LessonView lesson={buscaBinLesson} />);
+    const targetInput = screen.getByLabelText('alvo da busca');
+
+    // Initial for busca-binaria: [10, 25, 30, 45, 55, 60, 75, 88]
+    // Middle element (idx 3): 45
+    fireEvent.click(screen.getByRole('button', { name: 'Meio' }));
+    expect(targetInput).toHaveValue('45');
+    expect(screen.getByTestId('target-status')).toHaveTextContent('Presente');
+  });
+});
