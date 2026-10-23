@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Button, Group, Paper, SegmentedControl, Stack, Tabs, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Badge, Box, Button, Group, Paper, SegmentedControl, Stack, Tabs, Text, TextInput } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useSearchParams } from 'react-router-dom';
 import type {
@@ -138,17 +138,34 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     const validated = rawArr ? validateLessonInput(rawArr, schema) : null;
     const fromUrl = validated?.valid ? validated.values : null;
     const step = Number(searchParams.get('step'));
+    const rawTarget = searchParams.get('target');
+    let initialTarget: number | undefined;
+    if (lesson.hasTarget) {
+      if (rawTarget !== null && rawTarget.trim() !== '' && !Number.isNaN(Number(rawTarget))) {
+        initialTarget = Number(rawTarget);
+      } else if (lesson.defaultTarget !== undefined) {
+        initialTarget = lesson.defaultTarget;
+      } else {
+        initialTarget = fromUrl?.[0] ?? lesson.initial?.[0] ?? 55;
+      }
+    }
     return {
       input: fromUrl ?? readStoredInput(lesson.id) ?? lesson.initial ?? DEFAULT_INPUT,
       index: Number.isFinite(step) && step >= 1 ? Math.floor(step) - 1 : 0,
       lang: initialLang,
       approach: initialApproach,
+      target: initialTarget,
     };
   });
 
   const [input, setInput] = useState<number[]>(initial.input);
   const [inputValue, setInputValue] = useState(() => initial.input.join(', '));
   const [error, setError] = useState('');
+  const [targetInput, setTargetInput] = useState<number | undefined>(initial.target);
+  const [targetInputValue, setTargetInputValue] = useState<string>(() =>
+    initial.target !== undefined ? String(initial.target) : '',
+  );
+  const [targetError, setTargetError] = useState('');
   const [lang, setLang] = useState<CodeLang>(initial.lang);
   const [approach, setApproach] = useState<CodeApproach>(initial.approach);
   const [quiz, setQuiz] = useState(false);
@@ -171,7 +188,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       }
       return currentOperation.steps(vetorInput);
     }
-    return lesson.steps(input, approach);
+    return lesson.steps(input, approach, lesson.hasTarget ? targetInput : undefined);
   }, [
     isOperationsLesson,
     currentOperation,
@@ -181,6 +198,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     lesson,
     input,
     approach,
+    targetInput,
   ]);
 
   const currentCode = useMemo(() => {
@@ -242,6 +260,11 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           }
         } else {
           next.set('arr', input.join(','));
+          if (lesson.hasTarget && targetInput !== undefined) {
+            next.set('target', String(targetInput));
+          } else {
+            next.delete('target');
+          }
         }
         next.set('step', String(playback.index + 1));
         next.set('lang', lang);
@@ -257,11 +280,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     input,
     isOperationsLesson,
     lang,
+    lesson.hasTarget,
     matrizInput,
     playback.index,
     selectedOperation,
     selectedStructure,
     setSearchParams,
+    targetInput,
     vetorInput,
   ]);
 
@@ -353,14 +378,80 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     [lesson.id],
   );
 
+  const isTargetPresent = useMemo(() => {
+    if (targetInput === undefined) return false;
+    return input.includes(targetInput);
+  }, [input, targetInput]);
+
+  const smartRandomizeTarget = useCallback(
+    (currentArr: number[]) => {
+      const arr = currentArr.length > 0 ? currentArr : initialInput;
+      const pickPresent = Math.random() < 0.5;
+      let val: number;
+      if (pickPresent && arr.length > 0) {
+        val = arr[Math.floor(Math.random() * arr.length)];
+      } else {
+        const max = Math.max(...arr, 0);
+        let candidate = max + 1 + Math.floor(Math.random() * 20);
+        if (arr.includes(candidate)) {
+          candidate = max + 99;
+        }
+        val = candidate;
+      }
+      setTargetError('');
+      setTargetInput(val);
+      setTargetInputValue(String(val));
+      goTo(0);
+    },
+    [goTo, initialInput],
+  );
+
+  const applySearchPreset = useCallback(
+    (preset: 'inicio' | 'meio' | 'fim' | 'ausente') => {
+      const base = input.length > 0 ? input : initialInput;
+      const arr = lesson.id === 'busca-binaria' ? [...base].sort((a, b) => a - b) : base;
+      let val: number;
+      if (preset === 'inicio') {
+        val = arr[0] ?? 0;
+      } else if (preset === 'meio') {
+        const midIndex = Math.floor((arr.length - 1) / 2);
+        val = arr[midIndex] ?? 0;
+      } else if (preset === 'fim') {
+        val = arr[arr.length - 1] ?? 0;
+      } else {
+        val = Math.max(...arr, 0) + 7;
+        if (arr.includes(val)) {
+          val = Math.max(...arr, 0) + 99;
+        }
+      }
+      setTargetError('');
+      setTargetInput(val);
+      setTargetInputValue(String(val));
+      goTo(0);
+    },
+    [goTo, initialInput, input, lesson.id],
+  );
+
   const apply = useCallback(() => {
     const res = validateLessonInput(inputValue, effectiveSchema);
     if (!res.valid) {
       setError(res.error);
       return;
     }
+
+    if (lesson.hasTarget) {
+      const trimmedTarget = targetInputValue.trim();
+      const numTarget = Number(trimmedTarget);
+      if (trimmedTarget === '' || !Number.isInteger(numTarget)) {
+        setTargetError('Alvo deve ser um número inteiro.');
+        return;
+      }
+      setTargetError('');
+      setTargetInput(numTarget);
+    }
+
     setValues(res.values);
-  }, [effectiveSchema, inputValue, setValues]);
+  }, [effectiveSchema, inputValue, lesson.hasTarget, setValues, targetInputValue]);
 
   const randomize = useCallback(() => {
     const values =
@@ -372,7 +463,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             () => 1 + Math.floor(Math.random() * 60),
           ));
     setValues(values);
-  }, [lesson, setValues, singleValue]);
+    if (lesson.hasTarget) {
+      smartRandomizeTarget(values);
+    }
+  }, [lesson, setValues, singleValue, smartRandomizeTarget]);
 
   const applyPreset = useCallback(
     (kind: 'ordered' | 'reversed' | 'repeated') => {
@@ -853,6 +947,49 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               className="lesson-input"
               style={{ flex: '1 1 220px', maxWidth: 320 }}
             />
+            {lesson.hasTarget ? (
+              <Group gap={6} align="center" wrap="nowrap">
+                <TextInput
+                  aria-label="alvo da busca"
+                  placeholder="ex: 55"
+                  leftSection={
+                    <Text fz={font.micro} fw={600} c="dimmed">
+                      alvo =
+                    </Text>
+                  }
+                  leftSectionWidth={52}
+                  rightSection={
+                    <ActionIcon
+                      size="xs"
+                      variant="subtle"
+                      aria-label="Sortear alvo"
+                      title="Sortear alvo (50% presente / 50% ausente)"
+                      onClick={() => smartRandomizeTarget(input)}
+                    >
+                      <ShuffleIcon size={12} />
+                    </ActionIcon>
+                  }
+                  value={targetInputValue}
+                  onChange={(event) => setTargetInputValue(event.currentTarget.value)}
+                  error={targetError || undefined}
+                  size="sm"
+                  className="lesson-input"
+                  style={{ width: 110, flexShrink: 0 }}
+                />
+                {targetInput !== undefined ? (
+                  <Badge
+                    data-testid="target-status"
+                    size="sm"
+                    variant="light"
+                    color={isTargetPresent ? 'teal' : 'orange'}
+                    radius="sm"
+                    style={{ textTransform: 'none', fontWeight: 600, flexShrink: 0 }}
+                  >
+                    {isTargetPresent ? 'Presente' : 'Ausente'}
+                  </Badge>
+                ) : null}
+              </Group>
+            ) : null}
             <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
               Aplicar
             </Button>
@@ -866,7 +1003,37 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             >
               Sortear
             </Button>
-            {canPreset ? (
+            {lesson.hasTarget ? (
+              <Group className="lesson-presets" gap={6} wrap="wrap">
+                <Text
+                  visibleFrom="sm"
+                  fz={font.micro}
+                  fw={600}
+                  tt="uppercase"
+                  c="dimmed"
+                  style={{ letterSpacing: '0.1em' }}
+                >
+                  cenários
+                </Text>
+                {[
+                  ['inicio', 'Início'],
+                  ['meio', 'Meio'],
+                  ['fim', 'Fim'],
+                  ['ausente', 'Ausente'],
+                ].map(([preset, label]) => (
+                  <Button
+                    key={preset}
+                    type="button"
+                    variant="default"
+                    size="compact-sm"
+                    radius="pill"
+                    onClick={() => applySearchPreset(preset as 'inicio' | 'meio' | 'fim' | 'ausente')}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </Group>
+            ) : canPreset ? (
               <Group className="lesson-presets" gap={6} wrap="wrap">
                 <Text
                   visibleFrom="sm"

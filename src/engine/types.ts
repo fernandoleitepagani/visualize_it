@@ -377,11 +377,15 @@ export interface Lesson {
    * (e.g. vetor vs matriz with preencher, limpar, buscar, somar).
    */
   operationsGroup?: LessonOperationsGroup;
+  /** If true, the lesson accepts a search target value alongside the array. */
+  hasTarget?: boolean;
+  /** Default target value when not specified. */
+  defaultTarget?: number;
   /**
    * `approach` lets a lesson pick line numbers for the listing being shown.
    * Lessons without variants can ignore it.
    */
-  steps: (input: number[], approach?: CodeApproach) => Step[];
+  steps: (input: number[], approach?: CodeApproach, target?: number) => Step[];
 }
 
 /** Input used when a lesson does not declare its own `initial`. */
