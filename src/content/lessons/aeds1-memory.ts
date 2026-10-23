@@ -162,48 +162,7 @@ export const lessonStrings: Lesson = {
   ],
 };
 
-const arquivosCode = lines(`
-#include <stdio.h>
-
-int main() {
-  FILE *f = fopen("dados.txt", "w");
-  if (f == NULL) {
-    printf("Erro ao abrir\\n");
-    return 1;
-  }
-
-  fprintf(f, "10\\n");
-  fprintf(f, "20\\n");
-  fclose(f);
-
-  f = fopen("dados.txt", "r");
-  int x;
-  while (fscanf(f, "%d", &x) != EOF) {
-    printf("%d\\n", x);
-  }
-  fclose(f);
-  return 0;
-}`);
-
-export const lessonArquivos: Lesson = {
-  ...base,
-  id: 'arquivos',
-  title: 'Arquivos',
-  subtitle: 'Leitura e escrita',
-  description:
-    'Arquivos são fluxos de bytes mantidos fora da memória RAM. O ciclo profissional é abrir, manipular e fechar: fopen cria o vínculo e retorna FILE*; fprintf/fscanf leem e escrevem; fclose descarrega o buffer e libera o recurso. Sempre verifique NULL e trate o fim do arquivo com EOF.',
-  panelLabel: 'arquivo',
-  languages: ['c'],
-  code: { c: arquivosCode },
-  steps: () => [
-    s(lineOf(arquivosCode, 'FILE *f = fopen'), 'Abrir dados.txt para escrita.', [c('dados.txt', ['arquivo']), c('w', ['modo'], 'active')]),
-    s(lineOf(arquivosCode, 'if (f == NULL)'), 'Verificar se a abertura falhou.', [c('válido', ['FILE*'], 'write')]),
-    s(lineOf(arquivosCode, 'fprintf(f'), 'Escrever os valores no arquivo.', [c(10, ['linha 1'], 'write'), c(20, ['linha 2'], 'write')]),
-    s(lineOf(arquivosCode, 'fscanf'), 'Ler até o fim do arquivo.', [c('EOF', ['condição'], 'active')]),
-    s(lineOf(arquivosCode, 'fclose(f);'), 'Fechar libera o recurso.', [c('fechado', ['estado'], 'write')]),
-  ],
-};
-
+export { lessonArquivos } from './arquivos';
 export { lessonVetoresMatrizes } from './vetores-matrizes';
 
 const classesVetoresCode = lines(`
