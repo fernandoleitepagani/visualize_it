@@ -78,7 +78,17 @@ export function HeapView({ state, ids = [] }: Props) {
 
   const heapSize = state?.heapSize ?? (n - sorted.size);
 
-  const scale = useMemo(() => getBarScale(arr), [arr]);
+  // Cap scale to 82% max height so top values and labels stay safely inside the plot area
+  const scale = useMemo(() => {
+    const raw = getBarScale(arr);
+    return {
+      ...raw,
+      bars: raw.bars.map((b) => ({
+        ...b,
+        heightPercent: b.heightPercent * 0.82,
+      })),
+    };
+  }, [arr]);
   const slot = n > 0 ? 100 / n : 0;
 
   // Tree coordinates calculation
@@ -373,7 +383,7 @@ export function HeapView({ state, ids = [] }: Props) {
             fz={font.micro}
             fw={700}
             c="dimmed"
-            mb={6}
+            mb={16}
             pl={4}
             style={{ textTransform: 'uppercase', letterSpacing: '0.1em' }}
           >
