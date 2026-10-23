@@ -43,3 +43,7 @@ Thumbs.db
 
 # Storybook
 storybook-static
+
+# Local backups
+.backup_untracked
+dump.txt

@@ -25,6 +25,7 @@ const viewLabels: Record<ViewKind, string> = {
   loop: 'laço',
   callstack: 'pilha de chamadas',
   heap: 'heap',
+  file: 'arquivos',
 };
 
 export function LessonPage() {

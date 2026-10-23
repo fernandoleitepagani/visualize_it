@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack' | 'heap';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack' | 'heap' | 'file';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -242,6 +242,51 @@ export interface LoopState {
   accumulator?: LoopAccumulator;
 }
 
+export type FileMode = 'w' | 'r' | 'a';
+export type FileHandleStatus = 'unopened' | 'open' | 'closed' | 'error_null';
+
+export interface FileRamVariable {
+  name: string;
+  type: string;
+  value: string | number;
+  state?: 'default' | 'active' | 'write' | 'read';
+}
+
+export interface FileStreamHandle {
+  name: string;
+  address?: string;
+  targetFileName?: string;
+  mode?: FileMode;
+  status: FileHandleStatus;
+  state?: 'default' | 'active' | 'write' | 'read';
+}
+
+export interface FileDiskLine {
+  number: number;
+  text: string;
+  state?: 'default' | 'active' | 'write' | 'read';
+}
+
+export interface FileDiskState {
+  name: string;
+  exists: boolean;
+  lines: FileDiskLine[];
+  cursorLine?: number | null;
+  eofReached?: boolean;
+}
+
+/** Payload for the `file` view (RAM vs Disk, stream handle, seek head, buffer and console output). */
+export interface FileViewState {
+  ram: {
+    handle?: FileStreamHandle;
+    variables?: FileRamVariable[];
+    buffer?: string | null;
+    flushing?: boolean;
+  };
+  disk: FileDiskState;
+  stdout?: string[];
+}
+
 /** A line index or language-specific line mapping (0-based). */
 export type StepLine = number | Partial<Record<CodeLang, number>>;
 
@@ -292,6 +337,8 @@ export interface Step {
   callstack?: CallStackState;
   /** loop view */
   loop?: LoopState;
+  /** file view */
+  file?: FileViewState;
 }
 
 export interface Complexity {

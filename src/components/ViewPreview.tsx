@@ -311,6 +311,44 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'file') {
+    return (
+      <Box
+        data-testid="view-preview-file"
+        w={36}
+        h={30}
+        pos="relative"
+        aria-hidden
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <svg width="28" height="26" viewBox="0 0 28 26" style={{ overflow: 'visible' }}>
+          {/* document sheet */}
+          <rect
+            x="4"
+            y="2"
+            width="20"
+            height="22"
+            rx="2.5"
+            fill={vizVar.surface3}
+            stroke={vizVar.line2}
+            strokeWidth="1"
+          />
+          {/* lines of text in the file */}
+          <line x1="8" y1="7" x2="18" y2="7" stroke={vizVar.line3} strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="8" y1="12" x2="15" y2="12" stroke={vizVar.line3} strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="8" y1="17" x2="20" y2="17" stroke={vizVar.line3} strokeWidth="1.5" strokeLinecap="round" />
+          {/* seek head cursor on line 2 */}
+          <polygon points="1,12 4,10 4,14" fill={accent} />
+          <circle cx="16" cy="12" r="1.5" fill={accent} />
+        </svg>
+      </Box>
+    );
+  }
+
   return (
     <Flex gap={3} align="flex-end" h={30} aria-hidden>
       {barHeights.map((height, i) => (
