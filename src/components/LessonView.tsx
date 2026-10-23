@@ -926,11 +926,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                 </Button>
                 <Button
                   type="button"
-                  variant="subtle"
+                  className="btn-toolbar-random"
                   size="sm"
+                  radius="sm"
                   onClick={randomizeVetor}
                   aria-keyshortcuts="N"
-                  leftSection={<ShuffleIcon size={14} />}
+                  title="Sortear nova entrada aleatória (N)"
+                  leftSection={<ShuffleIcon size={14} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
                 >
                   Sortear
                 </Button>
@@ -981,8 +983,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   <Group gap="xs" mt={4} wrap="wrap">
                     <Button
                       type="button"
-                      variant="default"
+                      className="btn-toolbar-compact"
                       size="xs"
+                      radius="sm"
                       disabled={matrizRows.length >= 10}
                       onClick={() => {
                         if (matrizRows.length < 10) {
@@ -997,8 +1000,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                     </Button>
                     <Button
                       type="button"
-                      variant="default"
+                      className="btn-toolbar-compact"
                       size="xs"
+                      radius="sm"
                       disabled={matrizRows.length <= 1}
                       onClick={() => {
                         if (matrizRows.length > 1) {
@@ -1024,11 +1028,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                     </Button>
                     <Button
                       type="button"
-                      variant="subtle"
+                      className="btn-toolbar-random"
                       size="xs"
+                      radius="sm"
                       onClick={randomizeMatriz}
                       aria-keyshortcuts="N"
-                      leftSection={<ShuffleIcon size={13} />}
+                      title="Sortear nova matriz aleatória (N)"
+                      leftSection={<ShuffleIcon size={13} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
                     >
                       Sortear
                     </Button>
@@ -1136,13 +1142,13 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             </Button>
             <Button
               type="button"
-              variant="subtle"
+              className="btn-toolbar-random"
               size="sm"
               radius="sm"
               onClick={randomize}
               aria-keyshortcuts="N"
               title="Sortear nova entrada aleatória (N)"
-              leftSection={<ShuffleIcon size={14} />}
+              leftSection={<ShuffleIcon size={14} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
             >
               Sortear
             </Button>
@@ -1163,18 +1169,21 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   ['meio', 'Meio'],
                   ['fim', 'Fim'],
                   ['ausente', 'Ausente'],
-                ].map(([preset, label]) => (
-                  <Button
-                    key={preset}
-                    type="button"
-                    variant="default"
-                    size="compact-sm"
-                    radius="pill"
-                    onClick={() => applySearchPreset(preset as 'inicio' | 'meio' | 'fim' | 'ausente')}
-                  >
-                    {label}
-                  </Button>
-                ))}
+                ].map(([preset, label]) => {
+                  const isWarning = preset === 'ausente';
+                  return (
+                    <Button
+                      key={preset}
+                      type="button"
+                      className={`btn-preset-pill ${isWarning ? 'btn-preset-warning' : ''}`}
+                      size="compact-sm"
+                      radius="pill"
+                      onClick={() => applySearchPreset(preset as 'inicio' | 'meio' | 'fim' | 'ausente')}
+                    >
+                      {label}
+                    </Button>
+                  );
+                })}
               </Group>
             ) : canPreset ? (
               <Group className="lesson-presets" gap={6} wrap="wrap">
@@ -1196,7 +1205,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   <Button
                     key={kind}
                     type="button"
-                    variant="default"
+                    className="btn-preset-pill"
                     size="compact-sm"
                     radius="pill"
                     onClick={() => applyPreset(kind as 'ordered' | 'reversed' | 'repeated')}

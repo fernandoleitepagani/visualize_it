@@ -478,6 +478,70 @@ body::before {
   margin-left: auto;
 }
 
+/* ── Toolbar Action Buttons & Chips ────────────────────────────────────── */
+
+.btn-toolbar-random {
+  background: color-mix(in srgb, var(--viz-surface-3) 88%, var(--subject-accent, var(--viz-accent)) 12%) !important;
+  border: 1px solid color-mix(in srgb, var(--viz-line-3) 65%, var(--subject-accent, var(--viz-accent)) 35%) !important;
+  color: var(--viz-ink) !important;
+  font-weight: 600;
+  transition: all 140ms ease;
+}
+
+.btn-toolbar-random:hover {
+  background: color-mix(in srgb, var(--viz-surface-3) 76%, var(--subject-accent, var(--viz-accent)) 24%) !important;
+  border-color: var(--subject-accent, var(--viz-accent)) !important;
+  box-shadow: 0 2px 10px -3px color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 40%, transparent);
+}
+
+.btn-toolbar-compact {
+  background: var(--viz-surface-3) !important;
+  border: 1px solid var(--viz-line-3) !important;
+  color: var(--viz-ink) !important;
+  font-weight: 500;
+  transition: all 140ms ease;
+}
+
+.btn-toolbar-compact:hover:not(:disabled) {
+  border-color: var(--subject-accent, var(--viz-accent)) !important;
+  background: color-mix(in srgb, var(--viz-surface-3) 82%, var(--subject-accent, var(--viz-accent)) 18%) !important;
+}
+
+.btn-preset-pill {
+  background: var(--viz-surface-3) !important;
+  border: 1px solid var(--viz-line-3) !important;
+  color: var(--viz-ink-2) !important;
+  font-weight: 500;
+  transition: all 140ms ease;
+}
+
+.btn-preset-pill:hover {
+  background: color-mix(in srgb, var(--viz-surface-3) 80%, var(--subject-accent, var(--viz-accent)) 20%) !important;
+  border-color: var(--subject-accent, var(--viz-accent)) !important;
+  color: var(--viz-ink) !important;
+  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 35%, transparent);
+}
+
+.btn-preset-pill[data-active="true"] {
+  background: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 22%, var(--viz-surface-3)) !important;
+  border-color: var(--subject-accent, var(--viz-accent)) !important;
+  color: var(--subject-accent, var(--viz-accent)) !important;
+  font-weight: 700;
+}
+
+.btn-preset-warning {
+  border-color: color-mix(in srgb, #f59e0b 55%, var(--viz-line-3)) !important;
+  color: #d97706 !important;
+}
+
+.btn-preset-warning:hover,
+.btn-preset-warning[data-active="true"] {
+  background: color-mix(in srgb, #f59e0b 20%, var(--viz-surface-3)) !important;
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
+  box-shadow: 0 2px 8px -2px rgba(245, 158, 11, 0.35);
+}
+
 .viz-stage {
   display: flex;
   flex: 1;
@@ -570,6 +634,16 @@ body::before {
 .player-action-step:hover:not(:disabled) {
   border-color: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 45%, var(--viz-line2));
   background: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 8%, var(--viz-surface-2));
+}
+
+.player-action-reset {
+  background: var(--viz-surface-2) !important;
+  border: 1px solid var(--viz-line-2) !important;
+}
+
+.player-action-reset:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 8%, var(--viz-surface-2)) !important;
+  border-color: color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 45%, var(--viz-line-2)) !important;
 }
 
 .player-action-play {

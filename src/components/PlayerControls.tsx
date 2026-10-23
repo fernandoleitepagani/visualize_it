@@ -130,7 +130,7 @@ export function PlayerControls({
 
         <Group className="player-transport" gap={6} wrap="nowrap" justify="center">
           <Button
-            variant="subtle"
+            variant="default"
             size="md"
             radius="pill"
             onClick={playback.reset}
