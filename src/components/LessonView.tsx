@@ -912,15 +912,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
 
                 <Button
                   type="submit"
+                  className="btn-toolbar-apply"
                   size="sm"
                   radius="sm"
-                  leftSection={<CheckIcon size={14} />}
-                  style={{
-                    background: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 16%, var(--viz-surface-2))',
-                    borderColor: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 42%, var(--viz-line2))',
-                    color: vizVar.ink,
-                    fontWeight: 600,
-                  }}
+                  leftSection={<CheckIcon size={14} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
                 >
                   Aplicar
                 </Button>
@@ -932,7 +927,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   onClick={randomizeVetor}
                   aria-keyshortcuts="N"
                   title="Sortear nova entrada aleatória (N)"
-                  leftSection={<ShuffleIcon size={14} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
+                  leftSection={<ShuffleIcon size={14} style={{ color: 'var(--viz-purple, #a855f7)' }} />}
                 >
                   Sortear
                 </Button>
@@ -1014,15 +1009,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                     </Button>
                     <Button
                       type="submit"
+                      className="btn-toolbar-apply"
                       size="xs"
                       radius="sm"
-                      leftSection={<CheckIcon size={13} />}
-                      style={{
-                        background: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 16%, var(--viz-surface-2))',
-                        borderColor: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 42%, var(--viz-line2))',
-                        color: vizVar.ink,
-                        fontWeight: 600,
-                      }}
+                      leftSection={<CheckIcon size={13} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
                     >
                       Aplicar
                     </Button>
@@ -1034,7 +1024,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                       onClick={randomizeMatriz}
                       aria-keyshortcuts="N"
                       title="Sortear nova matriz aleatória (N)"
-                      leftSection={<ShuffleIcon size={13} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
+                      leftSection={<ShuffleIcon size={13} style={{ color: 'var(--viz-purple, #a855f7)' }} />}
                     >
                       Sortear
                     </Button>
@@ -1128,15 +1118,10 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             ) : null}
             <Button
               type="submit"
+              className="btn-toolbar-apply"
               size="sm"
               radius="sm"
-              leftSection={<CheckIcon size={14} />}
-              style={{
-                background: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 16%, var(--viz-surface-2))',
-                borderColor: 'color-mix(in srgb, var(--subject-accent, var(--viz-accent)) 42%, var(--viz-line2))',
-                color: vizVar.ink,
-                fontWeight: 600,
-              }}
+              leftSection={<CheckIcon size={14} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
             >
               Aplicar
             </Button>
@@ -1148,7 +1133,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
               onClick={randomize}
               aria-keyshortcuts="N"
               title="Sortear nova entrada aleatória (N)"
-              leftSection={<ShuffleIcon size={14} style={{ color: 'var(--subject-accent, var(--viz-accent))' }} />}
+              leftSection={<ShuffleIcon size={14} style={{ color: 'var(--viz-purple, #a855f7)' }} />}
             >
               Sortear
             </Button>
