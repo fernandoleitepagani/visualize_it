@@ -273,3 +273,27 @@ describe('LessonView search target input and scenarios', () => {
     expect(screen.getByTestId('target-status')).toHaveTextContent('Presente');
   });
 });
+
+describe('LessonView playback persistence and progression', () => {
+  const selecaoLesson = getLesson('selecao');
+  if (!selecaoLesson) throw new Error('A lição selecao precisa existir.');
+
+  it('preserves playback step progress and does not reset to step 1 when advancing', () => {
+    renderWithProviders(<LessonView lesson={selecaoLesson} />);
+
+    // Initially at step 1
+    expect(screen.getAllByText(/1 \/ \d+/)[0]).toBeInTheDocument();
+
+    // Click next step button
+    const nextBtn = screen.getByLabelText('Próximo passo');
+    fireEvent.click(nextBtn);
+
+    // Should now be at step 2, not reset to step 1
+    expect(screen.getAllByText(/2 \/ \d+/)[0]).toBeInTheDocument();
+
+    // Advance again to step 3
+    fireEvent.click(nextBtn);
+    expect(screen.getAllByText(/3 \/ \d+/)[0]).toBeInTheDocument();
+  });
+});
+

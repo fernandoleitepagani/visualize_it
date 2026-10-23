@@ -354,20 +354,30 @@ export interface ComplexityAnalysis {
   movements?: string;
 }
 
-export type StructureType = 'vetor' | 'matriz';
-export type ArrayOperationType = 'preencher' | 'limpar' | 'buscar' | 'somar';
+export type StructureType = 'vetor' | 'matriz' | string;
+export type ArrayOperationType = 'preencher' | 'limpar' | 'buscar' | 'somar' | string;
+
+export interface LessonOperationParamField {
+  id: string;
+  label: string;
+  placeholder?: string;
+  defaultValue: number;
+  min?: number;
+  max?: number;
+}
 
 export interface LessonOperationConfig {
-  id: ArrayOperationType;
+  id: string;
   label: string;
   panelLabel?: string;
-  code: (input: number[] | number[][]) => CodeListing;
+  code: (input: number[] | number[][], params?: Record<string, number>) => CodeListing;
   complexity?: Complexity;
-  steps: (input: number[] | number[][]) => Step[];
+  params?: LessonOperationParamField[];
+  steps: (input: number[] | number[][], params?: Record<string, number>) => Step[];
 }
 
 export interface LessonStructureConfig {
-  id: StructureType;
+  id: string;
   label: string;
   defaultInput: number[] | number[][];
   operations: LessonOperationConfig[];

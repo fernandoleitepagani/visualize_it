@@ -85,6 +85,7 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   `Vetor (1D)` e `Matriz (2D)`, 4 operações (`preencher`, `limpar`, `buscar`, `somar`), entradas dinâmicas
   (vetor proporcional à quantidade de valores; matriz com campos de linha empilhados até 10x10) e sincronização
   completa com o código C e o `VarsPanel`;
+- operações interativas em estruturas lineares (`lista-sequencial`, `lista-encadeada`, `pilha-sequencial`, `pilha-encadeada`, `fila-circular`, `fila-encadeada`) no padrão `operationsGroup` (Issue #58), permitindo alternar entre operações atômicas (inserções, remoções, consultas e buscas) com parâmetros dinâmicos (`valor`, `posição`), código C e Java correspondente e animação precisa em `CellsView` e `NodesView`;
 - nova view `object` (`ObjectView.tsx`) e reformulação completa das 9 lições de POO em C++ (Issue #53),
   eliminando caixas indexadas de array e introduzindo moldes de classe (blueprints) com membros públicos/privados,
   instâncias concretas na memória com realce de escrita em tempo real, hierarquias de herança com resolução
@@ -365,7 +366,7 @@ polimento.
 - Visualização de chamada recursiva (Call Stack) em Quicksort e Mergesort (Issue #59).
 - Visualização de Árvore Binária para Heapsort (Issue #60).
 - FileView: disco vs RAM com cursor sequencial (Issue #54 - concluído).
-- Operações interativas em listas encadeadas (Issue #58).
+- Operações interativas em estruturas lineares (Issue #58 - concluído).
 - Remover o shim/alias `viz` depois de migrar os imports restantes.
 
 ### Médio prazo
@@ -459,6 +460,7 @@ npm run build
 | 2026-10-22 | Lição `ponteiros-duplos` com a cadeia `pp → p → x`, `*pp = &y` e `**pp = 99`; grupo **Ponteiros** com 3 lições | Fechar a progressão básico → aritmética → duplo sem criar uma segunda view |
 | 2026-10-22 | View `callstack` e lições `funcoes` e `recursao` (quadros com parâmetros/locais, passagem por valor, caso base e desenrolar) | Ensinar o mecanismo de chamada e o retorno recursivo com um modelo explícito de pilha, sem nova dependência |
 | 2026-10-23 | Container do shell ampliado de 1280 px para 1600 px e padding lateral reduzido pela metade (`8/10/16 px`) | Reduzir pela metade os espaços laterais em telas largas e aproveitar melhor a área horizontal nas views e no código |
+| 2026-10-23 | Operações interativas em estruturas lineares (Lista, Pilha e Fila) com o padrão `operationsGroup` | Permitir alternar entre operações atômicas com entradas dinâmicas (valor/posição) e código C/Java sincronizado (Issue #58) |
 
 ---
 

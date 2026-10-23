@@ -92,16 +92,18 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const initialLang: CodeLang =
     requestedLang && languages.includes(requestedLang) ? requestedLang : languages[0];
 
-  // Operations group support (vetores e matrizes)
+  // Operations group support (vetores, matrizes, estruturas lineares)
   const isOperationsLesson = Boolean(lesson.operationsGroup);
   const structures = useMemo(
     () => lesson.operationsGroup?.structures ?? [],
     [lesson.operationsGroup],
   );
   const initialStructureId: StructureType =
-    (searchParams.get('estrutura') as StructureType) === 'matriz' ? 'matriz' : 'vetor';
+    (searchParams.get('estrutura') as StructureType) ||
+    (structures.length > 0 ? structures[0].id : 'vetor');
   const initialOperationId: ArrayOperationType =
-    (searchParams.get('operacao') as ArrayOperationType) || 'preencher';
+    (searchParams.get('operacao') as ArrayOperationType) ||
+    (structures[0]?.operations[0]?.id ?? 'preencher');
 
   const [selectedStructure, setSelectedStructure] = useState<StructureType>(initialStructureId);
   const [selectedOperation, setSelectedOperation] = useState<ArrayOperationType>(initialOperationId);
@@ -111,6 +113,28 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const currentOperation =
     currentStructure?.operations.find((op) => op.id === selectedOperation) ??
     currentStructure?.operations[0];
+
+  const [opParams, setOpParams] = useState<Record<string, number>>(() => {
+    const initialParams: Record<string, number> = {};
+    for (const field of currentOperation?.params ?? []) {
+      const fromUrl = searchParams.get(field.id);
+      if (fromUrl !== null && fromUrl.trim() !== '' && !Number.isNaN(Number(fromUrl))) {
+        initialParams[field.id] = Number(fromUrl);
+      } else {
+        initialParams[field.id] = field.defaultValue;
+      }
+    }
+    return initialParams;
+  });
+
+  const [opParamInputs, setOpParamInputs] = useState<Record<string, string>>(() => {
+    const initialInputs: Record<string, string> = {};
+    for (const field of currentOperation?.params ?? []) {
+      const fromUrl = searchParams.get(field.id);
+      initialInputs[field.id] = fromUrl ?? String(field.defaultValue);
+    }
+    return initialInputs;
+  });
 
   // Vetor input state for operationsGroup
   const [vetorInput, setVetorInput] = useState<number[]>(() => {
@@ -188,9 +212,9 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const steps = useMemo(() => {
     if (isOperationsLesson && currentOperation) {
       if (selectedStructure === 'matriz') {
-        return currentOperation.steps(matrizInput);
+        return currentOperation.steps(matrizInput, opParams);
       }
-      return currentOperation.steps(vetorInput);
+      return currentOperation.steps(vetorInput, opParams);
     }
     return lesson.steps(input, approach, lesson.hasTarget ? targetInput : undefined);
   }, [
@@ -199,6 +223,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     selectedStructure,
     matrizInput,
     vetorInput,
+    opParams,
     lesson,
     input,
     approach,
@@ -209,8 +234,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     if (isOperationsLesson && currentOperation) {
       const listing =
         selectedStructure === 'matriz'
-          ? currentOperation.code(matrizInput)
-          : currentOperation.code(vetorInput);
+          ? currentOperation.code(matrizInput, opParams)
+          : currentOperation.code(vetorInput, opParams);
       return listing[lang] ?? [];
     }
     return getLessonCode(lesson, lang, approach);
@@ -220,6 +245,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     selectedStructure,
     matrizInput,
     vetorInput,
+    opParams,
     lesson,
     lang,
     approach,
@@ -253,14 +279,27 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       (previous) => {
         const next = new URLSearchParams(previous);
         if (isOperationsLesson) {
-          next.set('estrutura', selectedStructure);
-          next.set('operacao', selectedOperation);
-          if (selectedStructure === 'vetor') {
-            next.set('arr', vetorInput.join(','));
-            next.delete('matriz');
+          if (structures.length > 1) {
+            next.set('estrutura', selectedStructure);
           } else {
+            next.delete('estrutura');
+          }
+          if (selectedOperation) {
+            next.set('operacao', selectedOperation);
+          }
+          if (selectedStructure === 'matriz') {
             next.set('matriz', matrizInput.map((r) => r.join(',')).join(';'));
             next.delete('arr');
+          } else {
+            next.set('arr', vetorInput.join(','));
+            next.delete('matriz');
+          }
+          if (currentOperation?.params) {
+            for (const param of currentOperation.params) {
+              if (opParams[param.id] !== undefined) {
+                next.set(param.id, String(opParams[param.id]));
+              }
+            }
           }
         } else {
           next.set('arr', input.join(','));
@@ -280,16 +319,19 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     );
   }, [
     approach,
+    currentOperation?.params,
     hasApproaches,
     input,
     isOperationsLesson,
     lang,
     lesson.hasTarget,
     matrizInput,
+    opParams,
     playback.index,
     selectedOperation,
     selectedStructure,
     setSearchParams,
+    structures.length,
     targetInput,
     vetorInput,
   ]);
@@ -308,8 +350,22 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
     setVetorInput(parsed);
     setVetorInputValue(parsed.join(', '));
     storeInput(`${lesson.id}-vetor`, parsed);
+
+    if (currentOperation?.params) {
+      const parsedParams: Record<string, number> = {};
+      for (const field of currentOperation.params) {
+        const raw = opParamInputs[field.id];
+        let val = raw !== undefined && raw.trim() !== '' ? Number(raw) : field.defaultValue;
+        if (Number.isNaN(val)) val = field.defaultValue;
+        if (field.min !== undefined) val = Math.max(field.min, val);
+        if (field.max !== undefined) val = Math.min(field.max, val);
+        parsedParams[field.id] = val;
+      }
+      setOpParams(parsedParams);
+    }
+
     goTo(0);
-  }, [goTo, lesson.id, vetorInputValue]);
+  }, [currentOperation, goTo, lesson.id, opParamInputs, vetorInputValue]);
 
   const randomizeVetor = useCallback(() => {
     const len = 3 + Math.floor(Math.random() * 5); // 3 to 7
@@ -740,24 +796,38 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         >
           <Stack gap="md">
             <Group justify="space-between" align="center" wrap="wrap" gap="md">
-              <Group gap="xs" align="center">
-                <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
-                  Estrutura
-                </Text>
-                <SegmentedControl
-                  size="sm"
-                  radius="md"
-                  value={selectedStructure}
-                  onChange={(val) => {
-                    setSelectedStructure(val as StructureType);
-                    goTo(0);
-                  }}
-                  data={[
-                    { label: 'Vetor (1D)', value: 'vetor' },
-                    { label: 'Matriz (2D)', value: 'matriz' },
-                  ]}
-                />
-              </Group>
+              {structures.length > 1 && (
+                <Group gap="xs" align="center">
+                  <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
+                    Estrutura
+                  </Text>
+                  <SegmentedControl
+                    size="sm"
+                    radius="md"
+                    value={selectedStructure}
+                    onChange={(val) => {
+                      setSelectedStructure(val);
+                      const newStruct = structures.find((s) => s.id === val);
+                      const newOp = newStruct?.operations[0];
+                      if (newOp) {
+                        setSelectedOperation(newOp.id);
+                        if (newOp.params) {
+                          const nextParams: Record<string, number> = {};
+                          const nextInputs: Record<string, string> = {};
+                          for (const field of newOp.params) {
+                            nextParams[field.id] = field.defaultValue;
+                            nextInputs[field.id] = String(field.defaultValue);
+                          }
+                          setOpParams(nextParams);
+                          setOpParamInputs(nextInputs);
+                        }
+                      }
+                      goTo(0);
+                    }}
+                    data={structures.map((s) => ({ label: s.label, value: s.id }))}
+                  />
+                </Group>
+              )}
 
               <Group gap="xs" align="center">
                 <Text fz={font.micro} fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.1em' }}>
@@ -768,20 +838,31 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                   radius="md"
                   value={selectedOperation}
                   onChange={(val) => {
-                    setSelectedOperation(val as ArrayOperationType);
+                    setSelectedOperation(val);
+                    const newOp = currentStructure?.operations.find((op) => op.id === val);
+                    if (newOp?.params) {
+                      const nextParams: Record<string, number> = {};
+                      const nextInputs: Record<string, string> = {};
+                      for (const field of newOp.params) {
+                        nextParams[field.id] = field.defaultValue;
+                        nextInputs[field.id] = String(field.defaultValue);
+                      }
+                      setOpParams(nextParams);
+                      setOpParamInputs(nextInputs);
+                    }
                     goTo(0);
                   }}
-                  data={[
-                    { label: 'Preencher', value: 'preencher' },
-                    { label: 'Limpar', value: 'limpar' },
-                    { label: 'Buscar', value: 'buscar' },
-                    { label: 'Somar', value: 'somar' },
-                  ]}
+                  data={
+                    currentStructure?.operations.map((op) => ({
+                      label: op.label,
+                      value: op.id,
+                    })) ?? []
+                  }
                 />
               </Group>
             </Group>
 
-            {selectedStructure === 'vetor' ? (
+            {selectedStructure !== 'matriz' ? (
               <Box
                 component="form"
                 className="lesson-toolbar-row"
@@ -791,21 +872,44 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
                 }}
               >
                 <TextInput
-                  aria-label="valores do vetor"
-                  placeholder="ex: 10, 20, 30, 40, 50 (máx 10)"
+                  aria-label={selectedStructure === 'vetor' ? 'valores do vetor' : 'valores da estrutura'}
+                  placeholder="ex: 10, 20, 30 (máx 10)"
                   leftSection={
                     <Text fz={font.micro} fw={600} c="dimmed">
-                      vetor =
+                      {lesson.panelLabel || 'inicial'} =
                     </Text>
                   }
-                  leftSectionWidth={60}
+                  leftSectionWidth={70}
                   value={vetorInputValue}
                   onChange={(event) => setVetorInputValue(event.currentTarget.value)}
                   error={vetorError || undefined}
                   size="sm"
                   className="lesson-input"
-                  style={{ flex: '1 1 240px', maxWidth: 360 }}
+                  style={{ flex: '1 1 200px', maxWidth: 300 }}
                 />
+
+                {currentOperation?.params?.map((field) => (
+                  <TextInput
+                    key={field.id}
+                    aria-label={field.label}
+                    placeholder={`ex: ${field.defaultValue}`}
+                    leftSection={
+                      <Text fz={font.micro} fw={600} c="dimmed">
+                        {field.label} =
+                      </Text>
+                    }
+                    leftSectionWidth={field.label.length > 5 ? 75 : 60}
+                    value={opParamInputs[field.id] ?? String(opParams[field.id] ?? field.defaultValue)}
+                    onChange={(event) => {
+                      const val = event.currentTarget.value;
+                      setOpParamInputs((prev) => ({ ...prev, [field.id]: val }));
+                    }}
+                    size="sm"
+                    className="lesson-input"
+                    style={{ width: 130 }}
+                  />
+                ))}
+
                 <Button type="submit" variant="default" size="sm" leftSection={<CheckIcon size={14} />}>
                   Aplicar
                 </Button>
