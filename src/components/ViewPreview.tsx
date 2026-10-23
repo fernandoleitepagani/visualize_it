@@ -282,6 +282,35 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'heap') {
+    return (
+      <Box
+        data-testid="view-preview-heap"
+        w={36}
+        h={30}
+        pos="relative"
+        aria-hidden
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <svg width="34" height="26" viewBox="0 0 34 26" style={{ overflow: 'visible' }}>
+          {/* lines */}
+          <line x1="17" y1="6" x2="8" y2="19" stroke={vizVar.line3} strokeWidth="1.2" />
+          <line x1="17" y1="6" x2="26" y2="19" stroke={vizVar.line3} strokeWidth="1.2" />
+          {/* root */}
+          <circle cx="17" cy="6" r="4.5" fill={accent} stroke={vizVar.line2} strokeWidth="1" />
+          {/* left child */}
+          <circle cx="8" cy="19" r="4" fill={vizVar.surface3} stroke={vizVar.line2} strokeWidth="1" />
+          {/* right child */}
+          <circle cx="26" cy="19" r="4" fill={vizVar.surface3} stroke={vizVar.line2} strokeWidth="1" />
+        </svg>
+      </Box>
+    );
+  }
+
   return (
     <Flex gap={3} align="flex-end" h={30} aria-hidden>
       {barHeights.map((height, i) => (

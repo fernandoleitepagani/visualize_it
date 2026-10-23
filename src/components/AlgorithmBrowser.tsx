@@ -30,6 +30,7 @@ const viewLabels: Record<ViewKind, string> = {
   object: 'Objetos',
   loop: 'Laços',
   callstack: 'Pilha de chamadas',
+  heap: 'Heap',
 };
 
 interface Props {

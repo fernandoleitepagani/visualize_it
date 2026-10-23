@@ -14,4 +14,10 @@ describe('ViewPreview', () => {
 
     expect(container.querySelector('[data-testid="view-preview-callstack"]')).toBeInTheDocument();
   });
+
+  it('renders the heap preview', () => {
+    const { container } = renderWithProviders(<ViewPreview view="heap" kind="lesson" />);
+
+    expect(container.querySelector('[data-testid="view-preview-heap"]')).toBeInTheDocument();
+  });
 });
