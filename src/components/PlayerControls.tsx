@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
 import {
   ActionIcon,
+  Badge,
   Box,
   Button,
   Flex,
   Group,
   Paper,
   SegmentedControl,
-  Slider,
   Switch,
   Text,
 } from '@mantine/core';
@@ -75,7 +75,7 @@ export function PlayerControls({
         </Box>
       ) : null}
 
-      <Flex className="player-deck-inner" align="center" gap="md" wrap="wrap" px="md" py="sm">
+      <Flex className="player-deck-inner" align="center" justify="space-between" gap="md" px="md" py="sm">
         <Group className="player-transport" gap={6} wrap="nowrap">
           <Button
             variant="subtle"
@@ -136,25 +136,29 @@ export function PlayerControls({
           </Button>
         </Group>
 
-        <Group className="player-progress" gap={10} wrap="nowrap">
-          <Slider
-            aria-label="Passo atual"
-            size="md"
-            className="player-slider"
-            min={0}
-            max={Math.max(total - 1, 0)}
-            value={index}
-            onChange={playback.goTo}
-            disabled={total <= 1}
-            label={(value) => (empty ? 'Sem passos' : `Passo ${value + 1} de ${total}`)}
-          />
-          <Text
-            fz={font.small}
-            fw={600}
-            style={{ color: vizVar.ink, minWidth: 60, textAlign: 'right' }}
+        <Group className="player-progress" gap={8} wrap="nowrap" justify="center">
+          <Badge
+            variant="light"
+            size="lg"
+            radius="md"
+            styles={{
+              root: {
+                background: 'var(--viz-surface-3)',
+                borderColor: vizVar.line2,
+                borderWidth: 1,
+                borderStyle: 'solid',
+                textTransform: 'none',
+                fontFamily: 'monospace',
+                fontSize: font.small,
+                fontWeight: 700,
+                color: vizVar.ink,
+                padding: '0 12px',
+                height: 32,
+              },
+            }}
           >
             {empty ? '0 / 0' : `${index + 1} / ${total}`}
-          </Text>
+          </Badge>
         </Group>
 
         <Group className="player-speed" gap={10} wrap="nowrap" justify="flex-end">

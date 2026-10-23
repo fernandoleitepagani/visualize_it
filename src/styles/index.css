@@ -531,10 +531,11 @@ body::before {
 /* ── Player ────────────────────────────────────────────────────────────── */
 
 .player-deck-inner {
-  display: grid;
-  grid-template-columns: auto minmax(220px, 1fr) auto;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .player-transport {
@@ -546,16 +547,14 @@ body::before {
 .player-progress {
   display: flex;
   align-items: center;
-  min-width: 0;
-}
-
-.player-slider {
-  flex: 1;
-  min-width: 80px;
+  justify-content: center;
 }
 
 .player-speed {
-  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .player-action {
@@ -579,9 +578,9 @@ body::before {
 }
 
 .player-timeline {
-  padding: 10px 12px 6px;
+  padding: 14px 18px 12px;
   border-bottom: 1px solid var(--viz-line);
-  background: color-mix(in srgb, var(--viz-surface-2) 32%, transparent);
+  background: color-mix(in srgb, var(--viz-surface-2) 36%, transparent);
 }
 
 /* ── Prose ─────────────────────────────────────────────────────────────── */
