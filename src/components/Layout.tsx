@@ -24,8 +24,8 @@ export function Layout({ children }: { children: ReactNode }) {
           Pular para o conteúdo
         </Anchor>
         <Container
-          size={1280}
-          px={{ base: 'md', sm: 'lg', md: 'xl' }}
+          size={1600}
+          px={{ base: 8, sm: 10, md: 16 }}
           pt={{ base: 'md', sm: 'lg' }}
           pb="xl"
           style={{ flex: 1, width: '100%', minWidth: 0 }}

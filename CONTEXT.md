@@ -458,6 +458,7 @@ npm run build
 | 2026-10-22 | Lição `ponteiros-basico` e view `pointers` (caixas endereçadas, setas por `targetId`, leitura em violeta e escrita em âmbar) | Separar endereço de valor antes da aritmética de ponteiros, com um modelo de memória explícito e acessível |
 | 2026-10-22 | Lição `ponteiros-duplos` com a cadeia `pp → p → x`, `*pp = &y` e `**pp = 99`; grupo **Ponteiros** com 3 lições | Fechar a progressão básico → aritmética → duplo sem criar uma segunda view |
 | 2026-10-22 | View `callstack` e lições `funcoes` e `recursao` (quadros com parâmetros/locais, passagem por valor, caso base e desenrolar) | Ensinar o mecanismo de chamada e o retorno recursivo com um modelo explícito de pilha, sem nova dependência |
+| 2026-10-23 | Container do shell ampliado de 1280 px para 1600 px e padding lateral reduzido pela metade (`8/10/16 px`) | Reduzir pela metade os espaços laterais em telas largas e aproveitar melhor a área horizontal nas views e no código |
 
 ---
 

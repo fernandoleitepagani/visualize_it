@@ -68,9 +68,9 @@ export function AppHeader() {
 
   return (
     <Container
-      size={1280}
+      size={1600}
       h="100%"
-      px={{ base: 'md', sm: 'lg', md: 'xl' }}
+      px={{ base: 8, sm: 10, md: 16 }}
       style={{ position: 'relative' }}
     >
       <Group h="100%" justify="space-between" wrap="nowrap" gap="md">

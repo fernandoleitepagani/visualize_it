@@ -231,17 +231,7 @@ body::before {
 }
 
 .filter-bar {
-  position: sticky;
-  top: 76px;
-  z-index: 10;
-  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.6);
-}
-
-@media (max-width: 61.99em) {
-  .filter-bar {
-    position: static;
-    box-shadow: none;
-  }
+  position: static;
 }
 
 /* ── Cards ─────────────────────────────────────────────────────────────── */

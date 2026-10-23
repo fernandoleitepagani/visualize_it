@@ -375,11 +375,10 @@ apresentacionais.
 
 ## 10. Responsividade
 
-- Container do shell: **1280 px**; header **64 px**.
+- Container do shell: **1600 px**; header **64 px**.
 - Desktop: lição em grid 1.14/0.86; código e visualização lado a lado.
 - `≤ 75.99em`: player empilha transporte/progresso/velocidade.
-- `≤ 61.99em`: lição em coluna única, abas, hero em coluna única, filtros deixam de ser sticky,
-  player vira dock sticky.
+- `≤ 61.99em`: lição em coluna única, abas, hero em coluna única, player vira dock sticky.
 - `≤ 40em`: input de valores ocupa a linha inteira, canvas reduz a altura mínima e presets rolam
   horizontalmente.
 - `≤ 26em`: transporte compacto.

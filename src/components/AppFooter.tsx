@@ -5,7 +5,7 @@ import { font, space } from '@/theme';
 
 export function AppFooter() {
   return (
-    <Container size={1280} px={{ base: 'md', sm: 'lg', md: 'xl' }}>
+    <Container size={1600} px={{ base: 8, sm: 10, md: 16 }}>
       <Group justify="space-between" align="flex-start" gap="lg" wrap="wrap">
         <div>
           <Text fz={font.small} fw={600} style={{ color: 'var(--viz-ink)' }}>
