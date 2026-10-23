@@ -37,7 +37,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 508 testes em 51 arquivos, passando |
+| Testes | 523 testes em 52 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -311,7 +311,7 @@ polimento.
 | BUG-02 | Resolvido | Loop Tracker desacoplado de células e correção do somatório em `for.ts` | Issue #57 resolvida: `for`, `while` e `do-while` migrados para `LoopView` com alternância entre Quadrados de Iteração (1D e 2D triangular) e Dashboard analítico; variáveis locais no `VarsPanel`; código C de `for.ts` simplificado para somatório aninhado didático ($j \le i$) com exata correspondência | — | Coberto por `LoopView.test.tsx` e `lessons.test.ts` |
 | BUG-03 | Resolvido | Lista dupla mostrava `∅` em todos os ponteiros anteriores/próximos | `lista-dupla.ts` agora mapeia `prev: nd.ant` e `next: nd.prox`; `NodesView` resolve os ids para os valores e desenha conectores curvos | — | Coberto por `lessons.test.ts`; a view também exibe o terminal `∅` |
 | BUG-04 | Resolvido | Validação de entrada por schema e prevenção de estouro de memória | Módulo `inputValidation.ts` introduzido com `InputSchema` (`min`, `max`, `integerOnly`, `unit-interval`), limites estritos e mensagens claras em pt-BR; counting sort protegido em 0..30 | — | Coberto por `inputValidation.test.ts`, `LessonView.test.tsx` e `ComparePage.tsx` |
-| BUG-05 | Média | Busca sempre procura o elemento do meio | `busca-sequencial.ts` e `busca-binaria.ts` definem `target = v[Math.floor(v.length / 2)]` | Não dá para demonstrar melhor/pior caso nem o caminho “não encontrado”; a busca sequencial sempre percorre metade do vetor | Permitir alvo explícito na entrada; manter um padrão quando não informado |
+| BUG-05 | Resolvido | Busca com alvo configurável e cenários de sucesso/falha | Issue #56 resolvida: suporte a alvo explícito (`hasTarget`, `defaultTarget`), campo `alvo = ` no toolbar com sincronização de URL (`?target=`), sorteio inteligente (50% presente / 50% ausente), badge de presença (Presente/Ausente) e presets de cenários rápidos (`Início`, `Meio`, `Fim`, `Ausente`). Animação cobre hit (destaque do índice encontrado) e miss (varredura completa e retorno -1). Variáveis locais populadas no `VarsPanel`. | — | Coberto por `busca.test.ts` e `LessonView.test.tsx` |
 | BUG-06 | Resolvido | Refactor de tema incompleto e com armadilha de resolução | `src/theme/tokens.ts` está rastreado e é a fonte única; `src/theme.ts` permanece como shim que re-exporta tokens, `vizVar` e `tint`, com `viz` deprecated para compatibilidade | — | A migração foi concluída mantendo o shim; criar `src/theme/index.ts` e remover `viz` quando todos os imports migrarem |
 | BUG-07 | Resolvido | Tabela de complexidade mostrava “Estável: Não” quando o valor era indefinido | `ComplexityTable.tsx` agora distingue `stable === undefined` e exibe “—” | — | Coberto por `ComplexityTable.test.tsx` |
 | BUG-08 | Resolvido | Acessibilidade e semântica | Home com um único `h1`; views com `role="img"` e `aria-label`; descrição do passo com `aria-live="polite"`; atalhos ignoram foco em campos, botões e links; skip link e breadcrumbs adicionados | — | Mantido coberto por revisão manual e testes de rota |
