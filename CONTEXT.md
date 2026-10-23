@@ -37,7 +37,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 541 testes em 55 arquivos, passando |
+| Testes | 603 testes em 61 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -191,8 +191,9 @@ abaixo de 62em, o deck vira uma barra sticky no rodapé da viewport. O cabeçalh
 visualização mostra o passo atual, a narração fica em um bloco destacado logo abaixo do canvas e as
 variáveis ficam em um rodapé próprio. Os painéis compartilham header, ícone e sombra via `Panel`;
 `src/components/icons.tsx` concentra os SVGs inline, `SectionHeading`/`MetaPill` padronizam
-títulos e metadados e `ViewLegend` padroniza a legenda das views. O player combina o `TimelineBar`
-(marcadores clicáveis com preview da operação) com o slider acessível. `usePlayback` mantém o
+títulos e metadados e `ViewLegend` padroniza a legenda das views. O player integra o `TimelineBar`
+(blocos táteis com ampliação dock fish-eye, preview da operação e prioridade para hover) eliminando a
+barra/slider redundante. `usePlayback` mantém o
 cursor, o estado de play/pause, a velocidade, `initialIndex`, `loop` e o callback `onStepChange`.
 Quando a lista de `Step` muda de identidade (nova lição ou nova entrada), o cursor reinicia durante
 o render.

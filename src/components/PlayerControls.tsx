@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
 import {
   ActionIcon,
+  Badge,
   Box,
   Button,
-  Flex,
   Group,
   Paper,
   SegmentedControl,
-  Slider,
   Switch,
   Text,
 } from '@mantine/core';
@@ -75,18 +74,72 @@ export function PlayerControls({
         </Box>
       ) : null}
 
-      <Flex className="player-deck-inner" align="center" gap="md" wrap="wrap" px="md" py="sm">
-        <Group className="player-transport" gap={6} wrap="nowrap">
+      <Box className="player-deck-inner">
+        <Group className="player-status-group" gap={8} wrap="nowrap" align="center">
+          <Box
+            aria-hidden
+            className={isPlaying ? 'status-dot pulse' : 'status-dot'}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 999,
+              background: isPlaying
+                ? 'var(--subject-accent, var(--viz-accent))'
+                : atEnd
+                ? 'var(--viz-muted)'
+                : vizVar.line3,
+              boxShadow: isPlaying
+                ? '0 0 8px var(--subject-accent, var(--viz-accent))'
+                : 'none',
+              flexShrink: 0,
+              transition: 'background-color 200ms ease, box-shadow 200ms ease',
+            }}
+          />
+          <Badge
+            variant="light"
+            size="md"
+            radius="md"
+            styles={{
+              root: {
+                background: 'var(--viz-surface-3)',
+                borderColor: vizVar.line2,
+                borderWidth: 1,
+                borderStyle: 'solid',
+                textTransform: 'none',
+                fontFamily: 'monospace',
+                fontSize: font.small,
+                fontWeight: 700,
+                color: vizVar.ink,
+                padding: '0 10px',
+                height: 28,
+              },
+            }}
+          >
+            {empty ? '0 / 0' : `${index + 1} / ${total}`}
+          </Badge>
+          <Text
+            fz={font.micro}
+            fw={600}
+            c="dimmed"
+            visibleFrom="xs"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            {empty ? 'Sem passos' : isPlaying ? 'Executando' : atEnd ? 'Concluído' : 'Pausado'}
+          </Text>
+        </Group>
+
+        <Group className="player-transport" gap={6} wrap="nowrap" justify="center">
           <Button
-            variant="subtle"
+            variant="default"
             size="md"
             radius="pill"
             onClick={playback.reset}
             disabled={empty}
             aria-label="Voltar ao início"
             aria-keyshortcuts="Home R"
+            title="Voltar ao início (Home ou R)"
             leftSection={<ResetIcon size={15} />}
-            className="player-action"
+            className="player-action player-action-reset"
           >
             <Text span visibleFrom="sm">
               Início
@@ -100,8 +153,9 @@ export function PlayerControls({
             disabled={atStart || empty}
             aria-label="Passo anterior"
             aria-keyshortcuts="ArrowLeft"
+            title="Passo anterior (←)"
             leftSection={<ChevronLeftIcon size={15} />}
-            className="player-action"
+            className="player-action player-action-step"
           >
             <Text span visibleFrom="sm">
               Anterior
@@ -112,6 +166,7 @@ export function PlayerControls({
             radius="pill"
             aria-pressed={isPlaying}
             aria-keyshortcuts="Space"
+            title="Executar ou Pausar (Espaço)"
             disabled={empty}
             onClick={playback.toggle}
             leftSection={isPlaying ? <PauseIcon size={15} /> : <PlayIcon size={15} />}
@@ -127,8 +182,9 @@ export function PlayerControls({
             disabled={atEnd || empty}
             aria-label="Próximo passo"
             aria-keyshortcuts="ArrowRight"
+            title="Próximo passo (→)"
             rightSection={<ChevronRightIcon size={15} />}
-            className="player-action"
+            className="player-action player-action-step"
           >
             <Text span visibleFrom="sm">
               Próximo
@@ -136,28 +192,7 @@ export function PlayerControls({
           </Button>
         </Group>
 
-        <Group className="player-progress" gap={10} wrap="nowrap">
-          <Slider
-            aria-label="Passo atual"
-            size="md"
-            className="player-slider"
-            min={0}
-            max={Math.max(total - 1, 0)}
-            value={index}
-            onChange={playback.goTo}
-            disabled={total <= 1}
-            label={(value) => (empty ? 'Sem passos' : `Passo ${value + 1} de ${total}`)}
-          />
-          <Text
-            fz={font.small}
-            fw={600}
-            style={{ color: vizVar.ink, minWidth: 60, textAlign: 'right' }}
-          >
-            {empty ? '0 / 0' : `${index + 1} / ${total}`}
-          </Text>
-        </Group>
-
-        <Group className="player-speed" gap={10} wrap="nowrap" justify="flex-end">
+        <Group className="player-speed" gap={8} wrap="nowrap" justify="flex-end">
           {onQuizChange ? (
             <Switch
               size="xs"
@@ -183,6 +218,7 @@ export function PlayerControls({
               size="sm"
               aria-label="Atalhos de teclado"
               aria-keyshortcuts="?"
+              title="Atalhos de teclado (?)"
               onClick={onShowShortcuts}
             >
               <KeyboardIcon size={14} />
@@ -199,7 +235,7 @@ export function PlayerControls({
             {copied ? 'Copiado!' : 'Copiar link'}
           </Button>
         </Group>
-      </Flex>
+      </Box>
     </Paper>
   );
 }

@@ -181,7 +181,7 @@ color: accent,
 ```
 
 Use esse padrão em **chrome de página**: cabeçalho, índice de seção, filtros ativos, tags, setas de
-cards, ícones de painel, linha ativa do código, variáveis alteradas, narração, timeline, slider e
+cards, ícones de painel, linha ativa do código, variáveis alteradas, narração, timeline e
 botão primário. Estados de dados continuam nas cores globais da seção 3.4.
 
 ### 4.3 Adicionar uma nova matéria com acento
@@ -338,7 +338,7 @@ apresentacionais.
 - Wrapper com `--subject-accent`.
 - `PageHeader` com meta pills (a complexidade usa `tone="subject"`).
 - Grid 1.14/0.86 no desktop; abas abaixo de 62em.
-- O player usa o acento da matéria no botão primário, slider e timeline; os estados da view
+- O player usa o acento da matéria no botão primário e timeline; os estados da view
   continuam globais.
 
 ### Teoria

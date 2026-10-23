@@ -98,4 +98,22 @@ describe('PlayerControls', () => {
     expect(playback.next).toHaveBeenCalledOnce();
     expect(playback.setSpeedMs).toHaveBeenCalledWith(450);
   });
+
+  it('displays active execution status and completed state', () => {
+    renderWithProviders(
+      <PlayerControls playback={makePlayback({ isPlaying: true, index: 1, total: 5 })} />,
+    );
+
+    expect(screen.getByText('Executando')).toBeInTheDocument();
+    expect(screen.getByText('2 / 5')).toBeInTheDocument();
+  });
+
+  it('displays completed state at the end of playback', () => {
+    renderWithProviders(
+      <PlayerControls playback={makePlayback({ isPlaying: false, index: 4, total: 5, atEnd: true })} />,
+    );
+
+    expect(screen.getByText('Concluído')).toBeInTheDocument();
+    expect(screen.getByText('5 / 5')).toBeInTheDocument();
+  });
 });
