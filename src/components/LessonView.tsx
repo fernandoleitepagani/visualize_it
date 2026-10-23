@@ -25,6 +25,7 @@ import { readStoredInput, storeInput } from '@/lib/persistedInput';
 import { getInsight } from '@/content/insights';
 import { font, radius, vizVar } from '@/theme';
 import { BarsView } from './BarsView';
+import { CallStackView } from './CallStackView';
 import { CellsView } from './CellsView';
 import { CodePanel } from './CodePanel';
 import { ComplexityAnalysisCard } from './ComplexityAnalysisCard';
@@ -53,6 +54,7 @@ function Canvas({ lesson, step, ids }: { lesson: Lesson; step: Step | undefined;
   if (lesson.view === 'pointers') return <PointersView state={step?.pointers} />;
   if (lesson.view === 'object') return <ObjectView state={step?.object} />;
   if (lesson.view === 'loop') return <LoopView state={step?.loop} />;
+  if (lesson.view === 'callstack') return <CallStackView state={step?.callstack} />;
   return <BarsView state={step} ids={ids} />;
 }
 

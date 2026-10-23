@@ -13,6 +13,12 @@ const views = [
   { name: 'nodes', route: '/algoritmos/lista-encadeada', heading: 'Lista Encadeada' },
   { name: 'pointers', route: '/algoritmos/ponteiros-basico', heading: 'Ponteiros: endereço e valor' },
   { name: 'double pointers', route: '/algoritmos/ponteiros-duplos', heading: 'Ponteiros duplos' },
+  {
+    name: 'functions',
+    route: '/algoritmos/funcoes',
+    heading: 'Funções: parâmetros, retorno e escopo',
+  },
+  { name: 'recursion', route: '/algoritmos/recursao', heading: 'Recursão: a pilha de chamadas' },
   { name: 'theory', route: '/teoria/complexidade', heading: 'Complexidade de Algoritmos' },
   { name: 'compare', route: '/comparar', heading: 'Comparar algoritmos' },
   { name: 'vim', route: '/vim', heading: 'Vim' },

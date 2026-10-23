@@ -20,6 +20,14 @@ export const insights: Record<string, LessonInsight> = {
     tip: 'O teste acontece depois do corpo, então o bloco executa pelo menos uma vez.',
     funFact: 'É útil quando a primeira leitura ou execução precisa acontecer antes da validação.',
   },
+  funcoes: {
+    tip: 'Parâmetros são cópias: alterar n dentro de dobro não muda o a de soma nem o x de main.',
+    funFact: 'Cada chamada ganha um quadro próprio na pilha; ao retornar, esse quadro é destruído e só o valor de retorno sobrevive.',
+  },
+  recursao: {
+    tip: 'O caso base encerra a descida; o retorno desenrola de dentro para fora, multiplicando 2 * 1, 3 * 2 e 4 * 6.',
+    funFact: 'fatorial(4) mantém cinco quadros vivos no pico (main + quatro chamadas): a pilha é o custo de espaço da recursão.',
+  },
   'ponteiros-basico': {
     tip: '&x devolve o endereço de x; *p acessa o valor guardado nesse endereço. p e *p são coisas diferentes.',
     funFact: 'O tipo do ponteiro diz ao compilador como interpretar o valor apontado; por isso int * e char * não são intercambiáveis.',

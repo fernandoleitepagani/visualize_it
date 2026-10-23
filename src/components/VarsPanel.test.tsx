@@ -21,6 +21,14 @@ describe('VarsPanel', () => {
     expect(screen.getByText('—')).toBeInTheDocument();
   });
 
+  it('does not mark a variable as changed when it was absent from the previous step', () => {
+    const { container } = renderWithProviders(
+      <VarsPanel vars={{ d: 6, a: 3, x: 3 }} prevVars={{ retorno: 6 }} />,
+    );
+
+    expect(container.querySelector('.viz-var-changed')).not.toBeInTheDocument();
+  });
+
   it('highlights changed variables when prevVars differs', () => {
     const { container } = renderWithProviders(
       <VarsPanel vars={{ i: 3, n: 10 }} prevVars={{ i: 2, n: 10 }} />,

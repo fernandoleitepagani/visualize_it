@@ -91,6 +91,24 @@ export const subjects: Subject[] = [
         ],
       },
       {
+        id: 'funcoes-recursao',
+        title: 'Funções e recursão',
+        entries: [
+          {
+            kind: 'lesson',
+            slug: 'funcoes',
+            blurb: 'chamada, parâmetros por valor, retorno e escopo.',
+            tag: 'Θ(1)',
+          },
+          {
+            kind: 'lesson',
+            slug: 'recursao',
+            blurb: 'a pilha cresce até o caso base e desenrola no retorno.',
+            tag: 'Θ(n)',
+          },
+        ],
+      },
+      {
         id: 'ponteiros',
         title: 'Ponteiros',
         entries: [

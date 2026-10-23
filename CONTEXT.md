@@ -16,7 +16,8 @@
 O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de dados e análise de
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
-- uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings` ou `pointers`);
+- uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`,
+  `object`, `loop` ou `callstack`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -31,12 +32,12 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 47 (`src/content/lessons/index.ts`) |
-| Views | 8 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`) |
+| Lições registradas | 49 (`src/content/lessons/index.ts`) |
+| Views | 10 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 474 testes em 48 arquivos, passando |
+| Testes | 508 testes em 51 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -44,7 +45,8 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (28):** `for`, `while`, `do-while`, `ponteiros-basico` (view `pointers`), `aritmetica`,
+- **AEDS I (30):** `for`, `while`, `do-while`; o grupo **Funções e recursão** com `funcoes` e
+  `recursao` (view `callstack`); depois `ponteiros-basico` (view `pointers`), `aritmetica`,
   `ponteiros-duplos` (view `pointers`), `soma` (view `plot`); o grupo
   **String** com `strings`, `strlen`, `strcpy`, `strcat`, `strcmp`, `busca-string`, `strtok`
   (view `strings`); depois `structs`, `alocacao-memoria`, `arquivos`, `vetores-matrizes`,
@@ -74,6 +76,9 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
 - view `pointers` com caixas de memória endereçadas, setas por `targetId` e leitura/escrita
   diferenciadas, usada por `ponteiros-basico` e `ponteiros-duplos`; a lição dupla acrescenta a
   cadeia `pp → p → x`;
+- view `callstack` com quadros empilhados (parâmetros, locais, retorno e escopo), usada por
+  `funcoes` e `recursao`; a primeira mostra `main → soma → dobro` e a passagem por valor, e a
+  segunda mostra `fatorial(4)` descendo até o caso base e desenrolando 2 → 6 → 24;
 - view bidimensional `matrix` com realce cruzado de coordenadas $(i, j)$ e suporte a matrizes 2D reais
   em `vetores-matrizes` e `classes-vetores-matrizes` (Issue #49);
 - separação interativa de vetores e matrizes em `vetores-matrizes` (Issue #51), com seleção entre
@@ -129,7 +134,7 @@ export interface Lesson {
   title: string;
   subtitle?: string;
   description?: string;
-  view?: ViewKind;                   // bars | cells | nodes | plot | matrix | strings | pointers; padrão: bars
+  view?: ViewKind;                   // bars | cells | nodes | plot | matrix | strings | pointers | callstack; padrão: bars
   linked?: 'singly' | 'doubly';      // só para nodes
   panelLabel?: string;
   initial?: number[];                // padrão: DEFAULT_INPUT
@@ -152,7 +157,10 @@ Cada `Step` contém:
 - `plot?`: pontos e total acumulado do somatório;
 - `matrix?`: grade 2D com coordenadas ativas e rótulos de linha/coluna;
 - `strings?`: fileiras de caracteres, ponteiros nas células, setas de cópia/concatenação e resultado;
-- `pointers?`: caixas de memória com tipo, nome, endereço, valor, alvo e resultado.
+- `pointers?`: caixas de memória com tipo, nome, endereço, valor, alvo e resultado;
+- `object?`: moldes de classe, instâncias, ponteiros, chamadas e exceções;
+- `loop?`: fase do laço, iteração, condição e acumulador;
+- `callstack?`: quadros de chamada da base ao topo, com parâmetros, locais, valor de retorno e valor recebido.
 
 `steps()` não toca no DOM e pode ser testada sem navegador. O player só percorre a lista pronta.
 
@@ -166,6 +174,7 @@ LessonPage (breadcrumb + LessonPager)
        ├─ toolbar de entrada (valores, Aplicar, Sortear, presets)
        ├─ useMemo: assignElementIds(steps)  // só para bars
        ├─ Canvas → BarsView | CellsView | NodesView | PlotView | MatrixView | StringsView
+       │            | PointersView | ObjectView | LoopView | CallStackView
        ├─ CodePanel (Java/C, iterativo/recursivo, linha ativa com rolagem automática)
        ├─ PlayerControls abaixo do grid (timeline de passos, transporte, progresso,
        │   velocidade, quiz, copiar link)
@@ -215,13 +224,20 @@ conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o te
 | `matrix` | vetores e matrizes 2D | `matrix: { rows, cols, grid, activeRow?, activeCol?, rowLabels?, colLabels? }` |
 | `strings` | funções de string em C | `strings: { rows: [{ label, cells }], links?, result? }` |
 | `pointers` | endereços e ponteiros em C | `pointers: { boxes: [{ id, name, type, address, value, targetId?, labels?, state? }], result? }` |
+| `object` | lições de POO em C++ | `object: { blueprints?, instances?, pointer?, call?, exception?, explanationNote? }` |
+| `loop` | `for`, `while`, `do-while` | `loop: { phase?, iteration?, innerIteration?, condition?, accumulator? }` |
+| `callstack` | funções e recursão em C | `callstack: { frames: [{ id, fn, call?, vars: [{ name, value, kind?, state? }], state?, returns?, received? }], result? }` |
 
 As views são apresentacionais: não calculam o algoritmo, apenas desenham o `Step` atual.
 `MatrixView` desenha a grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos;
 `StringsView` desenha fileiras de caracteres com índices, ponteiros nas células, terminador `\0`
 destacado e setas SVG para cópia/concatenação; `PointersView` desenha caixas de memória com
-tipo/nome/endereço/valor, setas por `targetId` e estados separados de leitura e escrita; a legenda
-e a descrição do passo continuam sendo a fonte textual do estado.
+tipo/nome/endereço/valor, setas por `targetId` e estados separados de leitura e escrita;
+`ObjectView` desenha moldes de classe, instâncias, herança, ponteiro base e fluxo de exceções;
+`LoopView` combina tracker de iterações, condição e acumulador;
+`CallStackView` empilha quadros do topo para a base, separa parâmetros de locais, destaca o retorno
+antes de o quadro desaparecer e mostra `recebeu X` no quadro que aguardava a chamada; a legenda e a
+descrição do passo continuam sendo a fonte textual do estado.
 
 ### 4.4 Tema
 
@@ -363,7 +379,8 @@ polimento.
 
 ### Longo prazo
 
-- Visualização de pilha de chamadas para recursão (quicksort, mergesort, heapsort).
+- Pilha de chamadas nas ordenações recursivas (quicksort, mergesort, heapsort), além da lição
+  introdutória de recursão.
 - Novas views para árvores e grafos.
 - Modo de comparação entre algoritmos ou entre Java e C.
 - Internacionalização (pt-BR/en) e refinamento do tema claro.
@@ -390,7 +407,8 @@ npm run build
 2. Abra `/materias/aeds-ii`, busque, filtre por grupo/view e confira o estado na URL.
 3. Abra uma lição de cada view: `selecao` (bars), `pilha-sequencial` (cells), `lista-encadeada`
    (nodes), `soma` (plot), `vetores-matrizes` (matrix), `strlen` (strings), `ponteiros-basico` e
-   `ponteiros-duplos` (pointers).
+   `ponteiros-duplos` (pointers), `oop` (object), `while` (loop), `funcoes` e `recursao`
+   (callstack).
 4. Use “Executar”, “Pausar”, “Anterior”, “Próximo”, “Recomeçar”, o slider de passo e a velocidade.
 5. Alterne Java/C e confira o destaque da linha.
 6. Aplique uma entrada válida e uma inválida; teste também “Sortear” e os presets.
@@ -398,7 +416,7 @@ npm run build
 8. Abra `/teoria/complexidade` e `/teoria/inducao`.
 9. Use a busca do header e confira o agrupamento por matéria.
 10. Abra `/playground` e execute o sandbox.
-11. Alterne o tema claro/escuro e confira as sete views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, `strlen`, view `strings`, e `ponteiros-basico`/`ponteiros-duplos`, view `pointers`).
+11. Alterne o tema claro/escuro e confira as dez views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, `strlen`, view `strings`, `ponteiros-basico`/`ponteiros-duplos`, view `pointers`, `oop`, view `object`, `while`, view `loop`, e `funcoes`/`recursao`, view `callstack`).
 12. Ative o quiz em uma lição de `bars` e responda uma pergunta.
 13. Abra uma URL inexistente e confira o 404.
 
@@ -438,6 +456,7 @@ npm run build
 | 2026-10-22 | Seção `/vim` com motor puro, 12 desafios e cheatsheet essencial, fora do catálogo de matérias | Ensinar Vim com prática real mantendo o mesmo contrato testável das lições e sem dependências novas |
 | 2026-10-22 | Lição `ponteiros-basico` e view `pointers` (caixas endereçadas, setas por `targetId`, leitura em violeta e escrita em âmbar) | Separar endereço de valor antes da aritmética de ponteiros, com um modelo de memória explícito e acessível |
 | 2026-10-22 | Lição `ponteiros-duplos` com a cadeia `pp → p → x`, `*pp = &y` e `**pp = 99`; grupo **Ponteiros** com 3 lições | Fechar a progressão básico → aritmética → duplo sem criar uma segunda view |
+| 2026-10-22 | View `callstack` e lições `funcoes` e `recursao` (quadros com parâmetros/locais, passagem por valor, caso base e desenrolar) | Ensinar o mecanismo de chamada e o retorno recursivo com um modelo explícito de pilha, sem nova dependência |
 
 ---
 

@@ -26,6 +26,7 @@ import { lesson as buscaSequencial } from './busca-sequencial';
 import { lesson as buscaString } from './busca-string';
 import { lesson as counting } from './counting';
 import { lesson as doWhile } from './do-while';
+import { lesson as funcoes } from './funcoes';
 import { lesson as filaCircular } from './fila-circular';
 import { lesson as filaEncadeada } from './fila-encadeada';
 import { lesson as forLoop } from './for';
@@ -40,6 +41,7 @@ import { lesson as pilhaSequencial } from './pilha-sequencial';
 import { lesson as ponteirosBasico } from './ponteiros-basico';
 import { lesson as ponteirosDuplos } from './ponteiros-duplos';
 import { lesson as quicksort } from './quicksort';
+import { lesson as recursao } from './recursao';
 import { lesson as radix } from './radix';
 import { lesson as selecao } from './selecao';
 import { lesson as shellsort } from './shellsort';
@@ -56,6 +58,8 @@ export const lessons = {
   for: forLoop,
   while: whileLoop,
   'do-while': doWhile,
+  funcoes,
+  recursao,
   'ponteiros-basico': ponteirosBasico,
   'ponteiros-duplos': ponteirosDuplos,
   aritmetica,

@@ -23,6 +23,7 @@ const viewLabels: Record<ViewKind, string> = {
   pointers: 'ponteiros',
   object: 'objetos',
   loop: 'laço',
+  callstack: 'pilha de chamadas',
 };
 
 export function LessonPage() {

@@ -8,4 +8,10 @@ describe('ViewPreview', () => {
 
     expect(container.querySelector('[data-testid="view-preview-pointers"]')).toBeInTheDocument();
   });
+
+  it('renders the call stack preview', () => {
+    const { container } = renderWithProviders(<ViewPreview view="callstack" kind="lesson" />);
+
+    expect(container.querySelector('[data-testid="view-preview-callstack"]')).toBeInTheDocument();
+  });
 });

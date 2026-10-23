@@ -26,7 +26,10 @@ export function VarsPanel({ vars, prevVars }: Props) {
       </Text>
       <Group role="group" aria-label="Variáveis do passo" gap={6} wrap="wrap">
         {entries.map(([name, value]) => {
-          const isChanged = prevVars !== undefined && prevVars[name] !== value;
+          // A variable that only appears now was not "changed": it was out of
+          // scope (or new) in the previous step.
+          const isChanged =
+            prevVars !== undefined && name in prevVars && prevVars[name] !== value;
           return (
             <Group
               key={`${name}-${String(value)}`}
