@@ -30,6 +30,9 @@ import { lesson as funcoes } from './funcoes';
 import { lesson as filaCircular } from './fila-circular';
 import { lesson as filaEncadeada } from './fila-encadeada';
 import { lesson as forLoop } from './for';
+import { lesson as ifElse } from './if-else';
+import { lesson as ternarioLesson } from './ternario';
+import { lesson as switchCase } from './switch-case';
 import { lesson as heapsort } from './heapsort';
 import { lesson as insercao } from './insercao';
 import { lesson as listaDupla } from './lista-dupla';
@@ -55,6 +58,9 @@ import { lesson as whileLoop } from './while';
 
 /** Every lesson, keyed by slug. The key is the URL segment. */
 export const lessons = {
+  'if-else': ifElse,
+  'switch-case': switchCase,
+  ternario: ternarioLesson,
   for: forLoop,
   while: whileLoop,
   'do-while': doWhile,

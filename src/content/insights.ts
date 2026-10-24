@@ -20,6 +20,18 @@ export const insights: Record<string, LessonInsight> = {
     tip: 'O teste acontece depois do corpo, então o bloco executa pelo menos uma vez.',
     funFact: 'É útil quando a primeira leitura ou execução precisa acontecer antes da validação.',
   },
+  'if-else': {
+    tip: 'As condições são avaliadas em ordem; assim que uma é verdadeira, as seguintes não são testadas.',
+    funFact: 'O else final é opcional: sem ele, um valor que não satisfaz nenhuma condição simplesmente segue em frente.',
+  },
+  'switch-case': {
+    tip: 'O break encerra o switch; sem ele, a execução cai no case seguinte (fall-through).',
+    funFact: 'O switch funciona melhor com valores discretos, como opções de menu ou códigos inteiros.',
+  },
+  ternario: {
+    tip: 'Use o ternário para escolhas curtas entre dois valores; para blocos de código, prefira if/else.',
+    funFact: 'O ternário é uma expressão: ele produz um valor que pode ser atribuído ou passado como argumento.',
+  },
   funcoes: {
     tip: 'Parâmetros são cópias: alterar n dentro de dobro não muda o a de soma nem o x de main.',
     funFact: 'Cada chamada ganha um quadro próprio na pilha; ao retornar, esse quadro é destruído e só o valor de retorno sobrevive.',

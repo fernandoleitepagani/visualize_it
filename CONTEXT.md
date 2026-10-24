@@ -17,7 +17,7 @@ O **Visualize It** é um site acadêmico que ensina algoritmos, estruturas de da
 complexidade por meio de visualizações passo a passo. Cada lição combina:
 
 - uma estrutura animada (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`,
-  `object`, `loop`, `callstack`, `heap` ou `file`);
+  `object`, `loop`, `callstack`, `heap`, `file` ou `flow`);
 - o código em **Java ou C**, com a linha executada destacada;
 - as variáveis do passo atual;
 - uma descrição do que acabou de acontecer;
@@ -32,12 +32,12 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 | Item | Estado |
 |---|---|
-| Lições registradas | 49 (`src/content/lessons/index.ts`) |
-| Views | 12 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`, `heap`, `file`) |
+| Lições registradas | 52 (`src/content/lessons/index.ts`) |
+| Views | 13 (`bars`, `cells`, `nodes`, `plot`, `matrix`, `strings`, `pointers`, `object`, `loop`, `callstack`, `heap`, `file`, `flow`) |
 | Seção Vim | 12 desafios, cheatsheet essencial e motor puro em `src/vim/` |
 | Artigos de teoria | 2 (`complexidade`, `inducao`) |
 | Rotas | `/`, `/materias/:subjectId`, `/algoritmos/:slug`, `/teoria/:slug`, `/playground`, `/comparar`, `/vim`, `/vim/desafios/:slug`, `*` (404) |
-| Testes | 603 testes em 61 arquivos, passando |
+| Testes | 647 testes em 66 arquivos, passando |
 | Lint | Limpo |
 | Typecheck | Limpo |
 | Deploy | Vercel, rewrite de SPA + redirects 301 das URLs antigas |
@@ -45,7 +45,7 @@ português (pt-BR). O site é publicado no Vercel como SPA.
 
 ### Lições existentes
 
-- **AEDS I (30):** `for`, `while`, `do-while`; o grupo **Funções e recursão** com `funcoes` e
+- **AEDS I (33):** o grupo **Condicionais** com `if-else`, `switch-case` e `ternario` (view `flow`); depois `for`, `while`, `do-while`; o grupo **Funções e recursão** com `funcoes` e
   `recursao` (view `callstack`); depois `ponteiros-basico` (view `pointers`), `aritmetica`,
   `ponteiros-duplos` (view `pointers`), `soma` (view `plot`); o grupo
   **String** com `strings`, `strlen`, `strcpy`, `strcat`, `strcmp`, `busca-string`, `strtok`
@@ -91,7 +91,8 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   instâncias concretas na memória com realce de escrita em tempo real, hierarquias de herança com resolução
   na classe base, despacho dinâmico polimórfico via ponteiro base com indicação de vtable, e fluxo interativo de
   exceções (`try` -> `throw` -> `catch`);
-- nova view de arquivos `file` (`FileView.tsx`) com distinção explícita entre memória RAM volátil e armazenamento persistente em disco (Issue #54), apresentando o ponteiro `FILE *f` com status e modo (w/r), buffer de E/S com indicador de flush (`fclose`), variáveis locais (`x`), representação física de `dados.txt` com linhas numeradas, seek head (cursor sequencial) apontando para a linha ativa e leitor de EOF, além de terminal para saída padrão (`stdout`).
+- nova view de arquivos `file` (`FileView.tsx`) com distinção explícita entre memória RAM volátil e armazenamento persistente em disco (Issue #54), apresentando o ponteiro `FILE *f` com status e modo (w/r), buffer de E/S com indicador de flush (`fclose`), variáveis locais (`x`), representação física de `dados.txt` com linhas numeradas, seek head (cursor sequencial) apontando para a linha ativa e leitor de EOF, além de terminal para saída padrão (`stdout`);
+- grupo **Condicionais** com `if-else`, `switch-case` e `ternario` (Issue #72), usando a view `flow`: a condição/seletor fica no topo, cada ramo mostra expressão, avaliação, statements e estado (`em avaliação`, `executado`, `ignorado`), e o resultado aparece em violeta. O aviso de fall-through do switch fica em `note`, o diagrama converge para `next` (a próxima linha fora da estrutura), e o controle **Ramos / Diagrama** alterna entre a lista e o diagrama.
 
 ---
 
@@ -136,7 +137,7 @@ export interface Lesson {
   title: string;
   subtitle?: string;
   description?: string;
-  view?: ViewKind;                   // bars | cells | nodes | plot | matrix | strings | pointers | callstack; padrão: bars
+  view?: ViewKind;                   // bars | cells | nodes | plot | matrix | strings | pointers | object | loop | callstack | heap | file | flow; padrão: bars
   linked?: 'singly' | 'doubly';      // só para nodes
   panelLabel?: string;
   initial?: number[];                // padrão: DEFAULT_INPUT
@@ -160,6 +161,7 @@ Cada `Step` contém:
 - `matrix?`: grade 2D com coordenadas ativas e rótulos de linha/coluna;
 - `strings?`: fileiras de caracteres, ponteiros nas células, setas de cópia/concatenação e resultado;
 - `pointers?`: caixas de memória com tipo, nome, endereço, valor, alvo e resultado;
+- `flow?`: seletor, ramos com condição/avaliação/estado, `break`/fall-through, resultado e próxima linha (`next`).
 - `object?`: moldes de classe, instâncias, ponteiros, chamadas e exceções;
 - `loop?`: fase do laço, iteração, condição e acumulador;
 - `callstack?`: quadros de chamada da base ao topo, com parâmetros, locais, valor de retorno e valor recebido.
@@ -227,6 +229,7 @@ conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o te
 | `matrix` | vetores e matrizes 2D | `matrix: { rows, cols, grid, activeRow?, activeCol?, rowLabels?, colLabels? }` |
 | `strings` | funções de string em C | `strings: { rows: [{ label, cells }], links?, result? }` |
 | `pointers` | endereços e ponteiros em C | `pointers: { boxes: [{ id, name, type, address, value, targetId?, labels?, state? }], result? }` |
+| `flow` | condicionais (`if-else`, `switch-case`, `ternario`) | `flow: { kind, selector?, branches: [{ id, label, condition?, evaluation?, result?, statements?, value?, state?, exit? }], result?, next?, note? }` |
 | `object` | lições de POO em C++ | `object: { blueprints?, instances?, pointer?, call?, exception?, explanationNote? }` |
 | `loop` | `for`, `while`, `do-while` | `loop: { phase?, iteration?, innerIteration?, condition?, accumulator? }` |
 | `callstack` | funções e recursão em C | `callstack: { frames: [{ id, fn, call?, vars: [{ name, value, kind?, state? }], state?, returns?, received? }], result? }` |
@@ -238,6 +241,7 @@ destacado e setas SVG para cópia/concatenação; `PointersView` desenha caixas 
 tipo/nome/endereço/valor, setas por `targetId` e estados separados de leitura e escrita;
 `ObjectView` desenha moldes de classe, instâncias, herança, ponteiro base e fluxo de exceções;
 `LoopView` combina tracker de iterações, condição e acumulador;
+`FlowView` desenha o seletor e os ramos de uma decisão, com estado textual, `break`/fall-through e resultado;
 `CallStackView` empilha quadros do topo para a base, separa parâmetros de locais, destaca o retorno
 antes de o quadro desaparecer e mostra `recebeu X` no quadro que aguardava a chamada; a legenda e a
 descrição do passo continuam sendo a fonte textual do estado.
@@ -408,10 +412,10 @@ npm run build
 
 1. Abra `/` e confira os três cards de matéria e os destaques.
 2. Abra `/materias/aeds-ii`, busque, filtre por grupo/view e confira o estado na URL.
-3. Abra uma lição de cada view: `selecao` (bars), `pilha-sequencial` (cells), `lista-encadeada`
-   (nodes), `soma` (plot), `vetores-matrizes` (matrix), `strlen` (strings), `ponteiros-basico` e
-   `ponteiros-duplos` (pointers), `oop` (object), `while` (loop), `funcoes` e `recursao`
-   (callstack).
+3. Abra uma lição de cada view: `selecao` (bars), `pilha-sequencial` (cells), `if-else` (flow),
+   `lista-encadeada` (nodes), `soma` (plot), `vetores-matrizes` (matrix), `strlen`
+   (strings), `ponteiros-basico` e `ponteiros-duplos` (pointers), `oop` (object), `while` (loop),
+   `funcoes` e `recursao` (callstack), `heapsort` (heap) e `arquivos` (file).
 4. Use “Executar”, “Pausar”, “Anterior”, “Próximo”, “Recomeçar”, o slider de passo e a velocidade.
 5. Alterne Java/C e confira o destaque da linha.
 6. Aplique uma entrada válida e uma inválida; teste também “Sortear” e os presets.
@@ -419,7 +423,7 @@ npm run build
 8. Abra `/teoria/complexidade` e `/teoria/inducao`.
 9. Use a busca do header e confira o agrupamento por matéria.
 10. Abra `/playground` e execute o sandbox.
-11. Alterne o tema claro/escuro e confira as dez views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, `strlen`, view `strings`, `ponteiros-basico`/`ponteiros-duplos`, view `pointers`, `oop`, view `object`, `while`, view `loop`, e `funcoes`/`recursao`, view `callstack`).
+11. Alterne o tema claro/escuro e confira as treze views (inclusive `soma`, view `plot`, `vetores-matrizes`, view `matrix`, `strlen`, view `strings`, `ponteiros-basico`/`ponteiros-duplos`, view `pointers`, `oop`, view `object`, `while`, view `loop`, `funcoes`/`recursao`, view `callstack`, `heapsort`, view `heap`, `arquivos`, view `file`, e `if-else`, view `flow`).
 12. Ative o quiz em uma lição de `bars` e responda uma pergunta.
 13. Abra uma URL inexistente e confira o 404.
 
@@ -462,6 +466,7 @@ npm run build
 | 2026-10-22 | View `callstack` e lições `funcoes` e `recursao` (quadros com parâmetros/locais, passagem por valor, caso base e desenrolar) | Ensinar o mecanismo de chamada e o retorno recursivo com um modelo explícito de pilha, sem nova dependência |
 | 2026-10-23 | Container do shell ampliado de 1280 px para 1600 px e padding lateral reduzido pela metade (`8/10/16 px`) | Reduzir pela metade os espaços laterais em telas largas e aproveitar melhor a área horizontal nas views e no código |
 | 2026-10-23 | Operações interativas em estruturas lineares (Lista, Pilha e Fila) com o padrão `operationsGroup` | Permitir alternar entre operações atômicas com entradas dinâmicas (valor/posição) e código C/Java sincronizado (Issue #58) |
+| 2026-10-23 | Grupo **Condicionais** com `if-else`, `switch-case` e `ternario`, usando a view `flow` | Ensinar decisões com seletor, ramos, estado e resultado, sem sobrecarregar `cells` ou `loop` (Issue #72) |
 
 ---
 

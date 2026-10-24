@@ -26,4 +26,10 @@ describe('ViewPreview', () => {
 
     expect(container.querySelector('[data-testid="view-preview-file"]')).toBeInTheDocument();
   });
+
+  it('renders the flow preview', () => {
+    const { container } = renderWithProviders(<ViewPreview view="flow" kind="lesson" />);
+
+    expect(container.querySelector('[data-testid="view-preview-flow"]')).toBeInTheDocument();
+  });
 });

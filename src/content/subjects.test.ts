@@ -71,6 +71,18 @@ describe('subjects catalog', () => {
     expect(slugs).toEqual(['funcoes', 'recursao']);
   });
 
+  it('places conditionals before loops and keeps the lesson order', () => {
+    const subject = getSubject('aeds-i');
+
+    expect(subject?.groups[0]?.id).toBe('condicionais');
+    expect(subject?.groups[0]?.entries.map((entry) => entry.slug)).toEqual([
+      'if-else',
+      'switch-case',
+      'ternario',
+    ]);
+    expect(subject?.groups[1]?.id).toBe('lacos');
+  });
+
   it('builds the routes used by the lesson and theory pages', () => {
     expect(getEntryPath(getEntryLocation('selecao')!.entry)).toBe('/algoritmos/selecao');
     expect(getEntryPath(getEntryLocation('complexidade')!.entry)).toBe('/teoria/complexidade');
