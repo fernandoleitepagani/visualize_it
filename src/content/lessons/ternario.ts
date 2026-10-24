@@ -14,6 +14,8 @@ int main() {
   return 0;
 }`);
 
+const NEXT = 'printf("%d", maior);';
+
 const lineOf = (text: string): number => {
   const index = code.findIndex((line) => line.includes(text));
   if (index < 0) throw new Error(`Linha não encontrada: ${text}`);
@@ -123,6 +125,8 @@ export const lesson: Lesson = {
       },
     });
 
-    return out;
+    return out.map((step) =>
+      step.flow ? { ...step, flow: { ...step.flow, next: NEXT } } : step,
+    );
   },
 };

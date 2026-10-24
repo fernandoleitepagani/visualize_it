@@ -38,6 +38,7 @@ describe('switch-case lesson', () => {
       ['default', 'idle'],
     ]);
     expect(flow(0)?.result).toBeUndefined();
+    expect(flow(0)?.next).toBe('return 0;');
   });
 
   it('evaluates case 1 as false and skips it', () => {

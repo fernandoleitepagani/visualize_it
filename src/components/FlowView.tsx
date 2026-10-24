@@ -165,86 +165,173 @@ function Branch({ branch, reducedMotion }: { branch: FlowBranch; reducedMotion: 
   );
 }
 
+function ChartNode({
+  testId,
+  label,
+  value,
+  highlighted = false,
+}: {
+  testId: string;
+  label: string;
+  value: string;
+  highlighted?: boolean;
+}) {
+  return (
+    <Box
+      data-testid={testId}
+      p={space.sm}
+      style={{
+        minWidth: 190,
+        maxWidth: 340,
+        textAlign: 'center',
+        border: `1px solid ${highlighted ? vizVar.accentLine : vizVar.line2}`,
+        borderRadius: radius.md,
+        background: vizVar.surface2,
+      }}
+    >
+      <Text
+        fz={font.micro}
+        tt="uppercase"
+        style={{ color: highlighted ? vizVar.accent : vizVar.muted, letterSpacing: '0.08em' }}
+      >
+        {label}
+      </Text>
+      <Text
+        ff="monospace"
+        fz={font.body}
+        fw={700}
+        mt={space.xxs}
+        style={{ color: vizVar.ink, overflowWrap: 'anywhere' }}
+      >
+        {value}
+      </Text>
+    </Box>
+  );
+}
+
+function connector(d: string, color: string, key: string) {
+  return (
+    <path
+      key={key}
+      d={d}
+      fill="none"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      vectorEffect="non-scaling-stroke"
+    />
+  );
+}
+
 function FlowChart({ state, reducedMotion }: { state: FlowState; reducedMotion: boolean }) {
+  const count = state.branches.length;
+  const minWidth = Math.max(340, count * 170);
+  const centers = state.branches.map((_, index) => ((index + 0.5) / count) * 100);
+  const selectedIndex = state.branches.findIndex(
+    (branch) => branch.state === 'active' || branch.state === 'done',
+  );
+  const selectedCenter = selectedIndex >= 0 ? centers[selectedIndex] : null;
+  const reachedNext = Boolean(state.result);
+  const dim = vizVar.line3;
+  const active = vizVar.accent;
+  const motion = reducedMotion
+    ? undefined
+    : `opacity ${transition.base}, border-color ${transition.base}, background ${transition.base}`;
+
   return (
     <Box
       data-testid="flow-chart"
       role="group"
-      aria-label="Fluxograma do fluxo condicional"
+      aria-label="Diagrama do fluxo condicional"
       mt={space.sm}
+      className="scroll-fade-x"
+      style={{ overflowX: 'auto', paddingBottom: space.xs }}
     >
-      <Flex justify="center">
+      <Box style={{ minWidth, width: '100%', margin: '0 auto' }}>
+        <Flex justify="center">
+          <ChartNode
+            testId="flow-chart-condition"
+            label={SELECTOR_LABELS[state.kind]}
+            value={state.selector ?? '—'}
+            highlighted
+          />
+        </Flex>
+
+        <Box aria-hidden style={{ position: 'relative', height: 34, marginTop: space.xxs }}>
+          <svg
+            width="100%"
+            height="34"
+            viewBox="0 0 100 34"
+            preserveAspectRatio="none"
+            style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+          >
+            {connector('M50 0 V16', dim, 'fork-trunk')}
+            {count > 1 ? connector(`M${centers[0]} 16 H${centers[count - 1]}`, dim, 'fork-bus') : null}
+            {centers.map((x, index) =>
+              connector(`M${x} 16 V34`, index === selectedIndex ? active : dim, `fork-${index}`),
+            )}
+            {selectedCenter
+              ? connector(`M50 0 V16 H${selectedCenter} V34`, active, 'fork-selected')
+              : null}
+          </svg>
+        </Box>
+
         <Box
-          data-testid="flow-chart-condition"
-          p={space.sm}
+          data-testid="flow-chart-branches"
           style={{
-            minWidth: 190,
-            maxWidth: 320,
-            textAlign: 'center',
-            border: `1px solid ${vizVar.accentLine}`,
-            borderRadius: radius.md,
-            background: vizVar.surface2,
+            display: 'grid',
+            gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))`,
+            gap: space.xs,
           }}
         >
-          <Text
-            fz={font.micro}
-            tt="uppercase"
-            style={{ color: vizVar.muted, letterSpacing: '0.08em' }}
-          >
-            {SELECTOR_LABELS[state.kind]}
-          </Text>
-          <Text
-            ff="monospace"
-            fz={font.body}
-            fw={700}
-            mt={space.xxs}
-            style={{ color: vizVar.ink, overflowWrap: 'anywhere' }}
-          >
-            {state.selector ?? '—'}
-          </Text>
-        </Box>
-      </Flex>
+          {state.branches.map((branch, index) => {
+            const highlighted = index === selectedIndex;
 
-      <Box
-        ml={28}
-        pl={20}
-        mt={space.xs}
-        style={{ borderLeft: `2px solid ${vizVar.line2}` }}
-      >
-        {state.branches.map((branch) => {
-          const branchState = branch.state ?? 'idle';
-          const edgeColor =
-            branchState === 'active' || branchState === 'done' ? vizVar.accent : vizVar.line3;
-
-          return (
-            <Box key={branch.id} pos="relative" mb={space.xs}>
+            return (
               <Box
-                aria-hidden
-                pos="absolute"
-                left={-20}
-                top={16}
-                w={20}
-                style={{ borderTop: `2px solid ${edgeColor}` }}
-              />
-              <Text
-                fz={font.micro}
-                tt="uppercase"
-                mb={4}
-                style={{ color: edgeColor, letterSpacing: '0.08em' }}
+                key={branch.id}
+                data-testid={`flow-chart-branch-${branch.id}`}
+                data-highlighted={highlighted}
+                style={{
+                  minWidth: 0,
+                  opacity: highlighted ? 1 : 0.5,
+                  transition: motion,
+                }}
               >
-                {branch.label}
-              </Text>
-              <Branch branch={branch} reducedMotion={reducedMotion} />
-            </Box>
-          );
-        })}
-      </Box>
+                <Branch branch={branch} reducedMotion={reducedMotion} />
+              </Box>
+            );
+          })}
+        </Box>
 
-      <Flex justify="center" mt={space.xs} aria-hidden>
-        <Text fz={font.tiny} style={{ color: vizVar.dim }}>
-          ↓
-        </Text>
-      </Flex>
+        <Box aria-hidden style={{ position: 'relative', height: 34, marginTop: space.xxs }}>
+          <svg
+            width="100%"
+            height="34"
+            viewBox="0 0 100 34"
+            preserveAspectRatio="none"
+            style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+          >
+            {centers.map((x, index) =>
+              connector(`M${x} 0 V18`, index === selectedIndex ? active : dim, `join-${index}`),
+            )}
+            {count > 1 ? connector(`M${centers[0]} 18 H${centers[count - 1]}`, dim, 'join-bus') : null}
+            {selectedCenter
+              ? connector(`M${selectedCenter} 0 V18 H50 V34`, active, 'join-selected')
+              : null}
+            {connector('M50 18 V34', reachedNext ? active : dim, 'join-trunk')}
+          </svg>
+        </Box>
+
+        <Flex justify="center">
+          <ChartNode
+            testId="flow-chart-next"
+            label="próxima linha"
+            value={state.next ?? '—'}
+            highlighted={reachedNext}
+          />
+        </Flex>
+      </Box>
     </Box>
   );
 }
@@ -306,7 +393,7 @@ export function FlowView({ state }: { state?: FlowState }) {
           onChange={(value) => setMode(value as FlowMode)}
           data={[
             { label: 'Ramos', value: 'list' },
-            { label: 'Fluxograma', value: 'chart' },
+            { label: 'Diagrama', value: 'chart' },
           ]}
           size="xs"
           radius="md"

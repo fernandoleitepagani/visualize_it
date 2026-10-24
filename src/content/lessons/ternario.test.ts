@@ -33,6 +33,7 @@ describe('ternario lesson', () => {
     expect(flow(0)?.selector).toBe('a > b');
     expect(flow(0)?.branches.map((item) => item.state)).toEqual(['idle', 'idle']);
     expect(flow(0)?.result).toBeUndefined();
+    expect(flow(0)?.next).toBe('printf("%d", maior);');
   });
 
   it('evaluates a > b as true and activates the true branch', () => {

@@ -36,6 +36,7 @@ describe('if-else lesson', () => {
       ['else', 'idle'],
     ]);
     expect(flow(0)?.result).toBeUndefined();
+    expect(flow(0)?.next).toBe('return 0;');
   });
 
   it('evaluates nota >= 9 as false and skips the first branch', () => {

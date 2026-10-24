@@ -92,7 +92,7 @@ linha que trouxe quiz, playground, storybook e a lição `soma`. O estado agora 
   na classe base, despacho dinâmico polimórfico via ponteiro base com indicação de vtable, e fluxo interativo de
   exceções (`try` -> `throw` -> `catch`);
 - nova view de arquivos `file` (`FileView.tsx`) com distinção explícita entre memória RAM volátil e armazenamento persistente em disco (Issue #54), apresentando o ponteiro `FILE *f` com status e modo (w/r), buffer de E/S com indicador de flush (`fclose`), variáveis locais (`x`), representação física de `dados.txt` com linhas numeradas, seek head (cursor sequencial) apontando para a linha ativa e leitor de EOF, além de terminal para saída padrão (`stdout`);
-- grupo **Condicionais** com `if-else`, `switch-case` e `ternario` (Issue #72), usando a view `flow`: a condição/seletor fica no topo, cada ramo mostra expressão, avaliação, statements e estado (`em avaliação`, `executado`, `ignorado`), e o resultado aparece em violeta. O aviso de fall-through do switch fica em `note`, e o controle **Ramos / Fluxograma** alterna entre a lista de ramos e o fluxograma.
+- grupo **Condicionais** com `if-else`, `switch-case` e `ternario` (Issue #72), usando a view `flow`: a condição/seletor fica no topo, cada ramo mostra expressão, avaliação, statements e estado (`em avaliação`, `executado`, `ignorado`), e o resultado aparece em violeta. O aviso de fall-through do switch fica em `note`, o diagrama converge para `next` (a próxima linha fora da estrutura), e o controle **Ramos / Diagrama** alterna entre a lista e o diagrama.
 
 ---
 
@@ -161,7 +161,7 @@ Cada `Step` contém:
 - `matrix?`: grade 2D com coordenadas ativas e rótulos de linha/coluna;
 - `strings?`: fileiras de caracteres, ponteiros nas células, setas de cópia/concatenação e resultado;
 - `pointers?`: caixas de memória com tipo, nome, endereço, valor, alvo e resultado;
-- `flow?`: seletor, ramos com condição/avaliação/estado, `break`/fall-through e resultado.
+- `flow?`: seletor, ramos com condição/avaliação/estado, `break`/fall-through, resultado e próxima linha (`next`).
 - `object?`: moldes de classe, instâncias, ponteiros, chamadas e exceções;
 - `loop?`: fase do laço, iteração, condição e acumulador;
 - `callstack?`: quadros de chamada da base ao topo, com parâmetros, locais, valor de retorno e valor recebido.
@@ -229,7 +229,7 @@ conectores curvos em SVG, converte ids de `prev`/`next` em valores e mostra o te
 | `matrix` | vetores e matrizes 2D | `matrix: { rows, cols, grid, activeRow?, activeCol?, rowLabels?, colLabels? }` |
 | `strings` | funções de string em C | `strings: { rows: [{ label, cells }], links?, result? }` |
 | `pointers` | endereços e ponteiros em C | `pointers: { boxes: [{ id, name, type, address, value, targetId?, labels?, state? }], result? }` |
-| `flow` | condicionais (`if-else`, `switch-case`, `ternario`) | `flow: { kind, selector?, branches: [{ id, label, condition?, evaluation?, result?, statements?, value?, state?, exit? }], result?, note? }` |
+| `flow` | condicionais (`if-else`, `switch-case`, `ternario`) | `flow: { kind, selector?, branches: [{ id, label, condition?, evaluation?, result?, statements?, value?, state?, exit? }], result?, next?, note? }` |
 | `object` | lições de POO em C++ | `object: { blueprints?, instances?, pointer?, call?, exception?, explanationNote? }` |
 | `loop` | `for`, `while`, `do-while` | `loop: { phase?, iteration?, innerIteration?, condition?, accumulator? }` |
 | `callstack` | funções e recursão em C | `callstack: { frames: [{ id, fn, call?, vars: [{ name, value, kind?, state? }], state?, returns?, received? }], result? }` |

@@ -252,7 +252,7 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `PointersView` | Caixas de memória para lições de ponteiro: tipo, nome, endereço, valor, setas por `targetId` e estados de leitura/escrita. |
 | `ObjectView` | Moldes de classe, instâncias, ponteiros, chamadas e exceções para lições de POO em C++. |
 | `LoopView` | Tracker de laço: iteração, condição e acumulador para `for`, `while` e `do-while`. |
-| `FlowView` | Condicionais: seletor, ramos com condição/avaliação/estado, `break`/fall-through e resultado; alterna entre lista de ramos e fluxograma. |
+| `FlowView` | Condicionais: seletor, ramos com condição/avaliação/estado, `break`/fall-through e resultado; alterna entre lista de ramos e diagrama; o diagrama converge para a próxima linha (`next`). |
 | `CallStackView` | Pilha de chamadas para funções/recursão: quadros com parâmetros, locais, estado, valor de retorno e valor recebido da chamada interna; topo primeiro. |
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |

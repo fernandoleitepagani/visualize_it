@@ -34,6 +34,7 @@ const ifState: FlowState = {
     },
   ],
   result: { label: 'saída', value: 'Aprovado' },
+  next: 'return 0;',
 };
 
 const switchState: FlowState = {
@@ -153,10 +154,19 @@ describe('FlowView', () => {
     expect(screen.getByTestId('flow-list')).toBeInTheDocument();
     expect(screen.queryByTestId('flow-chart')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('radio', { name: 'Fluxograma' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Diagrama' }));
 
     expect(screen.getByTestId('flow-chart')).toBeInTheDocument();
     expect(screen.getByTestId('flow-chart-condition')).toHaveTextContent('nota >= 6');
+    expect(screen.getByTestId('flow-chart-next')).toHaveTextContent('return 0;');
+    expect(screen.getByTestId('flow-chart-branch-else-if')).toHaveAttribute(
+      'data-highlighted',
+      'true',
+    );
+    expect(screen.getByTestId('flow-chart-branch-if')).toHaveAttribute(
+      'data-highlighted',
+      'false',
+    );
     expect(screen.queryByTestId('flow-list')).not.toBeInTheDocument();
     expect(screen.getByTestId('flow-branch-else-if')).toBeInTheDocument();
 

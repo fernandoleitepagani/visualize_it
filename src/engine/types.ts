@@ -208,6 +208,8 @@ export interface FlowState {
   branches: FlowBranch[];
   /** Output or assignment produced by the step. */
   result?: { label: string; value: string | number };
+  /** Next command after the conditional structure, where the paths converge. */
+  next?: string;
   /** Didactic note, for example the switch fall-through warning. */
   note?: string;
 }
