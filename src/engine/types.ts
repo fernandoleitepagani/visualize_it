@@ -6,7 +6,7 @@
  * touches the DOM, which keeps every algorithm trivially unit-testable.
  */
 
-export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack' | 'heap' | 'file';
+export type ViewKind = 'bars' | 'cells' | 'nodes' | 'plot' | 'matrix' | 'strings' | 'pointers' | 'object' | 'loop' | 'callstack' | 'heap' | 'file' | 'flow';
 export type LinkedKind = 'singly' | 'doubly';
 export type CodeApproach = 'iterativo' | 'recursivo';
 export type CodeLang = 'java' | 'c' | 'cpp';
@@ -176,6 +176,42 @@ export interface PointerState {
   result?: { label: string; value: string };
 }
 
+export type FlowKind = 'if' | 'switch' | 'ternary';
+export type FlowBranchState = 'active' | 'done' | 'skipped' | 'idle';
+export type FlowExit = 'break' | 'fall-through';
+
+/** One branch/expression of the `flow` view. */
+export interface FlowBranch {
+  id: string;
+  /** "if", "else if", "else", "case 2", "default", "verdadeiro" or "falso". */
+  label: string;
+  /** Expression evaluated for this branch. */
+  condition?: string;
+  /** Concrete evaluation, for example `7 >= 6`. */
+  evaluation?: string;
+  /** Boolean result of the branch condition. */
+  result?: boolean | null;
+  /** Statements executed by the branch. */
+  statements?: string[];
+  /** Value selected by a ternary branch. */
+  value?: string | number;
+  state?: FlowBranchState;
+  /** Control-flow exit shown after the branch. */
+  exit?: FlowExit;
+}
+
+/** Payload for the `flow` view (conditionals and branch selection). */
+export interface FlowState {
+  kind: FlowKind;
+  /** Expression shown in the decision header, for example `nota >= 6`. */
+  selector?: string;
+  branches: FlowBranch[];
+  /** Output or assignment produced by the step. */
+  result?: { label: string; value: string | number };
+  /** Didactic note, for example the switch fall-through warning. */
+  note?: string;
+}
+
 export type FrameVarKind = 'param' | 'local';
 export type FrameStateName = 'active' | 'waiting' | 'returning' | 'done';
 
@@ -333,6 +369,8 @@ export interface Step {
   strings?: StringState;
   /** pointers view */
   pointers?: PointerState;
+  /** flow view */
+  flow?: FlowState;
   /** callstack view */
   callstack?: CallStackState;
   /** loop view */

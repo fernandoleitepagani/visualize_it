@@ -349,6 +349,36 @@ export function ViewPreview({
     );
   }
 
+  if (view === 'flow') {
+    return (
+      <Box
+        data-testid="view-preview-flow"
+        w={36}
+        h={30}
+        pos="relative"
+        aria-hidden
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <svg width="34" height="28" viewBox="0 0 34 28" style={{ overflow: 'visible' }}>
+          <path
+            d="M17 3 L30 14 L17 25 L4 14 Z"
+            fill={vizVar.surface3}
+            stroke={accent}
+            strokeWidth="1.2"
+          />
+          <line x1="17" y1="25" x2="9" y2="28" stroke={vizVar.line3} strokeWidth="1.2" />
+          <line x1="17" y1="25" x2="25" y2="28" stroke={vizVar.line3} strokeWidth="1.2" />
+          <circle cx="9" cy="28" r="1.8" fill={accent} />
+          <circle cx="25" cy="28" r="1.8" fill={vizVar.line3} />
+        </svg>
+      </Box>
+    );
+  }
+
   return (
     <Flex gap={3} align="flex-end" h={30} aria-hidden>
       {barHeights.map((height, i) => (

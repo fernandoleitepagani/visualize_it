@@ -66,6 +66,30 @@ export const subjects: Subject[] = [
     accent: 'blue',
     groups: [
       {
+        id: 'condicionais',
+        title: 'Condicionais',
+        entries: [
+          {
+            kind: 'lesson',
+            slug: 'if-else',
+            blurb: 'escolhe entre caminhos com if, else if e else.',
+            tag: 'Θ(1)',
+          },
+          {
+            kind: 'lesson',
+            slug: 'switch-case',
+            blurb: 'seleciona um caso e encerra com break.',
+            tag: 'Θ(1)',
+          },
+          {
+            kind: 'lesson',
+            slug: 'ternario',
+            blurb: 'decide entre duas expressões em uma linha.',
+            tag: 'Θ(1)',
+          },
+        ],
+      },
+      {
         id: 'lacos',
         title: 'Laços de repetição',
         entries: [

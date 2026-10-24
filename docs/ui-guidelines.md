@@ -127,6 +127,10 @@ Na `CallStackView`, o quadro ativo usa âmbar, os que aguardam usam cinza (`--vi
 usa violeta. O topo aparece primeiro, cada quadro separa parâmetros de locais e o estado também
 está escrito no cabeçalho do quadro. Ao receber um retorno, o chamador mostra `recebeu X` em texto.
 
+Na `FlowView`, o ramo em avaliação/executado usa âmbar, os ignorados usam cinza, e o resultado
+(ou valor selecionado) usa violeta. O estado (`em avaliação`, `executado`, `ignorado`) e o
+`break`/fall-through aparecem escritos no próprio ramo.
+
 Não codifique estado apenas por cor: use também legenda, rótulos e a descrição do passo.
 
 ---
@@ -242,11 +246,13 @@ Use `ff="monospace"` apenas onde o texto é código/número. Títulos e prosa em
 | `MetaPill` | Tag mono. `tone="subject"` segue a matéria; `accent`, `purple`, `danger` são globais; `green` é alias do âmbar. |
 | `Breadcrumbs` | Navegação acessível com `aria-current="page"`. |
 | `ViewLegend` | Legenda compartilhada das views. |
+| `CellsView` | Vetores, pilhas, filas e listas; células com labels e estados. |
 | `MatrixView` | Grade 2D com realce cruzado de linha/coluna, coordenadas e rótulos; usada por vetores/matrizes. |
 | `StringsView` | Fileiras de caracteres para lições de string: índices, ponteiros, terminador `\0`, setas de cópia/concatenação e resultado. |
 | `PointersView` | Caixas de memória para lições de ponteiro: tipo, nome, endereço, valor, setas por `targetId` e estados de leitura/escrita. |
 | `ObjectView` | Moldes de classe, instâncias, ponteiros, chamadas e exceções para lições de POO em C++. |
 | `LoopView` | Tracker de laço: iteração, condição e acumulador para `for`, `while` e `do-while`. |
+| `FlowView` | Condicionais: seletor, ramos com condição/avaliação/estado, `break`/fall-through e resultado; alterna entre lista de ramos e fluxograma. |
 | `CallStackView` | Pilha de chamadas para funções/recursão: quadros com parâmetros, locais, estado, valor de retorno e valor recebido da chamada interna; topo primeiro. |
 | `AlgorithmCard` / `SubjectCard` | Cards de catálogo/home. Já definem `--subject-accent` e `--card-glow`. |
 | `ViewPreview` | Miniatura da view; herda o acento da matéria via `--subject-accent`. |

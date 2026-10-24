@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { LessonView } from '@/components/LessonView';
 import { getLesson } from '@/content/lessons';
@@ -58,6 +58,30 @@ describe('LessonView call stack', () => {
 
     expect(screen.getByTestId('call-stack')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /main ativo.*x = 3/i })).toBeInTheDocument();
+    expect(screen.queryByLabelText('valores')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Código' }));
+    expect(screen.getByRole('region', { name: 'Código C' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Código Java' })).not.toBeInTheDocument();
+  });
+});
+
+describe('LessonView conditionals', () => {
+  const conditionalLesson = getLesson('if-else');
+
+  if (!conditionalLesson) throw new Error('A lição if-else precisa existir.');
+
+  it('renders the branch strip without an input toolbar and with C only', () => {
+    renderWithProviders(
+      <LessonView lesson={conditionalLesson} />,
+      '/algoritmos/if-else?lang=java',
+    );
+
+    const region = screen.getByRole('region', {
+      name: 'Visualizador de fluxo condicional',
+    });
+    expect(within(region).getByText('if')).toBeInTheDocument();
+    expect(within(region).getByText('else if')).toBeInTheDocument();
     expect(screen.queryByLabelText('valores')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('tab', { name: 'Código' }));

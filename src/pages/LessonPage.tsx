@@ -26,6 +26,7 @@ const viewLabels: Record<ViewKind, string> = {
   callstack: 'pilha de chamadas',
   heap: 'heap',
   file: 'arquivos',
+  flow: 'fluxo',
 };
 
 export function LessonPage() {
